@@ -15,14 +15,18 @@ const defaultAuthContext = {
 export const AuthContext = createContext<IAuthContext>(defaultAuthContext);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const storedAuth = localStorage.getItem("isAuthenticated");
+  const initialAuthState = storedAuth ? JSON.parse(storedAuth) : false;
+  const [isAuthenticated, setIsAuthenticated] = useState(initialAuthState);
 
   const login = () => {
     setIsAuthenticated(true);
+    localStorage.setItem("isAuthenticated", "true");
   };
 
   const logout = () => {
     setIsAuthenticated(false);
+    localStorage.removeItem("isAuthenticated");
   };
 
   return (

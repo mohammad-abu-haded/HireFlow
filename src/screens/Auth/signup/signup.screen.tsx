@@ -1,14 +1,12 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import eye from "../../../assets/icons/eye.svg";
 import eyeClosed from "../../../assets/icons/eye-closed.svg";
 import leftArrow from "../../../assets/icons/left-arrow.svg";
 import errorMessageIcon from "../../../assets/icons/emblem-important.svg";
-import "./login.css";
-import { AuthContext } from "../../../context/authContext";
+import "./signup.css";
 import { useNavigate } from "react-router-dom";
-const LoginScreen = () => {
-  const { login } = useContext(AuthContext);
-  const loginHandler = (event: any) => {
+const SignupScreen = () => {
+  const signupHandler = (event: any) => {
     event.preventDefault();
     const storedEmail = localStorage.getItem("email");
     const storedPassword = localStorage.getItem("password");
@@ -16,44 +14,59 @@ const LoginScreen = () => {
       setEmail("");
       setPassword("");
       setErrorMessage("");
-      login();
       navigate("/dashboard");
     } else {
       setErrorMessage("Invalid email or password. Please try again.");
     }
   };
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
   return (
-    <div className="login-screen">
+    <div className="signup-screen">
       <div
         className={
           errorMessage
-            ? "login-screen-container with-error"
-            : "login-screen-container"
+            ? "signup-screen-container with-error"
+            : "signup-screen-container"
         }
       >
-        <form onSubmit={loginHandler} className="login-screen-form">
-          <div className="login-screen-logo">
+        <form onSubmit={signupHandler} className="signup-screen-form">
+          <div className="signup-screen-logo">
             <img src="/hireflow-favicon.png" alt="HireFlow Logo" />
             <h2>HireFlow</h2>
           </div>
-          <div className="login-screen-content">
-            <h2>Admin Portal</h2>
+          <div className="signup-screen-content">
+            <h2>Create your account</h2>
             <p>
-              Sign in to manage your job listings and review applicant profiles.
+              Join thousands of professionals finding their next career move.
             </p>
           </div>
-          <div className={errorMessage ? "login-form with-error" : "login-form"}>
-            <div className="login-input">
+          <div
+            className={errorMessage ? "signup-form with-error" : "signup-form"}
+          >
+            <div className="signup-input">
+              <div className="fullname-input">
+                <label htmlFor="signup-fullname">Full Name</label>
+                <input
+                  type="text"
+                  id="signup-fullname"
+                  placeholder="Alex Thompson"
+                  onChange={(e) => setFullName(e.target.value)}
+                  value={fullName}
+                  required
+                />
+              </div>
               <div className="email-input">
-                <label htmlFor="login-email">Email Address</label>
+                <label htmlFor="signup-email">Email Address</label>
                 <input
                   type="email"
-                  id="login-email"
+                  id="signup-email"
                   placeholder="admin@careerhub.io"
                   onChange={(e) => setEmail(e.target.value)}
                   value={email}
@@ -62,8 +75,7 @@ const LoginScreen = () => {
               </div>
               <div className="password-input">
                 <div className="password-label">
-                  <label htmlFor="login-password">Password</label>
-                  <p className="forgot-password">Forgot password?</p>
+                  <label htmlFor="signup-password">Password</label>
                 </div>
                 <div className="password-field">
                   {password.length > 0 && (
@@ -76,10 +88,33 @@ const LoginScreen = () => {
                   )}
                   <input
                     type={showPassword ? "text" : "password"}
-                    id="login-password"
+                    id="signup-password"
                     placeholder="••••••••"
                     onChange={(e) => setPassword(e.target.value)}
                     value={password}
+                    required
+                  />
+                </div>
+              </div>
+              <div className="password-input">
+                <div className="password-label">
+                  <label htmlFor="signup-confirm-password">Confirm Password</label>
+                </div>
+                <div className="password-field">
+                  {confirmPassword.length > 0 && (
+                    <img
+                      src={!showConfirmPassword ? eye : eyeClosed}
+                      alt="Toggle Password Visibility"
+                      className="eye-icon"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    />
+                  )}
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    id="signup-confirm-password"
+                    placeholder="••••••••"
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    value={confirmPassword}
                     required
                   />
                 </div>
@@ -91,11 +126,15 @@ const LoginScreen = () => {
                 {errorMessage}
               </div>
             )}
-            <div className="login-actions">
-            <input type="submit" id="login-button" value="Sign In" />
-            <button className="create-account-button" type="button" onClick={() => navigate("/signup")}>
-              Create New Account
-            </button>
+            <div className="signup-actions">
+              <input type="submit" id="signup-button" value="Sign In" />
+              <button
+                className="create-account-button"
+                type="button"
+                onClick={() => navigate("/signup")}
+              >
+                Create New Account
+              </button>
             </div>
           </div>
         </form>
@@ -124,4 +163,4 @@ const LoginScreen = () => {
   );
 };
 
-export default LoginScreen;
+export default SignupScreen;

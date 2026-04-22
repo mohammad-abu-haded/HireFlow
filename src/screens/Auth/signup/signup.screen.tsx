@@ -1,22 +1,27 @@
 import { useState } from "react";
 import eye from "../../../assets/icons/eye.svg";
 import eyeClosed from "../../../assets/icons/eye-closed.svg";
-import leftArrow from "../../../assets/icons/left-arrow.svg";
 import errorMessageIcon from "../../../assets/icons/emblem-important.svg";
 import "./signup.css";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 const SignupScreen = () => {
   const signupHandler = (event: any) => {
     event.preventDefault();
     const storedEmail = localStorage.getItem("email");
-    const storedPassword = localStorage.getItem("password");
-    if (email === storedEmail && password === storedPassword) {
+    if (email === storedEmail) {
+      setErrorMessage("An account with this email already exists.");
+    } else if (password !== confirmPassword) {
+      setErrorMessage("Passwords do not match. Please try again.");
+    } else {
+      localStorage.setItem("fullName", fullName);
+      localStorage.setItem("email", email);
+      localStorage.setItem("password", password);
+      setFullName("");
       setEmail("");
       setPassword("");
+      setConfirmPassword("");
       setErrorMessage("");
-      navigate("/dashboard");
-    } else {
-      setErrorMessage("Invalid email or password. Please try again.");
+      navigate("/login");
     }
   };
   const [fullName, setFullName] = useState("");
@@ -127,30 +132,19 @@ const SignupScreen = () => {
               </div>
             )}
             <div className="signup-actions">
-              <input type="submit" id="signup-button" value="Sign In" />
-              <button
-                className="create-account-button"
-                type="button"
-                onClick={() => navigate("/signup")}
-              >
-                Create New Account
-              </button>
+              <input type="submit" id="signup-button" value="Create Account" />
             </div>
           </div>
         </form>
-        <div className="or-divider">
-          <span>or</span>
+        <div className="signin-link">
+          <p>
+          Already have an account? 
+          </p>
+          <Link to={"/login"}>Sign in instead</Link>
         </div>
-        <button className="back-to-portal">
-          <img src={leftArrow} alt="Left Arrow" />
-          Back to Careers Portal
-        </button>
         <div className="security-notes">
           <p className="security-note">
-            Protected by HireFlow Enterprise Security.
-          </p>
-          <p className="security-note">
-            By signing in, you agree to our{" "}
+            By clicking "Create Account", you agree to our{" "}
             <span className="policy-link">Terms of Service</span> and{" "}
             <span className="policy-link">Privacy Policy</span>.
           </p>

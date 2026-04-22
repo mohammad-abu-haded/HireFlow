@@ -2,6 +2,7 @@ import "./App.css";
 import LoginScreen from "./screens/Auth/login/login.screen";
 import { Route, Routes } from "react-router-dom";
 import SignupScreen from "./screens/Auth/signup/signup.screen";
+import DemoModeSetup from "./screens/onboarding/demoModeSetup.screen";
 
 function App() {
   return (
@@ -9,6 +10,7 @@ function App() {
       <Routes>
         <Route path="/login" element={<LoginScreen />} />
         <Route path="/signup" element={<SignupScreen />} />
+        <Route path="/demo-setup" element={<DemoModeSetup />} />
       </Routes>
     </div>
   );

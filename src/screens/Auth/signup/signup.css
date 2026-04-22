@@ -17,14 +17,14 @@
   align-items: center;
   background-color: #ffffff;
   width: 448px;
-  height: 869px;
+  height: 780px;
   border-radius: 14px;
   border: 1px solid #f4f4f6;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
 .signup-screen-container.with-error {
-  height: 822px;
+  height: 869px;
 }
 
 .signup-screen-logo {
@@ -172,8 +172,7 @@ input::placeholder {
   row-gap: 16px;
   margin-top: 32px;
 }
-#signup-button,
-.create-account-button {
+#signup-button {
   all: unset;
   text-align: center;
   width: 366px;
@@ -186,25 +185,12 @@ input::placeholder {
   cursor: pointer;
 }
 
-.create-account-button {
-  color: #ffffff;
-}
-
-#signup-button:hover,
-.create-account-button:hover {
+#signup-button:hover {
   background-color: #f28602a0;
 }
 
-#signup-button:active,
-.create-account-button:active {
+#signup-button:active{
   background-color: #f28602;
-}
-
-#signup-button:focus,
-.create-account-button:focus {
-  outline: none;
-  border: 1px solid #f28602a0;
-  box-shadow: 0 0 0 2px rgba(124, 113, 98, 0.2);
 }
 
 .signup-form input:focus {
@@ -213,61 +199,7 @@ input::placeholder {
   box-shadow: 0 0 0 2px rgba(242, 134, 2, 0.2);
 }
 
-.or-divider {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding-top: 24px;
-  padding-bottom: 16px;
-}
-
-.or-divider::before,
-.or-divider::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: #f4f4f6;
-}
-
-.or-divider span {
-  padding: 0 18px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #444;
-  letter-spacing: 0.5px;
-}
-
-.back-to-portal {
-  all: unset;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  font-size: 14px;
-  color: #17191c;
-  cursor: pointer;
-  border-radius: 12px;
-  width: 366px;
-  height: 44px;
-  border: 1px solid #f4f4f6;
-}
-
-.back-to-portal:hover {
-  background-color: #f8f8fa;
-}
-
-.back-to-portal:active {
-  background-color: #f4f4f6;
-}
-
-.back-to-portal:focus {
-  outline: none;
-  border: 1px solid #f28602a0;
-  box-shadow: 0 0 0 2px rgba(242, 134, 2, 0.2);
-}
-
-#signup-button:focus-visible,
-.create-account-button:focus-visible {
+#signup-button:focus-visible {
   outline: none;
   transform: translateY(-1px);
   box-shadow:
@@ -277,7 +209,7 @@ input::placeholder {
 }
 
 .security-notes {
-  margin-top: 39px;
+  margin-top: 23px;
 }
 .security-note {
   font-size: 12px;
@@ -300,4 +232,22 @@ input::placeholder {
   width: 351px;
   letter-spacing: 1.2px;
   text-transform: uppercase;
+}
+
+.signin-link {
+  margin-top: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.signin-link p {
+  color: #353940;
+}
+
+.signin-link a {
+  margin-left: 4px;
+  color: #f28602;
+  font-weight: 600;
 }

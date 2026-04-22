@@ -17,7 +17,7 @@ const LoginScreen = () => {
       setPassword("");
       setErrorMessage("");
       login();
-      navigate("/dashboard");
+      navigate("/demo-setup");
     } else {
       setErrorMessage("Invalid email or password. Please try again.");
     }

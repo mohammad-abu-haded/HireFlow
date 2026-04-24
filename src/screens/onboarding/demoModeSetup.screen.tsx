@@ -1,8 +1,16 @@
-import "./demoModeSetup.css";
-import bag from "../../assets/icons/briefcase-bag.svg";
-import plus from "../../assets/icons/plus-circle.svg";
+import "./DemoModeSetup.css";
+import BagIcon from "../../assets/icons/briefcase-bag.svg?react";
+import Plus from "../../assets/icons/plus-circle.svg?react";
 import rightArrow from "../../assets/icons/right-arrow.svg";
-const DemoModeSetup = () => {
+import { useNavigate } from "react-router";
+const DemoModeSetupScreen = () => {
+  const navigate = useNavigate();
+  const handleSampleWorkspaceClick = () => {
+    navigate('/dashboard');
+  };
+  const handleBlankWorkspaceClick = () => {
+    navigate('/dashboard');
+  };
   const featuresSamples = [
     "Full pipeline of 12 sample jobs",
     "45+ pre-populated applications",
@@ -31,7 +39,7 @@ const DemoModeSetup = () => {
         <div className="mode-item with-sample">
           <div className="mode-label">Recommended</div>
           <div className="mode-icon with-sample">
-            <img src={bag} alt="HireFlow Icon" />
+            <BagIcon className="mode-icon-sample" />
           </div>
           <h2>Start with Sample Data</h2>
           <p>
@@ -45,14 +53,14 @@ const DemoModeSetup = () => {
               </div>
             ))}
           </div>
-          <div className="explore-button with-sample">
+          <div className="explore-button with-sample" onClick={handleSampleWorkspaceClick}>
             <p>Explore Sample Workspace</p>
             <img src={rightArrow} alt="Right Arrow" />
           </div>
         </div>
         <div className="mode-item without-sample">
           <div className="mode-icon without-sample">
-            <img src={plus} alt="HireFlow Icon" />
+            <Plus className="plus-icon" />
           </div>
           <h2>Start Fresh</h2>
           <p>
@@ -67,7 +75,7 @@ const DemoModeSetup = () => {
               </div>
             ))}
           </div>
-          <div className="explore-button without-sample">
+          <div className="explore-button without-sample" onClick={handleBlankWorkspaceClick}>
             <p>Create Blank Workspace</p>
             <img src={rightArrow} alt="Right Arrow" />
           </div>
@@ -77,4 +85,4 @@ const DemoModeSetup = () => {
   );
 };
 
-export default DemoModeSetup;
+export default DemoModeSetupScreen;

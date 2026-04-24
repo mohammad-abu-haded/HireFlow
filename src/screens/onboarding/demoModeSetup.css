@@ -209,3 +209,15 @@
 .explore-button:hover p {
   transform: scale(1.05);
 }
+
+.mode-icon-sample {
+  width: 32px;
+  height: 32px;
+  color: #F17204;
+}
+
+.mode-icon>.plus-icon {
+  width: 32px;
+  height: 32px;
+  color: #99968F;
+}

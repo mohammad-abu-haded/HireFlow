@@ -16,16 +16,18 @@ function App() {
   return (
     <div>
       <Routes>
+        <Route path="/" element={<Navigate to="/jobs" replace />} />
         <Route path="/login" element={<LoginScreen />} />
         <Route path="/signup" element={<SignupScreen />} />
+        <Route element={<AppLayout />}>
+          <Route path="/jobs" element={<JobsScreen />} />
+        </Route>
         <Route element={<AuthGuard />}>
           <Route path="/demo-setup" element={<DemoModeSetupScreen />} />
           <Route element={<AppLayout />}>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/dashboard" element={<DashboardScreen />} />
             <Route path="/post-job" element={<PostJobScreen />} />
             <Route path="/applications" element={<ApplicationsScreen />} />
-            <Route path="/jobs" element={<JobsScreen />} />
           </Route>
         </Route>
       </Routes>

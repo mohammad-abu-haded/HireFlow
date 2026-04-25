@@ -16,7 +16,7 @@ const LoginScreen = () => {
       setEmail("");
       setPassword("");
       setErrorMessage("");
-      login();
+      login(email);
       navigate("/demo-setup");
     } else {
       setErrorMessage("Invalid email or password. Please try again.");
@@ -102,7 +102,7 @@ const LoginScreen = () => {
         <div className="or-divider">
           <span>or</span>
         </div>
-        <button className="back-to-portal">
+        <button className="back-to-portal" onClick={() => navigate("/")}>
           <img src={leftArrow} alt="Left Arrow" />
           Back to Careers Portal
         </button>

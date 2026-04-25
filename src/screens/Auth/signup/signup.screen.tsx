@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import eye from "../../../assets/icons/eye.svg";
 import eyeClosed from "../../../assets/icons/eye-closed.svg";
 import errorMessageIcon from "../../../assets/icons/emblem-important.svg";
 import "./signup.css";
 import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "../../../context/authContext";
 const SignupScreen = () => {
+  const { signup } = useContext(AuthContext);
   const signupHandler = (event: any) => {
     event.preventDefault();
     const storedEmail = localStorage.getItem("email");
@@ -13,9 +15,7 @@ const SignupScreen = () => {
     } else if (password !== confirmPassword) {
       setErrorMessage("Passwords do not match. Please try again.");
     } else {
-      localStorage.setItem("fullName", fullName);
-      localStorage.setItem("email", email);
-      localStorage.setItem("password", password);
+      signup(email, password, fullName);
       setFullName("");
       setEmail("");
       setPassword("");

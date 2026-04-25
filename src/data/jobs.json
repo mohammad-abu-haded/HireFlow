@@ -1,0 +1,137 @@
+[
+  {
+    "id": "job_1",
+    "email": "mo.abu.haded@gmail.com",
+    "title": "Frontend Developer",
+    "company": "TechNova",
+    "location": "Ramallah",
+    "jobType": "Full-time",
+    "employmentType": "Permanent",
+    "duration": null,
+    "workSetting": "Hybrid",
+    "experienceLevel": "Junior",
+    "salaryRange": "$900 - $1300",
+    "deadline": "2026-05-20",
+    "jobDescription": "Build responsive user interfaces using React and TypeScript.",
+    "keyResponsibilities": [
+      "Develop reusable React components",
+      "Implement responsive layouts",
+      "Collaborate with designers and backend developers"
+    ],
+    "requirements": [
+      "Good knowledge of React",
+      "Basic TypeScript experience",
+      "Understanding of REST APIs"
+    ],
+    "skills": ["React", "TypeScript", "CSS", "Git"],
+    "benefits": ["Flexible hours", "Training budget", "Hybrid work"]
+  },
+  {
+    "id": "job_2",
+    "email": "hr@codebase.com",
+    "title": "Backend Developer",
+    "company": "CodeBase",
+    "location": "Nablus",
+    "jobType": "Contract",
+    "employmentType": null,
+    "duration": "6 months",
+    "workSetting": "On-site",
+    "experienceLevel": "Mid-level",
+    "salaryRange": "$1200 - $1800",
+    "deadline": "2026-06-10",
+    "jobDescription": "Develop and maintain backend services using Node.js and MongoDB.",
+    "keyResponsibilities": [
+      "Build REST APIs",
+      "Design database schemas",
+      "Write clean and maintainable backend code"
+    ],
+    "requirements": [
+      "Experience with Node.js",
+      "Knowledge of MongoDB",
+      "Understanding of authentication and authorization"
+    ],
+    "skills": ["Node.js", "Express", "MongoDB", "JWT"],
+    "benefits": ["Project bonus", "Career growth", "Team workshops"]
+  },
+  {
+    "id": "job_3",
+    "email": "careers@pixelsoft.com",
+    "title": "UI/UX Designer",
+    "company": "PixelSoft",
+    "location": "Remote",
+    "jobType": "Part-time",
+    "employmentType": "Non-permanent",
+    "duration": "3 months",
+    "workSetting": "Remote",
+    "experienceLevel": "Junior",
+    "salaryRange": "$500 - $800",
+    "deadline": "2026-05-30",
+    "jobDescription": "Design clean and user-friendly interfaces for web and mobile products.",
+    "keyResponsibilities": [
+      "Create wireframes and prototypes",
+      "Improve user flows",
+      "Work closely with frontend developers"
+    ],
+    "requirements": [
+      "Experience with Figma",
+      "Good visual design skills",
+      "Basic understanding of usability principles"
+    ],
+    "skills": ["Figma", "Wireframing", "Prototyping", "UI Design"],
+    "benefits": ["Remote work", "Flexible schedule", "Portfolio projects"]
+  },
+  {
+    "id": "job_4",
+    "email": "jobs@cloudbridge.com",
+    "title": "DevOps Intern",
+    "company": "CloudBridge",
+    "location": "Hebron",
+    "jobType": "Internship",
+    "employmentType": null,
+    "duration": "4 months",
+    "workSetting": "Hybrid",
+    "experienceLevel": "Entry-level",
+    "salaryRange": "$300 - $500",
+    "deadline": "2026-06-01",
+    "jobDescription": "Assist the DevOps team with deployment, monitoring, and automation tasks.",
+    "keyResponsibilities": [
+      "Help maintain CI/CD pipelines",
+      "Monitor application performance",
+      "Support deployment processes"
+    ],
+    "requirements": [
+      "Basic Linux knowledge",
+      "Basic Git experience",
+      "Interest in cloud technologies"
+    ],
+    "skills": ["Linux", "Git", "Docker", "CI/CD"],
+    "benefits": ["Mentorship", "Certificate", "Real-world experience"]
+  },
+  {
+    "id": "job_5",
+    "email": "talent@nextapps.com",
+    "title": "Mobile App Developer",
+    "company": "NextApps",
+    "location": "Jerusalem",
+    "jobType": "Full-time",
+    "employmentType": "Permanent",
+    "duration": null,
+    "workSetting": "On-site",
+    "experienceLevel": "Mid-level",
+    "salaryRange": "$1300 - $2000",
+    "deadline": "2026-06-15",
+    "jobDescription": "Develop mobile applications using React Native for Android and iOS.",
+    "keyResponsibilities": [
+      "Build mobile screens and features",
+      "Integrate APIs",
+      "Fix bugs and improve app performance"
+    ],
+    "requirements": [
+      "Experience with React Native",
+      "Good JavaScript knowledge",
+      "Understanding of mobile app lifecycle"
+    ],
+    "skills": ["React Native", "JavaScript", "REST API", "Mobile UI"],
+    "benefits": ["Health insurance", "Paid vacation", "Performance bonus"]
+  }
+]

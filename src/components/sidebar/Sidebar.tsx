@@ -1,11 +1,13 @@
 import "./Sidebar.css";
 import BagIcon from "../../assets/icons/briefcase-bag.svg?react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import DashboardIcon from "../../assets/icons/dashboard.svg?react";
 import PostJobIcon from "../../assets/icons/plus-circle.svg?react";
 import ApplicationsIcon from "../../assets/icons/persons.svg?react";
 import LogoutIcon from "../../assets/icons/logout.svg?react";
 import JobsIcon from "../../assets/icons/list.svg?react";
+import { AuthContext } from "../../context/authContext";
+import { useContext } from "react";
 const navItems = [
   {
     path: "/dashboard",
@@ -29,6 +31,12 @@ const navItems = [
   },
 ];
 const Sidebar = () => {
+  const navigate = useNavigate();
+  const { isAuthenticated, logout } = useContext(AuthContext);
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
   return (
     <div className="sidebar">
       <div className="sidebar-logo">
@@ -56,11 +64,14 @@ const Sidebar = () => {
           );
         })}
       </nav>
+      {
+        isAuthenticated &&
+        <div className="sidebar-auth logout" onClick={handleLogout}>
+          <LogoutIcon className="auth-icon" />
+          <span className="logout-label">Logout</span>
+        </div>
 
-      <div className="sidebar-logout">
-        <LogoutIcon className="logout-icon" />
-        <span className="logout-label">Logout</span>
-      </div>
+      }
     </div>
   );
 };

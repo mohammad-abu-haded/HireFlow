@@ -85,7 +85,7 @@
   color: #f28602;
 }
 
-.sidebar-logout {
+.sidebar-auth {
   position: absolute;
   bottom: 20px;
   width: 223px;
@@ -93,19 +93,23 @@
   display: flex;
   align-items: center;
   column-gap: 12px;
-  color: #d92626;
   padding: 16px;
   cursor: pointer;
   transition: transform 0.3s ease;
 }
 
-.logout-icon {
-  width: 20px;
-  height: 20px;
-  stroke-width: 10px;
+.sidebar-auth.logout {
+  color: #d92626;
 }
 
-.sidebar-logout:hover {
+
+.auth-icon {
+  width: 20px;
+  height: 20px;
+  transform: scaleX(-1);
+}
+
+.sidebar-auth.logout:hover {
   transform: scale(1.05);
   background-color: #d926261a;
   border-radius: 12px;

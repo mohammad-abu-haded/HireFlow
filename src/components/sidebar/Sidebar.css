@@ -76,12 +76,14 @@
   color: #f28602;
 }
 
-.nav-item:hover {
+.nav-item:hover,
+.nav-item:focus-visible {
   background-color: #f286020d;
   color: #f28602;
 }
 
-.nav-item:hover .nav-icon {
+.nav-item:hover .nav-icon,
+.nav-item:focus-visible .nav-icon {
   color: #f28602;
 }
 

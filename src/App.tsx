@@ -10,7 +10,8 @@ import ApplicationsScreen from "./screens/Applications/Applications.screen";
 
 import AuthGuard from "./routes/AuthGuard";
 import AppLayout from "./components/layouts/AppLayout";
-import JobsScreen from "./screens/JobsScreen/JobsScreen";
+import JobsScreen from "./screens/JobsScreen/Jobs.screen";
+import MyJobsScreen from "./screens/MyJobsScreen/MyJobs.screen";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route path="/demo-setup" element={<DemoModeSetupScreen />} />
           <Route element={<AppLayout />}>
             <Route path="/dashboard" element={<DashboardScreen />} />
+            <Route path="/my-jobs" element={<MyJobsScreen />} />
             <Route path="/post-job" element={<PostJobScreen />} />
             <Route path="/applications" element={<ApplicationsScreen />} />
           </Route>

@@ -1,0 +1,183 @@
+.my-job-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 20px;
+  background-color: #ffffff;
+  border: 1px solid #dce0e5;
+  border-radius: 14px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background-color: #eb7d0f0d;
+  border-radius: 12px;
+  color: #eb7d0f;
+  flex-shrink: 0;
+}
+
+.bag-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.job-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+}
+
+.job-info > h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #161a1d;
+}
+
+.job-info > p {
+  font-size: 14px;
+  color: #303840;
+}
+
+.location-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #303840;
+}
+
+.location-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.status-container {
+  padding: 3px 14px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-container.active {
+  border: 1px solid #dce0e5;
+  color: #161a1d;
+}
+
+.status-container.closed {
+  background-color: #f3f5f6;
+  color: #303840;
+}
+
+.status-container.expired {
+  background-color: #fff4e5;
+  color: #b26a00;
+  border: 1px solid #ffe0b2;
+}
+
+.applications-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.applications-count {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.applications-count > p {
+  font-size: 16px;
+  color: #161a1d;
+  font-weight: 600;
+}
+
+.persons-icon {
+  color: #eb7d0f;
+  width: 16px;
+  height: 16px;
+}
+
+.applications-container > p {
+  font-size: 10px;
+  color: #303840;
+}
+
+.posted-container {
+  display: flex;
+  flex-direction: column;
+  row-gap: 4px;
+}
+
+.posted-label {
+  font-size: 12px;
+  color: #303840;
+}
+
+.posted-date {
+  font-size: 14px;
+  color: #161a1d;
+  font-weight: 600;
+}
+
+.view-button {
+  all: unset;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 8px 16px;
+  color: #eb7d0f;
+  font-size: 14px;
+  cursor: pointer;
+  border-right: 1px solid #dce0e580;
+  height: 36px;
+  transition:
+    background-color 0.2s,
+    transform 0.2s;
+}
+
+.eye-icon-myJobCard {
+  width: 14px;
+  height: 14px;
+}
+
+.edit-button,
+.delete-button {
+  all: unset;
+  color: #303840;
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    transform 0.2s;
+}
+
+.edit-icon-myJobCard,
+.delete-icon-myJobCard {
+  width: 16px;
+  height: 16px;
+}
+
+.view-button:focus-visible,
+.edit-button:focus-visible,
+.delete-button:focus-visible,
+.view-button:hover,
+.edit-button:hover,
+.delete-button:hover {
+  transform: scale(1.05);
+}
+
+.edit-delete-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}

@@ -9,19 +9,16 @@ const SignupScreen = () => {
   const { signup } = useContext(AuthContext);
   const signupHandler = (event: any) => {
     event.preventDefault();
-    const storedEmail = localStorage.getItem("email");
-    if (email === storedEmail) {
-      setErrorMessage("An account with this email already exists.");
-    } else if (password !== confirmPassword) {
-      setErrorMessage("Passwords do not match. Please try again.");
-    } else {
-      signup(email, password, fullName);
+    const result = signup(email, password, confirmPassword, fullName);
+    if (result.success) {
       setFullName("");
       setEmail("");
       setPassword("");
       setConfirmPassword("");
       setErrorMessage("");
       navigate("/login");
+    } else {
+      setErrorMessage(result.message || "Signup failed. Please try again.");
     }
   };
   const [fullName, setFullName] = useState("");
@@ -71,6 +68,7 @@ const SignupScreen = () => {
                 <label htmlFor="signup-email">Email Address</label>
                 <input
                   type="email"
+                  autoComplete="email"
                   id="signup-email"
                   placeholder="admin@careerhub.io"
                   onChange={(e) => setEmail(e.target.value)}
@@ -96,6 +94,7 @@ const SignupScreen = () => {
                     id="signup-password"
                     placeholder="••••••••"
                     onChange={(e) => setPassword(e.target.value)}
+                    autoComplete="new-password"
                     value={password}
                     required
                   />
@@ -103,7 +102,9 @@ const SignupScreen = () => {
               </div>
               <div className="password-input">
                 <div className="password-label">
-                  <label htmlFor="signup-confirm-password">Confirm Password</label>
+                  <label htmlFor="signup-confirm-password">
+                    Confirm Password
+                  </label>
                 </div>
                 <div className="password-field">
                   {confirmPassword.length > 0 && (
@@ -111,11 +112,14 @@ const SignupScreen = () => {
                       src={!showConfirmPassword ? eye : eyeClosed}
                       alt="Toggle Password Visibility"
                       className="eye-icon"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
                     />
                   )}
                   <input
                     type={showConfirmPassword ? "text" : "password"}
+                    autoComplete="new-password"
                     id="signup-confirm-password"
                     placeholder="••••••••"
                     onChange={(e) => setConfirmPassword(e.target.value)}
@@ -137,9 +141,7 @@ const SignupScreen = () => {
           </div>
         </form>
         <div className="signin-link">
-          <p>
-          Already have an account? 
-          </p>
+          <p>Already have an account?</p>
           <Link to={"/login"}>Sign in instead</Link>
         </div>
         <div className="security-notes">

@@ -10,13 +10,10 @@ const LoginScreen = () => {
   const { login } = useContext(AuthContext);
   const loginHandler = (event: any) => {
     event.preventDefault();
-    const storedEmail = localStorage.getItem("email");
-    const storedPassword = localStorage.getItem("password");
-    if (email === storedEmail && password === storedPassword) {
+    if (login(email, password)) {
       setEmail("");
       setPassword("");
       setErrorMessage("");
-      login(email);
       navigate("/demo-setup");
     } else {
       setErrorMessage("Invalid email or password. Please try again.");
@@ -55,6 +52,7 @@ const LoginScreen = () => {
                   type="email"
                   id="login-email"
                   placeholder="admin@careerhub.io"
+                  autoComplete="email"
                   onChange={(e) => setEmail(e.target.value)}
                   value={email}
                   required
@@ -78,6 +76,7 @@ const LoginScreen = () => {
                     type={showPassword ? "text" : "password"}
                     id="login-password"
                     placeholder="••••••••"
+                    autoComplete="current-password"
                     onChange={(e) => setPassword(e.target.value)}
                     value={password}
                     required

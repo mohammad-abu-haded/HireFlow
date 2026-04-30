@@ -6,13 +6,14 @@ interface IProps {
   state: string[];
   label: string;
   placeholder: string;
+  isEditMode: boolean;
 }
 const DynamicList = (props: IProps) => {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
     const lastIndex = props.state.length - 1;
-    if (lastIndex >= 0) {
+    if (lastIndex >= 0 && props.isEditMode == false) {
       inputRefs.current[lastIndex]?.focus();
     }
   }, [props.state.length]);

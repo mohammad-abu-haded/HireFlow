@@ -1,0 +1,148 @@
+.my-jobs {
+  display: flex;
+  flex-direction: column;
+  padding-top: 40px;
+  width: 80%;
+  height: 100%;
+}
+
+.my-jobs-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  row-gap: 4px;
+}
+
+.my-jobs-header h2 {
+  font-size: 30px;
+  font-weight: 600;
+  color: #161a1d;
+}
+
+.my-jobs-header p {
+  font-size: 18px;
+  color: #303840;
+}
+
+.my-jobs-stats {
+  width: 100%;
+  display: flex;
+  column-gap: 24px;
+  margin-top: 40px;
+  justify-content: space-evenly;
+}
+
+.post-job-button {
+  all: unset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background-color: #eb7d0f;
+  color: #ffffff;
+  font-size: 16px;
+  width: 181px;
+  height: 48px;
+  column-gap: 8px;
+  transition:
+    background-color 0.2s,
+    transform 0.2s;
+  cursor: pointer;
+}
+
+.plus-icon-button-post {
+  width: 20px;
+  height: 20px;
+}
+
+.post-job-button:focus-visible,
+.post-job-button:hover {
+  background-color: #eb7d0fcc;
+  transform: scale(1.05);
+}
+
+.my-jobs-header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.filters-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 40px;
+}
+
+.status-filter-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  column-gap: 6px;
+  padding: 5px;
+  background-color: #f9fafb;
+  height: 42px;
+  border-radius: 12px;
+  border: 1px solid #dce0e599;
+  padding: 5px;
+}
+
+.search-input {
+  all: unset;
+  box-sizing: border-box;
+  height: 44px;
+  width: 384px;
+  color: #303840;
+  font-size: 14px;
+  background-color: #f9fafb;
+  border-radius: 12px;
+  padding: 12px;
+  padding-left: 36px;
+  border: 1px solid #dce0e5;
+}
+
+.search-icon {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  color: #303840;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.search-container {
+  position: relative;
+}
+
+.status-filter {
+  padding: 6px 16px;
+}
+
+.status-filter-active {
+  background-color: #eb7d0f;
+  color: #ffffff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-filter {
+  cursor: pointer;
+}
+
+.my-jobs-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  row-gap: 12px;
+  margin-top: 24px;
+}
+
+.no-jobs-message {
+  font-size: 18px;
+  color: #303840;
+  text-align: center;
+  margin-top: 40px;
+}

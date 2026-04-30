@@ -4,8 +4,7 @@ import { AuthContext } from '../../context/authContext';
 import { useNavigate } from 'react-router-dom';
 const Topbar = () => {
     const navigate = useNavigate();
-    const { isAuthenticated, userName } = useContext(AuthContext);
-    
+    const { isAuthenticated, userName } = useContext(AuthContext);    
   return (
     <div className='topbar'>
         {isAuthenticated ? 

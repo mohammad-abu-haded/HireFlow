@@ -15,6 +15,11 @@ const navItems = [
     icon: DashboardIcon,
   },
   {
+    path: "/my-jobs",
+    label: "My Jobs",
+    icon: BagIcon,
+  },
+  {
     path: "/post-job",
     label: "Post Jobs",
     icon: PostJobIcon,

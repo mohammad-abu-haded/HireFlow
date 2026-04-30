@@ -5,28 +5,14 @@ import ConfigurationIcon from "../../assets/icons/configuration.svg?react";
 import DetailsIcon from "../../assets/icons/details.svg?react";
 import ContentIcon from "../../assets/icons/content.svg?react";
 import DoneIcon from "../../assets/icons/done.svg?react";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import DynamicList from "../DynamicList/DynamicList";
+import type { IForm } from "../../types";
+import { AuthContext } from "../../context/authContext";
+import { useNavigate } from "react-router-dom";
 const PostJobForm = () => {
-  interface IForm {
-    jobTitle: string;
-    companyName: string;
-    location: string;
-    jobType: string;
-    workSetting: string;
-    experienceLevel: string;
-    employmentType: string;
-    duration: string;
-    salaryMin: string;
-    salaryMax: string;
-    applicationDeadline: string;
-    jobDescription: string;
-    requirements: string[];
-    skills: string[];
-    benefits: string[];
-    keyResponsibilities: string[];
-  }
-  const initialState = {
+  const { email } = useContext(AuthContext);
+  const initialState: IForm = {
     jobTitle: "",
     companyName: "",
     location: "",
@@ -43,9 +29,41 @@ const PostJobForm = () => {
     skills: [],
     benefits: [],
     keyResponsibilities: [],
+    status: "",
+    createdAt: "",
+    email: "",
+    applicationsCount: 0,
   };
+  const [isEditMode, setIsEditMode] = useState(false);
+  let storedData = localStorage.getItem("jobFormEdit");
   const [form, setForm] = useState<IForm>(() => {
-    const storedData = localStorage.getItem("jobForm");
+    if (storedData) {
+      try {
+        setIsEditMode(true);
+        const parsedData = JSON.parse(storedData);
+        initialState.jobTitle = parsedData.jobTitle || "";
+        initialState.companyName = parsedData.companyName || "";
+        initialState.location = parsedData.location || "";
+        initialState.jobType = parsedData.jobType || "";
+        initialState.workSetting = parsedData.workSetting || "";
+        initialState.experienceLevel = parsedData.experienceLevel || "";
+        initialState.employmentType = parsedData.employmentType || "";
+        initialState.duration = parsedData.duration || "";
+        initialState.salaryMin = parsedData.salaryMin || "";
+        initialState.salaryMax = parsedData.salaryMax || "";
+        initialState.applicationDeadline = parsedData.applicationDeadline || "";
+        initialState.jobDescription = parsedData.jobDescription || "";
+        initialState.requirements = parsedData.requirements || [];
+        initialState.skills = parsedData.skills || [];
+        initialState.benefits = parsedData.benefits || [];
+        initialState.keyResponsibilities = parsedData.keyResponsibilities || [];
+      } catch {
+        localStorage.removeItem("jobFormEdit");
+      }
+    } else {
+      setIsEditMode(false);
+      storedData = localStorage.getItem("jobForm");
+    }
     if (!storedData) return initialState;
     try {
       return JSON.parse(storedData);
@@ -55,17 +73,38 @@ const PostJobForm = () => {
     }
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const navigate = useNavigate();
   const handleSubmit = (e: any) => {
     e.preventDefault();
+    if (storedData) {
+      localStorage.removeItem("jobFormEdit");
+      const jobs = JSON.parse(localStorage.getItem("Jobs") || "[]") as IForm[];
+      const updatedJobs = jobs.map((job) => {
+        if (job.id === form.id) {
+          return { ...job, ...form };
+        }
+        return job;
+      });
+      localStorage.setItem("Jobs", JSON.stringify(updatedJobs));
+      setForm(initialState);
+      setIsSubmitted(true);
+      setTimeout(() => {
+        setIsSubmitted(false);
+        navigate("/my-jobs");
+      }, 3000);
+      return;
+    }
+    const oldJobs = JSON.parse(localStorage.getItem("Jobs") || "[]");
 
-    const oldJobs = JSON.parse(localStorage.getItem("myJobs") || "[]");
-
-    const newJob = {
+    const newJob: IForm = {
       id: Date.now(),
       ...form,
+      status: "ACTIVE",
+      createdAt: new Date().toISOString(),
+      email: email,
     };
 
-    localStorage.setItem("myJobs", JSON.stringify([...oldJobs, newJob]));
+    localStorage.setItem("Jobs", JSON.stringify([newJob, ...oldJobs]));
 
     setForm(initialState);
     localStorage.removeItem("jobForm");
@@ -252,6 +291,7 @@ const PostJobForm = () => {
             <label htmlFor="salary-min">Minimum Salary (USD)</label>
             <input
               type="number"
+              autoComplete="off"
               id="salary-min"
               value={form.salaryMin}
               placeholder="e.g. 60000"
@@ -266,6 +306,7 @@ const PostJobForm = () => {
             <label htmlFor="salary-max">Maximum Salary (USD)</label>
             <input
               type="number"
+              autoComplete="off"
               id="salary-max"
               value={form.salaryMax}
               placeholder="e.g. 120000"
@@ -321,6 +362,7 @@ const PostJobForm = () => {
             }
             label="Key Responsibilities"
             placeholder="Responsibility"
+            isEditMode={isEditMode}
           />
           <DynamicList
             state={form.requirements}
@@ -329,6 +371,7 @@ const PostJobForm = () => {
             }
             label="Requirements"
             placeholder="Requirement"
+            isEditMode={isEditMode}
           />
           <DynamicList
             state={form.skills}
@@ -337,6 +380,7 @@ const PostJobForm = () => {
             }
             label="Skills"
             placeholder="Skill"
+            isEditMode={isEditMode}
           />
           <DynamicList
             state={form.benefits}
@@ -345,6 +389,7 @@ const PostJobForm = () => {
             }
             label="Benefits"
             placeholder="Benefits"
+            isEditMode={isEditMode}
           />
         </div>
         <div className="form-actions">
@@ -353,11 +398,15 @@ const PostJobForm = () => {
             className="cancel-publish-job-posting"
             onClick={handleCancel}
           >
-            Cancel
+            {
+              isEditMode ? "Clear" : "Cancel"
+            }
           </button>
           <input
             type="submit"
-            value="Publish Job Posting"
+            value={
+              isEditMode ? "Update Job Posting" : "Publish Job Posting"
+            }
             id="publish-job-posting"
           />
         </div>

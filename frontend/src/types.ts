@@ -1,5 +1,5 @@
 export interface IForm {
-  id?: number;
+  _id?: string;
   jobTitle: string;
   companyName: string;
   location: string;
@@ -29,7 +29,7 @@ export interface IUser {
 }
 
 export interface IApplication {
-  id: number;
+  id: string;
   jobId: number;
   fullName: string;
   email: string;

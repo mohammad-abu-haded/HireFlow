@@ -14,30 +14,42 @@ const MyJobsScreen = () => {
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const { email } = useContext(AuthContext);
-  const handleEdit = (jobId: string) => {
-    localStorage.setItem("jobFormEdit", JSON.stringify(myJobs.find((job: IForm) => job.id === parseInt(jobId))));
-    navigate("/post-job");
-  };
-  const [isDeleteMode, setIsDeleteMode] = useState(false);
-  const handleDelete = (jobId: string) => {
-    const newJobs = myJobs.filter((job : IForm) => job.id !== parseInt(jobId));
-    localStorage.setItem("Jobs", JSON.stringify(newJobs));
-    setIsDeleteMode(true);
-  }
   const [myJobsFiltered, setMyJobsFiltered] = useState<IForm[]>([]);
-  useEffect(() => {
-    if (isDeleteMode) {
-      setIsDeleteMode(false);
+  const [jobs, setJobs] = useState<IForm[]>([]);
+  const deleteJob = async (id: string) => {
+    console.log("Deleting ID:", id);
+    try {
+      const res = await fetch(`http://localhost:5000/api/jobs/${id}`, {
+        method: "DELETE",
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setJobs((prev) => prev.filter((job) => job._id !== id));}
+    } catch (error) {
+      console.error("Error deleting job:", error);
     }
+  };
+  const fetchJobs = async () => {
+    const res = await fetch(
+      `http://localhost:5000/api/jobs?email=${encodeURIComponent(email)}`,
+    );
+    const data = await res.json();
+    setJobs(data);
+  };
+
+  useEffect(() => {
+    fetchJobs();
+  }, []);
+
+  useEffect(() => {
     const query = (params.get("q") || "")
       .toLowerCase()
       .trim()
       .replace(/\s+/g, " ");
     const queryWords = query.split(" ").filter(Boolean);
     const status = params.get("status");
-    const jobs = JSON.parse(localStorage.getItem("Jobs") || "[]") as IForm[];
-    const myJobs = jobs.filter((job: IForm) => job.email === email);
-    let filtered = myJobs;
+    let filtered: IForm[] = [...jobs];
     if (query) {
       filtered = filtered.filter((job) => {
         const searchableText = [
@@ -69,7 +81,7 @@ const MyJobsScreen = () => {
       return true;
     });
     setMyJobsFiltered(filtered);
-  }, [params, isDeleteMode]);
+  }, [params, jobs]);
   const getJobsStats = (jobs: IForm[]) => {
     const now = new Date();
 
@@ -111,9 +123,7 @@ const MyJobsScreen = () => {
 
     return "ACTIVE";
   };
-  const jobs = JSON.parse(localStorage.getItem("Jobs") || "[]");
-  const myJobs = jobs.filter((job: IForm) => job.email === email);
-  const activeJobs = myJobs.filter((job: IForm) => getStatus(job) === "ACTIVE");
+  const activeJobs = jobs.filter((job: IForm) => getStatus(job) === "ACTIVE");
   const diff = getJobsStats(activeJobs);
   const subtitle: string =
     diff > 0
@@ -230,8 +240,8 @@ const MyJobsScreen = () => {
         ) : (
           myJobsFiltered.map((job) => (
             <MyJobCard
-              key={job.id}
-              jobId={job.id!}
+              key={job._id}
+              jobId={job._id!}
               jobTitle={job.jobTitle}
               companyName={job.companyName}
               location={job.location}
@@ -239,8 +249,7 @@ const MyJobsScreen = () => {
               status={getStatus(job)}
               applicationsCount={job.applicationsCount}
               createdAt={job.createdAt}
-              handleEdit={handleEdit}
-              handleDelete={handleDelete}
+              deleteJob={deleteJob}
             />
           ))
         )}

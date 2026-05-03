@@ -5,8 +5,9 @@ import BagIcon from "../../assets/icons/briefcase-bag.svg?react";
 import EyeIcon from "../../assets/icons/eye.svg?react";
 import EditIcon from "../../assets/icons/edit.svg?react";
 import DeleteIcon from "../../assets/icons/trash.svg?react";
+import { useNavigate } from "react-router-dom";
 interface IProps {
-  jobId: number;
+  jobId: string;
   jobTitle: string;
   companyName: string;
   location: string;
@@ -14,8 +15,7 @@ interface IProps {
   status: "ACTIVE" | "CLOSED" | "EXPIRED";
   createdAt: string;
   applicationsCount: number;
-  handleEdit : (jobId: string) => void;
-  handleDelete : (jobId: string) => void;
+  deleteJob: (id: string) => void;
 }
 
 const formatPostedDate = (dateString: string) => {
@@ -30,7 +30,9 @@ const formatPostedDate = (dateString: string) => {
 
   return date.toLocaleDateString("en-US", options);
 };
+
 const MyJobCard = (props: IProps) => {
+    const navigate = useNavigate();
   let location = "";
   switch (props.workSetting) {
     case "on-site":
@@ -76,10 +78,18 @@ const MyJobCard = (props: IProps) => {
         <p>View</p>
       </button>
       <div className="edit-delete-container">
-        <button className="edit-button" title="Edit Job" onClick={() => props.handleEdit(props.jobId.toString())}>
+        <button
+          className="edit-button"
+          title="Edit Job"
+          onClick={() => navigate(`/update-job/${props.jobId}`)}
+        >
           <EditIcon className="edit-icon-myJobCard" />
         </button>
-        <button className="delete-button" title="Delete Job" onClick={() => props.handleDelete(props.jobId.toString())}>
+        <button
+          className="delete-button"
+          title="Delete Job"
+          onClick={() => props.deleteJob(props.jobId.toString())}
+        >
           <DeleteIcon className="delete-icon-myJobCard" />
         </button>
       </div>

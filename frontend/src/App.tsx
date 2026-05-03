@@ -29,7 +29,9 @@ function App() {
             <Route path="/dashboard" element={<DashboardScreen />} />
             <Route path="/my-jobs" element={<MyJobsScreen />} />
             <Route path="/post-job" element={<PostJobScreen />} />
+            <Route path="/update-job/:id" element={<PostJobScreen />} />
             <Route path="/applications" element={<ApplicationsScreen />} />
+            <Route path="*" element={<Navigate to="/jobs" replace />} />
           </Route>
         </Route>
       </Routes>

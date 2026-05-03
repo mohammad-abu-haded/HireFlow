@@ -9,9 +9,15 @@ import { useContext, useEffect, useState } from "react";
 import DynamicList from "../DynamicList/DynamicList";
 import type { IForm } from "../../types";
 import { AuthContext } from "../../context/authContext";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 const PostJobForm = () => {
   const { email } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { id } = useParams();
+  const [formData, setFormData] = useState<IForm | null>(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const initialState: IForm = {
     jobTitle: "",
     companyName: "",
@@ -34,58 +40,42 @@ const PostJobForm = () => {
     email: "",
     applicationsCount: 0,
   };
-  const [isEditMode, setIsEditMode] = useState(false);
-  let storedData = localStorage.getItem("jobFormEdit");
-  const [form, setForm] = useState<IForm>(() => {
-    if (storedData) {
-      try {
-        setIsEditMode(true);
-        const parsedData = JSON.parse(storedData);
-        initialState.jobTitle = parsedData.jobTitle || "";
-        initialState.companyName = parsedData.companyName || "";
-        initialState.location = parsedData.location || "";
-        initialState.jobType = parsedData.jobType || "";
-        initialState.workSetting = parsedData.workSetting || "";
-        initialState.experienceLevel = parsedData.experienceLevel || "";
-        initialState.employmentType = parsedData.employmentType || "";
-        initialState.duration = parsedData.duration || "";
-        initialState.salaryMin = parsedData.salaryMin || "";
-        initialState.salaryMax = parsedData.salaryMax || "";
-        initialState.applicationDeadline = parsedData.applicationDeadline || "";
-        initialState.jobDescription = parsedData.jobDescription || "";
-        initialState.requirements = parsedData.requirements || [];
-        initialState.skills = parsedData.skills || [];
-        initialState.benefits = parsedData.benefits || [];
-        initialState.keyResponsibilities = parsedData.keyResponsibilities || [];
-      } catch {
-        localStorage.removeItem("jobFormEdit");
-      }
-    } else {
-      setIsEditMode(false);
-      storedData = localStorage.getItem("jobForm");
-    }
-    if (!storedData) return initialState;
-    try {
-      return JSON.parse(storedData);
-    } catch {
-      localStorage.removeItem("jobForm");
-      return initialState;
-    }
-  });
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const navigate = useNavigate();
+
+  const [form, setForm] = useState<IForm>(initialState);
+  const createJob = async (job: IForm) => {
+    const res = await fetch("http://localhost:5000/api/jobs", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(job),
+    });
+
+    const data = await res.json();
+    return data;
+  };
+
+  const updateJob = async (id: string, updatedData: IForm) => {
+    const res = await fetch(`http://localhost:5000/api/jobs/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updatedData),
+    });
+
+    return await res.json();
+  };
+  const getJobById = async (id: string) => {
+    if (!id) return;
+    const res = await fetch(`http://localhost:5000/api/jobs/${id}`);
+    return await res.json();
+  };
+
   const handleSubmit = (e: any) => {
     e.preventDefault();
-    if (storedData) {
-      localStorage.removeItem("jobFormEdit");
-      const jobs = JSON.parse(localStorage.getItem("Jobs") || "[]") as IForm[];
-      const updatedJobs = jobs.map((job) => {
-        if (job.id === form.id) {
-          return { ...job, ...form };
-        }
-        return job;
-      });
-      localStorage.setItem("Jobs", JSON.stringify(updatedJobs));
+    if (formData) {
+      updateJob(form._id!, form);
       setForm(initialState);
       setIsSubmitted(true);
       setTimeout(() => {
@@ -94,18 +84,13 @@ const PostJobForm = () => {
       }, 3000);
       return;
     }
-    const oldJobs = JSON.parse(localStorage.getItem("Jobs") || "[]");
-
     const newJob: IForm = {
-      id: Date.now(),
       ...form,
       status: "ACTIVE",
       createdAt: new Date().toISOString(),
       email: email,
     };
-
-    localStorage.setItem("Jobs", JSON.stringify([newJob, ...oldJobs]));
-
+    createJob(newJob);
     setForm(initialState);
     localStorage.removeItem("jobForm");
     setIsSubmitted(true);
@@ -119,8 +104,36 @@ const PostJobForm = () => {
   };
 
   useEffect(() => {
+    if (formData) {
+      setForm({
+        ...formData,
+      });
+      setIsEditMode(true);
+    }
+  }, [formData]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data: IForm = await getJobById(id!);
+      setFormData(data);
+    };
+    if (id) {
+      fetchData();
+    }
+  }, [id]);
+
+  useEffect(() => {
     localStorage.setItem("jobForm", JSON.stringify(form));
+    return () => {
+      localStorage.removeItem("jobForm");
+    };
   }, [form]);
+
+  useEffect(() => {
+    setForm(initialState);
+    localStorage.removeItem("jobForm");
+  }, [location.pathname]);
+
   return (
     <div className="post-job-form">
       <div className={isSubmitted ? "success-message" : ""}>
@@ -398,15 +411,11 @@ const PostJobForm = () => {
             className="cancel-publish-job-posting"
             onClick={handleCancel}
           >
-            {
-              isEditMode ? "Clear" : "Cancel"
-            }
+            {isEditMode ? "Clear" : "Cancel"}
           </button>
           <input
             type="submit"
-            value={
-              isEditMode ? "Update Job Posting" : "Publish Job Posting"
-            }
+            value={isEditMode ? "Update Job Posting" : "Publish Job Posting"}
             id="publish-job-posting"
           />
         </div>

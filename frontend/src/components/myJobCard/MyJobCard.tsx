@@ -32,7 +32,7 @@ const formatPostedDate = (dateString: string) => {
 };
 
 const MyJobCard = (props: IProps) => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   let location = "";
   switch (props.workSetting) {
     case "on-site":
@@ -59,8 +59,10 @@ const MyJobCard = (props: IProps) => {
         <LocationIcon className="location-icon" />
         <p>{location}</p>
       </div>
-      <div className={`status-container ${props.status.toLowerCase()}`}>
-        <p>{props.status}</p>
+      <div className="status-container">
+        <div className={`status ${props.status.toLowerCase()}`}>
+          <p>{props.status}</p>
+        </div>
       </div>
       <div className="applications-container">
         <div className="applications-count">
@@ -73,10 +75,12 @@ const MyJobCard = (props: IProps) => {
         <p className="posted-label">Posted</p>
         <p className="posted-date">{formatPostedDate(props.createdAt)}</p>
       </div>
-      <button className="view-button">
-        <EyeIcon className="eye-icon-myJobCard" />
-        <p>View</p>
-      </button>
+      <div className="view-button-container">
+        <button className="view-button">
+          <EyeIcon className="eye-icon-myJobCard" />
+          <p>View</p>
+        </button>
+      </div>
       <div className="edit-delete-container">
         <button
           className="edit-button"

@@ -18,6 +18,7 @@ const PostJobForm = () => {
   const [formData, setFormData] = useState<IForm | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [prevLocation, setPrevLocation] = useState<string>('');
   const initialState: IForm = {
     jobTitle: "",
     companyName: "",
@@ -72,10 +73,10 @@ const PostJobForm = () => {
     return await res.json();
   };
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
     if (formData) {
-      updateJob(form._id!, form);
+     await updateJob(form._id!, form);
       setForm(initialState);
       setIsSubmitted(true);
       setTimeout(() => {
@@ -90,7 +91,7 @@ const PostJobForm = () => {
       createdAt: new Date().toISOString(),
       email: email,
     };
-    createJob(newJob);
+    await createJob(newJob);
     setForm(initialState);
     localStorage.removeItem("jobForm");
     setIsSubmitted(true);
@@ -103,12 +104,19 @@ const PostJobForm = () => {
     setForm(initialState);
   };
 
+  useEffect (() => {
+    setPrevLocation(location.pathname);
+  }, [])
   useEffect(() => {
     if (formData) {
-      setForm({
-        ...formData,
-      });
+      setForm({ ...formData });
       setIsEditMode(true);
+    } else {
+      const storedDataFromLocalStorage = localStorage.getItem("jobForm");      
+      if (storedDataFromLocalStorage) {
+        const parsedData: IForm = JSON.parse(storedDataFromLocalStorage);
+        setForm({ ...parsedData });
+      }
     }
   }, [formData]);
 
@@ -125,14 +133,19 @@ const PostJobForm = () => {
   useEffect(() => {
     localStorage.setItem("jobForm", JSON.stringify(form));
     return () => {
-      localStorage.removeItem("jobForm");
+      if(formData) {
+        localStorage.removeItem("jobForm");
+      }
     };
   }, [form]);
 
   useEffect(() => {
-    setForm(initialState);
-    localStorage.removeItem("jobForm");
+    if(prevLocation.includes('/update-job') && location.pathname === '/post-job') {
+      setForm(initialState);
+      setFormData(null);
+    }
   }, [location.pathname]);
+
 
   return (
     <div className="post-job-form">

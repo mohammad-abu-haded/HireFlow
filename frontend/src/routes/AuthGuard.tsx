@@ -1,12 +1,12 @@
-import { Navigate, Outlet } from "react-router-dom";
-import { AuthContext } from "../context/authContext";
 import { useContext } from "react";
+import { AuthContext } from "../context/authContext";
+import { Navigate, Outlet } from "react-router-dom";
 
 
 const AuthGuard = () => {
-  const { isAuthenticated } = useContext(AuthContext);
+  const { token } = useContext(AuthContext);
 
-  if (!isAuthenticated) {
+  if (!token) {
     return <Navigate to="/login" replace />;
   }
 

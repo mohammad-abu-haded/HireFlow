@@ -8,9 +8,12 @@ import { AuthContext } from "../../../context/authContext";
 import { useNavigate } from "react-router-dom";
 const LoginScreen = () => {
   const { login } = useContext(AuthContext);
-  const loginHandler = (event: any) => {
+  const loginHandler = async (event: any) => {
     event.preventDefault();
-    if (login(email, password)) {
+
+    const success = await login(email, password);
+
+    if (success) {
       setEmail("");
       setPassword("");
       setErrorMessage("");
@@ -44,7 +47,9 @@ const LoginScreen = () => {
               Sign in to manage your job listings and review applicant profiles.
             </p>
           </div>
-          <div className={errorMessage ? "login-form with-error" : "login-form"}>
+          <div
+            className={errorMessage ? "login-form with-error" : "login-form"}
+          >
             <div className="login-input">
               <div className="email-input">
                 <label htmlFor="login-email">Email Address</label>
@@ -91,10 +96,14 @@ const LoginScreen = () => {
               </div>
             )}
             <div className="login-actions">
-            <input type="submit" id="login-button" value="Sign In" />
-            <button className="create-account-button" type="button" onClick={() => navigate("/signup")}>
-              Create New Account
-            </button>
+              <input type="submit" id="login-button" value="Sign In" />
+              <button
+                className="create-account-button"
+                type="button"
+                onClick={() => navigate("/signup")}
+              >
+                Create New Account
+              </button>
             </div>
           </div>
         </form>

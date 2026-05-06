@@ -7,9 +7,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../context/authContext";
 const SignupScreen = () => {
   const { signup } = useContext(AuthContext);
-  const signupHandler = (event: any) => {
+  const signupHandler = async (event: any) => {
     event.preventDefault();
-    const result = signup(email, password, confirmPassword, fullName);
+
+    const result = await signup(email, password, confirmPassword, fullName);
+
     if (result.success) {
       setFullName("");
       setEmail("");

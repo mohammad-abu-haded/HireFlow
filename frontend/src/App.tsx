@@ -12,6 +12,7 @@ import AuthGuard from "./routes/AuthGuard";
 import AppLayout from "./components/layouts/AppLayout";
 import JobsScreen from "./screens/JobsScreen/Jobs.screen";
 import MyJobsScreen from "./screens/MyJobsScreen/MyJobs.screen";
+import NotFoundScreen from "./screens/NotFound/NotFound.screen";
 
 function App() {
   return (
@@ -31,7 +32,8 @@ function App() {
             <Route path="/post-job" element={<PostJobScreen />} />
             <Route path="/update-job/:id" element={<PostJobScreen />} />
             <Route path="/applications" element={<ApplicationsScreen />} />
-            <Route path="*" element={<Navigate to="/jobs" replace />} />
+            <Route path="/not-found" element={<NotFoundScreen />} />
+            <Route path="*" element={<Navigate to="/not-found" replace />} />
           </Route>
         </Route>
       </Routes>

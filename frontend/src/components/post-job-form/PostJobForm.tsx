@@ -18,7 +18,7 @@ const PostJobForm = () => {
   const [formData, setFormData] = useState<IForm | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [prevLocation, setPrevLocation] = useState<string>('');
+  const [prevLocation, setPrevLocation] = useState<string>("");
   const initialState: IForm = {
     jobTitle: "",
     companyName: "",
@@ -44,23 +44,24 @@ const PostJobForm = () => {
 
   const [form, setForm] = useState<IForm>(initialState);
   const createJob = async (job: IForm) => {
-    const res = await fetch("http://localhost:5000/api/jobs", {
+    const res = await fetch("http://localhost:5000/jobs", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
       body: JSON.stringify(job),
     });
 
-    const data = await res.json();
-    return data;
+    return await res.json();
   };
 
   const updateJob = async (id: string, updatedData: IForm) => {
-    const res = await fetch(`http://localhost:5000/api/jobs/${id}`, {
+    const res = await fetch(`http://localhost:5000/jobs/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
       body: JSON.stringify(updatedData),
     });
@@ -68,15 +69,27 @@ const PostJobForm = () => {
     return await res.json();
   };
   const getJobById = async (id: string) => {
-    if (!id) return;
-    const res = await fetch(`http://localhost:5000/api/jobs/${id}`);
-    return await res.json();
+    const res = await fetch(`http://localhost:5000/jobs/${id}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      navigate("/not-found", {
+        state: { message: "Job not found" },
+      });
+    }
+
+    return data;
   };
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     if (formData) {
-     await updateJob(form._id!, form);
+      await updateJob(form._id!, form);
       setForm(initialState);
       setIsSubmitted(true);
       setTimeout(() => {
@@ -104,15 +117,15 @@ const PostJobForm = () => {
     setForm(initialState);
   };
 
-  useEffect (() => {
+  useEffect(() => {
     setPrevLocation(location.pathname);
-  }, [])
+  }, []);
   useEffect(() => {
     if (formData) {
       setForm({ ...formData });
       setIsEditMode(true);
     } else {
-      const storedDataFromLocalStorage = localStorage.getItem("jobForm");      
+      const storedDataFromLocalStorage = localStorage.getItem("jobForm");
       if (storedDataFromLocalStorage) {
         const parsedData: IForm = JSON.parse(storedDataFromLocalStorage);
         setForm({ ...parsedData });
@@ -133,19 +146,21 @@ const PostJobForm = () => {
   useEffect(() => {
     localStorage.setItem("jobForm", JSON.stringify(form));
     return () => {
-      if(formData) {
+      if (formData) {
         localStorage.removeItem("jobForm");
       }
     };
   }, [form]);
 
   useEffect(() => {
-    if(prevLocation.includes('/update-job') && location.pathname === '/post-job') {
+    if (
+      prevLocation.includes("/update-job") &&
+      location.pathname === "/post-job"
+    ) {
       setForm(initialState);
       setFormData(null);
     }
   }, [location.pathname]);
-
 
   return (
     <div className="post-job-form">

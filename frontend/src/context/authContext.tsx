@@ -1,100 +1,122 @@
-import { createContext, useState } from "react";
-import type { IUser } from "../types";
-type AuthResult = {
-  success: boolean;
-  message?: string;
-};
+import { createContext, useState, useEffect } from "react";
+
 interface IAuthContext {
   isAuthenticated: boolean;
   email: string;
   userName: string;
-  login: (email: string, password: string) => boolean;
-  logout: () => void;
-  signup: (email: string, password: string, confirmPassword : string, userName: string) => AuthResult;
+  token: string | null;
+  login: (email: string, password: string) => Promise<boolean>;
+  logout: () => Promise<void>;
+  signup: (
+    email: string,
+    password: string,
+    confirmPassword: string,
+    userName: string
+  ) => Promise<{ success: boolean; message?: string }>;
 }
 
-const defaultAuthContext = {
-  isAuthenticated: false,
-  email: "",
-  userName: "",
-  login: () => false,
-  logout: () => {},
-  signup: () => ({success: false}),
-};
+export const AuthContext = createContext<IAuthContext>(null!);
 
-export const AuthContext = createContext<IAuthContext>(defaultAuthContext);
+const API = "http://localhost:5000/auth";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const storedAuth = localStorage.getItem("isAuthenticated");
-  const initialAuthState = storedAuth ? JSON.parse(storedAuth) : false;
-  const [isAuthenticated, setIsAuthenticated] = useState(initialAuthState);
-  const storedEmail = localStorage.getItem("email");
-  const initialEmailState = storedEmail ? storedEmail : "";
-  const [email, setEmail] = useState(initialEmailState);
-  const storedUserName = localStorage.getItem("userName");
-  const initialUserNameState = storedUserName ? storedUserName : "";
-  const [userName, setUserName] = useState(initialUserNameState);
+  const [token, setToken] = useState<string | null>(
+    localStorage.getItem("token")
+  );
 
-  const login = (email: string, password: string) => {
-    const users = JSON.parse(localStorage.getItem("users") || "[]") as IUser[];
-    const foundUser = users.find(
-      (user) => user.email === email && user.password === password,
-    );
-    if (!foundUser) {
-      return false;
-    }
-    setIsAuthenticated(true);
-    setEmail(email);
-    setUserName(foundUser.userName);
-    localStorage.setItem("isAuthenticated", "true");
-    localStorage.setItem("email", foundUser.email);
-    localStorage.setItem("userName", foundUser.userName);
+  const [email, setEmail] = useState(localStorage.getItem("email") || "");
+  const [userName, setUserName] = useState(
+    localStorage.getItem("userName") || ""
+  );
+
+  const isAuthenticated = !!token;
+
+  // LOGIN
+  const login = async (email: string, password: string) => {
+    const res = await fetch(`${API}/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await res.json();
+    if (!data.success) return false;
+
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("email", data.user.email);
+    localStorage.setItem("userName", data.user.userName);
+
+    setToken(data.token);
+    setEmail(data.user.email);
+    setUserName(data.user.userName);
+
     return true;
   };
 
-  const logout = () => {
-    setIsAuthenticated(false);
-    setEmail("");
-    setUserName("");
-    localStorage.removeItem("email");
-    localStorage.removeItem("userName");
-    localStorage.removeItem("password");
-    localStorage.removeItem("isAuthenticated");
-  };
-
-  const signup = (email: string, password: string, confirmPassword: string , userName: string) => {
-    const users: IUser[] = JSON.parse(localStorage.getItem("users") || "[]");
-    const userExists = users.some((user) => user.email === email);
-
-    if (userExists) {
-      return {
-        success: false,
-        message: "An account with this email already exists.",
-      };
-    }
-
+  // SIGNUP
+  const signup = async (
+    email: string,
+    password: string,
+    confirmPassword: string,
+    userName: string
+  ) => {
     if (password !== confirmPassword) {
-      return {
-        success: false,
-        message: "Passwords do not match. Please try again.",
-      };
+      return { success: false, message: "Passwords do not match" };
     }
-    const newUser: IUser = {
-      email,
-      password,
-      userName,
-    };
-    localStorage.setItem("users", JSON.stringify([...users, newUser]));
-    setEmail("");
-    setUserName("");
-    localStorage.setItem("email", email);
-    localStorage.setItem("password", password);
-    localStorage.setItem("userName", userName);
+
+    const res = await fetch(`${API}/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password, userName }),
+    });
+
+    const data = await res.json();
+
+    if (!data.success) {
+      return { success: false, message: data.message };
+    }
+
     return { success: true };
   };
+
+  // LOGOUT
+  const logout = async () => {
+    if (!token) return;
+
+    await fetch(`${API}/logout`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    localStorage.clear();
+    setToken(null);
+    setEmail("");
+    setUserName("");
+  };
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+    const storedEmail = localStorage.getItem("email");
+    const storedUser = localStorage.getItem("userName");
+
+    if (storedToken) setToken(storedToken);
+    if (storedEmail) setEmail(storedEmail);
+    if (storedUser) setUserName(storedUser);
+  }, []);
+
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, email, userName, login, logout, signup }}
+      value={{
+        isAuthenticated,
+        email,
+        userName,
+        token,
+        login,
+        logout,
+        signup,
+      }}
     >
       {children}
     </AuthContext.Provider>

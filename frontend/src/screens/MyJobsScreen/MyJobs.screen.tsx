@@ -13,34 +13,45 @@ import MyJobCard from "../../components/myJobCard/MyJobCard";
 const MyJobsScreen = () => {
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
-  const { email } = useContext(AuthContext);
+  const { token } = useContext(AuthContext);
   const [myJobsFiltered, setMyJobsFiltered] = useState<IForm[]>([]);
   const [jobs, setJobs] = useState<IForm[]>([]);
   const deleteJob = async (id: string) => {
-    console.log("Deleting ID:", id);
+    if (!token) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/jobs/${id}`, {
+      const res = await fetch(`http://localhost:5000/jobs/${id}`, {
         method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       const data = await res.json();
+
       if (data.success) {
-        setJobs((prev) => prev.filter((job) => job._id !== id));}
+        setJobs((prev) => prev.filter((job) => job._id !== id));
+      }
     } catch (error) {
       console.error("Error deleting job:", error);
     }
   };
   const fetchJobs = async () => {
-    const res = await fetch(
-      `http://localhost:5000/api/jobs?email=${encodeURIComponent(email)}`,
-    );
+    if (!token) return;
+
+    const res = await fetch(`http://localhost:5000/jobs`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
     const data = await res.json();
     setJobs(data);
   };
 
   useEffect(() => {
+    if (!token) return;
     fetchJobs();
-  }, []);
+  }, [token]);
 
   useEffect(() => {
     const query = (params.get("q") || "")
@@ -235,8 +246,10 @@ const MyJobsScreen = () => {
         </div>
       </div>
       <div className="my-jobs-list">
-        {myJobsFiltered.length === 0 ? (
+        {jobs.length === 0 ? (
           <p className="no-jobs-message">You have not posted any jobs yet.</p>
+        ) : myJobsFiltered.length === 0 ? (
+          <p className="no-jobs-message">No jobs match your search/filter.</p>
         ) : (
           myJobsFiltered.map((job) => (
             <MyJobCard

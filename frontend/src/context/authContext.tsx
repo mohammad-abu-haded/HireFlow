@@ -5,14 +5,32 @@ interface IAuthContext {
   email: string;
   userName: string;
   token: string | null;
+
   login: (email: string, password: string) => Promise<boolean>;
+
   logout: () => Promise<void>;
+
   signup: (
     email: string,
     password: string,
     confirmPassword: string,
-    userName: string
+    userName: string,
+  ) => Promise<{
+    success: boolean;
+    message?: string;
+    otpExpiresAt?: number;
+  }>;
+
+  verifyOtp: (
+    email: string,
+    otp: string,
   ) => Promise<{ success: boolean; message?: string }>;
+
+  resendOtp: (email: string) => Promise<{
+    success: boolean;
+    message?: string;
+    otpExpiresAt?: number;
+  }>;
 }
 
 export const AuthContext = createContext<IAuthContext>(null!);
@@ -21,17 +39,16 @@ const API = "http://localhost:5000/auth";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [token, setToken] = useState<string | null>(
-    localStorage.getItem("token")
+    localStorage.getItem("token"),
   );
 
   const [email, setEmail] = useState(localStorage.getItem("email") || "");
   const [userName, setUserName] = useState(
-    localStorage.getItem("userName") || ""
+    localStorage.getItem("userName") || "",
   );
 
   const isAuthenticated = !!token;
 
-  // LOGIN
   const login = async (email: string, password: string) => {
     const res = await fetch(`${API}/login`, {
       method: "POST",
@@ -53,13 +70,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return true;
   };
 
-  // SIGNUP
   const signup = async (
     email: string,
     password: string,
     confirmPassword: string,
-    userName: string
-  ) => {
+    userName: string,
+  ): Promise<{
+    success: boolean;
+    message?: string;
+    otpExpiresAt?: number;
+  }> => {
     if (password !== confirmPassword) {
       return { success: false, message: "Passwords do not match" };
     }
@@ -76,10 +96,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       return { success: false, message: data.message };
     }
 
-    return { success: true };
+    return {
+      success: true,
+      message: data.message,
+      otpExpiresAt: data.otpExpiresAt,
+    };
   };
 
-  // LOGOUT
   const logout = async () => {
     if (!token) return;
 
@@ -96,6 +119,56 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setUserName("");
   };
 
+  const verifyOtp = async (email: string, otp: string) => {
+    const res = await fetch(`${API}/verify-otp`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email,
+        otp,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!data.success) {
+      return {
+        success: false,
+        message: data.message,
+      };
+    }
+
+    return {
+      success: true,
+    };
+  };
+
+  const resendOtp = async (email: string) => {
+    const res = await fetch(`${API}/resend-otp`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    const data = await res.json();
+
+    if (!data.success) {
+      return {
+        success: false,
+        message: data.message,
+      };
+    }
+
+    return {
+      success: true,
+      message: data.message,
+      otpExpiresAt: data.otpExpiresAt,
+    };
+  };
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     const storedEmail = localStorage.getItem("email");
@@ -116,6 +189,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         login,
         logout,
         signup,
+        verifyOtp,
+        resendOtp
       }}
     >
       {children}

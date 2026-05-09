@@ -139,6 +139,7 @@ input::placeholder {
   margin-left: 12px;
   margin-top: 36.5px;
 }
+
 .password-label {
   display: flex;
   align-items: center;
@@ -172,6 +173,7 @@ input::placeholder {
   row-gap: 16px;
   margin-top: 32px;
 }
+
 #signup-button {
   all: unset;
   text-align: center;
@@ -250,4 +252,10 @@ input::placeholder {
   margin-left: 4px;
   color: #f28602;
   font-weight: 600;
+}
+
+.error-signup-icon {
+  width: 16px;
+  height: 16px;
+  color: #D92626;
 }

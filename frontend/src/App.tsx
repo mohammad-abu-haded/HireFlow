@@ -13,6 +13,7 @@ import AppLayout from "./components/layouts/AppLayout";
 import JobsScreen from "./screens/JobsScreen/Jobs.screen";
 import MyJobsScreen from "./screens/MyJobsScreen/MyJobs.screen";
 import NotFoundScreen from "./screens/NotFound/NotFound.screen";
+import VerifyOtp from "./screens/VerifyOtp/VerifyOtp.screen";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/" element={<Navigate to="/jobs" replace />} />
         <Route path="/login" element={<LoginScreen />} />
         <Route path="/signup" element={<SignupScreen />} />
+        <Route path="/verify-otp" element={<VerifyOtp />} />
         <Route element={<AppLayout />}>
           <Route path="/jobs" element={<JobsScreen />} />
         </Route>

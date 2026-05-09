@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import eye from "../../../assets/icons/eye.svg";
 import eyeClosed from "../../../assets/icons/eye-closed.svg";
 import leftArrow from "../../../assets/icons/left-arrow.svg";
-import errorMessageIcon from "../../../assets/icons/emblem-important.svg";
+import ErrorMessageIcon from "../../../assets/icons/emblem-important.svg?react";
 import "./login.css";
 import { AuthContext } from "../../../context/authContext";
 import { useNavigate } from "react-router-dom";
@@ -91,7 +91,7 @@ const LoginScreen = () => {
             </div>
             {errorMessage && (
               <div className="error-container">
-                <img src={errorMessageIcon} alt="Error" />
+                <ErrorMessageIcon className="error-login-icon"/>
                 {errorMessage}
               </div>
             )}

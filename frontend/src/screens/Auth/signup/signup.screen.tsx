@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import eye from "../../../assets/icons/eye.svg";
 import eyeClosed from "../../../assets/icons/eye-closed.svg";
-import errorMessageIcon from "../../../assets/icons/emblem-important.svg";
+import ErrorMessageIcon from "../../../assets/icons/emblem-important.svg?react";
 import "./signup.css";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../context/authContext";
@@ -13,12 +13,19 @@ const SignupScreen = () => {
     const result = await signup(email, password, confirmPassword, fullName);
 
     if (result.success) {
-      setFullName("");
-      setEmail("");
-      setPassword("");
-      setConfirmPassword("");
       setErrorMessage("");
-      navigate("/login");
+
+      if (result.otpExpiresAt) {
+        localStorage.setItem("otpExpiresAt", String(result.otpExpiresAt));
+      }
+
+      localStorage.setItem("pendingEmail", email);
+
+      navigate("/verify-otp", {
+        state: {
+          email,
+        },
+      });
     } else {
       setErrorMessage(result.message || "Signup failed. Please try again.");
     }
@@ -133,7 +140,7 @@ const SignupScreen = () => {
             </div>
             {errorMessage && (
               <div className="error-container">
-                <img src={errorMessageIcon} alt="Error" />
+                <ErrorMessageIcon className="error-signup-icon" />
                 {errorMessage}
               </div>
             )}

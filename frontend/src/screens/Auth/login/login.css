@@ -312,3 +312,9 @@ input::placeholder {
   letter-spacing: 1.2px;
   text-transform: uppercase;
 }
+
+.error-login-icon {
+  width: 16px;
+  height: 16px;
+  color: #D92626;
+}

@@ -95,6 +95,7 @@
   font-size: 14px;
   display: flex;
   align-items: center;
+  transition: transform 0.3s ease, border 0.3s ease;
 }
 
 .form-group textarea {
@@ -266,4 +267,15 @@
   align-items: center;
   column-gap: 16px;
   justify-content: flex-end;
+}
+
+.form-group .date-highlight {
+  border: 1px solid #f28602;
+  transform: scale(1.05);
+}
+
+.header-job-details {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }

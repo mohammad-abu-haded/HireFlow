@@ -1,100 +1,103 @@
 import "./MyJobCard.css";
 import LocationIcon from "../../assets/icons/location.svg?react";
-import PersonsIcon from "../../assets/icons/persons.svg?react";
-import BagIcon from "../../assets/icons/briefcase-bag.svg?react";
-import EyeIcon from "../../assets/icons/eye.svg?react";
+import ViewIcon from "../../assets/icons/external-link.svg?react";
 import EditIcon from "../../assets/icons/edit.svg?react";
+import ClockIcon from "../../assets/icons/clock.svg?react";
+import SalaryIcon from "../../assets/icons/dollar-sign.svg?react";
 import DeleteIcon from "../../assets/icons/trash.svg?react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 interface IProps {
   jobId: string;
   jobTitle: string;
   companyName: string;
   location: string;
   workSetting: string;
-  status: "ACTIVE" | "CLOSED" | "EXPIRED";
+  status: "ACTIVE" | "CLOSED" | "EXPIRED" | "";
   createdAt: string;
   applicationsCount: number;
+  salary: string;
   deleteJob: (id: string) => void;
 }
 
-const formatPostedDate = (dateString: string) => {
-  const date = new Date(dateString);
-  const now = new Date();
+const getTimeAgo = (date: string) => {
+  const now = new Date().getTime();
+  const posted = new Date(date).getTime();
 
-  const isSameYear = date.getFullYear() === now.getFullYear();
+  const diff = Math.floor((now - posted) / (1000 * 60 * 60 * 24));
 
-  const options: Intl.DateTimeFormatOptions = isSameYear
-    ? { month: "short", day: "numeric" } // Oct 10
-    : { month: "short", day: "numeric", year: "numeric" }; // Oct 10, 2024
-
-  return date.toLocaleDateString("en-US", options);
+  if (diff === 0) return "Posted today";
+  if (diff === 1) return "Posted 1 day ago";
+  return `Posted ${diff} days ago`;
 };
 
 const MyJobCard = (props: IProps) => {
   const navigate = useNavigate();
-  let location = "";
+  const location = useLocation();
+  let jobLocation = "";
   switch (props.workSetting) {
     case "on-site":
-      location = props.location;
+      jobLocation = props.location;
       break;
     case "remote":
-      location = "Remote";
+      jobLocation = "Remote";
       break;
     case "hybrid":
-      location = `Hybrid - ${props.location}`;
+      jobLocation = `Hybrid - ${props.location}`;
       break;
   }
-
   return (
     <div className="my-job-card">
-      <div className="icon-container">
-        <BagIcon className="bag-icon" />
-      </div>
-      <div className="job-info">
+      <div className="job-title-card">
         <h3>{props.jobTitle}</h3>
-        <p>{props.companyName}</p>
       </div>
-      <div className="location-container">
-        <LocationIcon className="location-icon" />
-        <p>{location}</p>
-      </div>
-      <div className="status-container">
+      <div className="job-meta">
         <div className={`status ${props.status.toLowerCase()}`}>
           <p>{props.status}</p>
         </div>
-      </div>
-      <div className="applications-container">
-        <div className="applications-count">
-          <PersonsIcon className="persons-icon" />
-          <p>{props.applicationsCount}</p>
+        <div className="post-date-container">
+          <ClockIcon className="post-date-clock-icon" />
+          <div className="post-date">{getTimeAgo(props.createdAt)}</div>
         </div>
-        <p>Applicants</p>
       </div>
-      <div className="posted-container">
-        <p className="posted-label">Posted</p>
-        <p className="posted-date">{formatPostedDate(props.createdAt)}</p>
+      <div className="company-name-card">{props.companyName}</div>
+      <div className="job-location-salary">
+        <div className="location-container">
+          <LocationIcon className="location-icon" />
+          <p>{jobLocation}</p>
+        </div>
+        <div className="salary-range">
+          <SalaryIcon className="salary-icon" />
+          <p>{props.salary}</p>
+        </div>
       </div>
-      <div className="view-button-container">
-        <button className="view-button">
-          <EyeIcon className="eye-icon-myJobCard" />
-          <p>View</p>
-        </button>
-      </div>
-      <div className="edit-delete-container">
-        <button
-          className="edit-button"
-          title="Edit Job"
-          onClick={() => navigate(`/update-job/${props.jobId}`)}
+      <div className="actions-container">
+        <div className="edit-delete-container">
+          <button
+            className="edit-button"
+            title="Edit Job"
+            onClick={() => 
+              navigate(`/update-job/${props.jobId}`,
+                {state: {from: location.pathname}}
+              )}
+          >
+            <EditIcon className="edit-icon-myJobCard" />
+            <p>Edit</p>
+          </button>
+          <button
+            className="delete-button"
+            title="Delete Job"
+            onClick={() => props.deleteJob(props.jobId.toString())}
+          >
+            <DeleteIcon className="delete-icon-myJobCard" />
+            <p>Delete</p>
+          </button>
+        </div>
+        <button 
+        className="view-button"
+        onClick={() => navigate(`/job-details/${props.jobId}`)}
         >
-          <EditIcon className="edit-icon-myJobCard" />
-        </button>
-        <button
-          className="delete-button"
-          title="Delete Job"
-          onClick={() => props.deleteJob(props.jobId.toString())}
-        >
-          <DeleteIcon className="delete-icon-myJobCard" />
+          <ViewIcon className="view-icon-myJobCard" />
+          <p>View Details</p>
         </button>
       </div>
     </div>

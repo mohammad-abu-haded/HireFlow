@@ -10,6 +10,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../context/authContext";
 import MyJobCard from "../../components/myJobCard/MyJobCard";
+import { getStatus } from "../../utils/getStatus ";
 const MyJobsScreen = () => {
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
@@ -125,15 +126,7 @@ const MyJobsScreen = () => {
 
     return diff;
   };
-  const getStatus = (job: IForm) => {
-    if (job.status === "CLOSED") return "CLOSED";
 
-    if (new Date() > new Date(job.applicationDeadline)) {
-      return "EXPIRED";
-    }
-
-    return "ACTIVE";
-  };
   const activeJobs = jobs.filter((job: IForm) => getStatus(job) === "ACTIVE");
   const diff = getJobsStats(activeJobs);
   const subtitle: string =
@@ -263,6 +256,7 @@ const MyJobsScreen = () => {
               applicationsCount={job.applicationsCount}
               createdAt={job.createdAt}
               deleteJob={deleteJob}
+              salary={`$${job.salaryMin} - $${job.salaryMax}`}
             />
           ))
         )}

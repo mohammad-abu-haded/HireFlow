@@ -20,6 +20,7 @@ export interface IForm {
   createdAt: string;
   email: string;
   applicationsCount: number;
+  profileViews?: number;
 }
 
 export interface IUser {

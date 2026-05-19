@@ -5,7 +5,7 @@ import ConfigurationIcon from "../../assets/icons/configuration.svg?react";
 import DetailsIcon from "../../assets/icons/details.svg?react";
 import ContentIcon from "../../assets/icons/content.svg?react";
 import DoneIcon from "../../assets/icons/done.svg?react";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import DynamicList from "../DynamicList/DynamicList";
 import type { IForm } from "../../types";
 import { AuthContext } from "../../context/authContext";
@@ -14,6 +14,9 @@ const PostJobForm = () => {
   const { email } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
+  const scrollToDate = location.state?.scrollToDate;
+  const dateRef = useRef<HTMLInputElement>(null);
+  const [highlightDate, setHighlightDate] = useState(false);
   const { id } = useParams();
   const [formData, setFormData] = useState<IForm | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -94,7 +97,7 @@ const PostJobForm = () => {
       setIsSubmitted(true);
       setTimeout(() => {
         setIsSubmitted(false);
-        navigate("/my-jobs");
+        navigate(location.state?.from || "/");
       }, 3000);
       return;
     }
@@ -162,6 +165,20 @@ const PostJobForm = () => {
     }
   }, [location.pathname]);
 
+  useEffect(() => {
+    if (scrollToDate && dateRef.current) {
+      dateRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    if (scrollToDate) {
+      setHighlightDate(true);
+
+      const timer = setTimeout(() => {
+        setHighlightDate(false);
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [scrollToDate]);
   return (
     <div className="post-job-form">
       <div className={isSubmitted ? "success-message" : ""}>
@@ -368,7 +385,9 @@ const PostJobForm = () => {
             <label htmlFor="application-deadline">Application Deadline</label>
             <input
               type="date"
-              id="application-deadline"
+              ref={dateRef}
+              id='application-deadline'
+              className={highlightDate ? "date-highlight" : ""}
               value={form.applicationDeadline}
               onChange={(e) =>
                 setForm((prev) => ({

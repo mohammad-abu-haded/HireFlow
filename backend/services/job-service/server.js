@@ -56,28 +56,90 @@ app.post("/", authMiddleware, async (req, res) => {
 
 // UPDATE
 app.put("/:id", authMiddleware, async (req, res) => {
-  const job = await Job.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-  });
+  const job = await Job.findOneAndUpdate(
+    {
+      _id: req.params.id,
+      userId: req.user.id,
+    },
+    req.body,
+    { new: true }
+  );
+
+  if (!job) {
+    return res.status(404).json({
+      success: false,
+      message: "Not found",
+    });
+  }
 
   res.json(job);
 });
 
 // DELETE
 app.delete("/:id", authMiddleware, async (req, res) => {
-  await Job.findByIdAndDelete(req.params.id);
+  const job = await Job.findOneAndDelete({
+    _id: req.params.id,
+    userId: req.user.id,
+  });
+
+  if (!job) {
+    return res.status(404).json({
+      success: false,
+      message: "Not found",
+    });
+  }
+
   res.json({ success: true });
 });
 
 // GET ONE
 app.get("/:id", authMiddleware, async (req, res) => {
-  const job = await Job.findById(req.params.id);
+  const job = await Job.findOne({
+    _id: req.params.id,
+    userId: req.user.id,
+  });
 
   if (!job) {
-    return res.status(404).json({ success: false, message: "Not found" });
+    return res.status(404).json({
+      success: false,
+      message: "Not found",
+    });
   }
 
   res.json(job);
+});
+
+// UPDATE STATUS
+app.patch("/:id/status", authMiddleware, async (req, res) => {
+  try {
+    const { status } = req.body;
+
+    const job = await Job.findOneAndUpdate(
+      {
+        _id: req.params.id,
+        userId: req.user.id,
+      },
+      { status },
+      { new: true }
+    );
+
+    if (!job) {
+      return res.status(404).json({
+        success: false,
+        message: "Job not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      job,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
 });
 
 app.listen(5002, () => {

@@ -138,6 +138,7 @@
   flex-direction: column;
   row-gap: 12px;
   margin-top: 24px;
+  padding-bottom: 40px;
 }
 
 .no-jobs-message {

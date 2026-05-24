@@ -181,10 +181,6 @@
   color: #1c1a17;
 }
 
-.explore-button.without-sample img {
-  filter: invert(1);
-}
-
 .explore-button.with-sample:hover {
   background-color: #f17204c9;
 }
@@ -193,12 +189,12 @@
   background-color: #f6f5f4;
 }
 
-.explore-button img {
+.explore-button .explore-button-icon {
   display: inline-block;
   transition: transform 0.3s ease;
 }
 
-.explore-button:hover img {
+.explore-button:hover .explore-button-icon {
   transform: scale(1.5);
 }
 
@@ -220,4 +216,14 @@
   width: 32px;
   height: 32px;
   color: #99968F;
+}
+
+.explore-button-icon {
+  width: 16px;
+  height: 16px;
+  color: #ffffff;
+}
+
+.explore-button-icon.without-sample {
+  color: #000;
 }

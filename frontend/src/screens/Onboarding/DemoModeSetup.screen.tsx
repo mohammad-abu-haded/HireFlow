@@ -1,7 +1,7 @@
 import "./DemoModeSetup.css";
 import BagIcon from "../../assets/icons/briefcase-bag.svg?react";
 import Plus from "../../assets/icons/plus-circle.svg?react";
-import rightArrow from "../../assets/icons/right-arrow.svg";
+import RightArrow from "../../assets/icons/right-arrow.svg?react";
 import { useNavigate } from "react-router";
 const DemoModeSetupScreen = () => {
   const navigate = useNavigate();
@@ -55,7 +55,7 @@ const DemoModeSetupScreen = () => {
           </div>
           <div className="explore-button with-sample" onClick={handleSampleWorkspaceClick}>
             <p>Explore Sample Workspace</p>
-            <img src={rightArrow} alt="Right Arrow" />
+            <RightArrow className="explore-button-icon" />
           </div>
         </div>
         <div className="mode-item without-sample">
@@ -77,7 +77,7 @@ const DemoModeSetupScreen = () => {
           </div>
           <div className="explore-button without-sample" onClick={handleBlankWorkspaceClick}>
             <p>Create Blank Workspace</p>
-            <img src={rightArrow} alt="Right Arrow" />
+            <RightArrow className="explore-button-icon without-sample" />
           </div>
         </div>
       </div>

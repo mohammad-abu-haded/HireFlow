@@ -19,7 +19,6 @@ const PostJobForm = () => {
   const [highlightDate, setHighlightDate] = useState(false);
   const { id } = useParams();
   const [formData, setFormData] = useState<IForm | null>(null);
-  const [isEditMode, setIsEditMode] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [prevLocation, setPrevLocation] = useState<string>("");
   const initialState: IForm = {
@@ -126,7 +125,6 @@ const PostJobForm = () => {
   useEffect(() => {
     if (formData) {
       setForm({ ...formData });
-      setIsEditMode(true);
     } else {
       const storedDataFromLocalStorage = localStorage.getItem("jobForm");
       if (storedDataFromLocalStorage) {
@@ -422,7 +420,7 @@ const PostJobForm = () => {
             }
             label="Key Responsibilities"
             placeholder="Responsibility"
-            isEditMode={isEditMode}
+            pathname={location.pathname}
           />
           <DynamicList
             state={form.requirements}
@@ -431,7 +429,7 @@ const PostJobForm = () => {
             }
             label="Requirements"
             placeholder="Requirement"
-            isEditMode={isEditMode}
+            pathname={location.pathname}
           />
           <DynamicList
             state={form.skills}
@@ -440,7 +438,7 @@ const PostJobForm = () => {
             }
             label="Skills"
             placeholder="Skill"
-            isEditMode={isEditMode}
+            pathname={location.pathname}
           />
           <DynamicList
             state={form.benefits}
@@ -449,7 +447,7 @@ const PostJobForm = () => {
             }
             label="Benefits"
             placeholder="Benefits"
-            isEditMode={isEditMode}
+            pathname={location.pathname}
           />
         </div>
         <div className="form-actions">
@@ -458,11 +456,11 @@ const PostJobForm = () => {
             className="cancel-publish-job-posting"
             onClick={handleCancel}
           >
-            {isEditMode ? "Clear" : "Cancel"}
+            {location.pathname.includes("/update-job") ? "Clear" : "Cancel"}
           </button>
           <input
             type="submit"
-            value={isEditMode ? "Update Job Posting" : "Publish Job Posting"}
+            value={location.pathname.includes("/update-job") ? "Update Job Posting" : "Publish Job Posting"}
             id="publish-job-posting"
           />
         </div>

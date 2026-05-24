@@ -13,28 +13,34 @@ const navItems = [
     path: "/dashboard",
     label: "Dashboard",
     icon: DashboardIcon,
+    requiresAuth: true,
   },
   {
     path: "/my-jobs",
     label: "My Jobs",
     icon: BagIcon,
+    requiresAuth: true,
   },
   {
     path: "/post-job",
     label: "Post Jobs",
     icon: PostJobIcon,
+    requiresAuth: true,
   },
   {
     path: "/applications",
     label: "Applications",
     icon: ApplicationsIcon,
+    requiresAuth: true,
   },
   {
     path: "/jobs",
     label: "Jobs",
     icon: JobsIcon,
+    requiresAuth: false,
   },
 ];
+
 const Sidebar = () => {
   const navigate = useNavigate();
   const { isAuthenticated, logout } = useContext(AuthContext);
@@ -52,7 +58,8 @@ const Sidebar = () => {
       </div>
 
       <nav className="sidebar-nav">
-        {navItems.map((item) => {
+        {navItems.filter((item) => (isAuthenticated? true: !item.requiresAuth))
+        .map((item) => {
           const Icon = item.icon;
 
           return (
@@ -69,14 +76,12 @@ const Sidebar = () => {
           );
         })}
       </nav>
-      {
-        isAuthenticated &&
+      {isAuthenticated && (
         <div className="sidebar-auth logout" onClick={handleLogout}>
           <LogoutIcon className="auth-icon" />
           <span className="logout-label">Logout</span>
         </div>
-
-      }
+      )}
     </div>
   );
 };

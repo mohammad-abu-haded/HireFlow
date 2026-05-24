@@ -12,10 +12,10 @@ export interface IForm {
   salaryMax: string;
   applicationDeadline: string;
   jobDescription: string;
+  keyResponsibilities: string[];
   requirements: string[];
   skills: string[];
   benefits: string[];
-  keyResponsibilities: string[];
   status: "ACTIVE" | "CLOSED" | "EXPIRED" | "";
   createdAt: string;
   email: string;
@@ -40,3 +40,9 @@ export interface IApplication {
   coverLetter: string;
   appliedAt: string;
 }
+
+export type JobDetailSectionType =
+  | "DESCRIPTION"
+  | "KEY_RESPONSIBILITIES"
+  | "REQUIREMENTS"
+  | "SKILLS";

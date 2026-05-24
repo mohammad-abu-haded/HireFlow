@@ -1,0 +1,62 @@
+.job-detail-section-main {
+  display: flex;
+  flex-direction: column;
+  row-gap: 16px;
+}
+
+.job-detail-section-list {
+  display: flex;
+  flex-direction: column;
+  row-gap: 12px;
+}
+
+.title-job-details-section {
+  color: #16181d;
+  font-size: 20px;
+  height: 37px;
+  width: fit-content;
+  border-bottom: 1px solid #e0e2e6;
+}
+
+.job-detail-section-list-icon {
+    width: 20px;
+    height: 20px;
+    color: #F1720499;
+}
+
+.job-detail-section-item {
+    display: flex;
+    align-items: flex-start;
+    column-gap: 12px;
+    max-width: 85vw;
+}
+
+.job-detail-section-item > p {
+    font-size: 16px;
+    color: #16181D;
+}
+
+.job-detail-section-content {
+    white-space: pre-line;
+}
+
+.job-detail-section-empty-message {
+  color: #888;
+  font-size: 14px;
+  font-style: italic;
+}
+
+.job-detail-section-skill {
+  padding: 5px 13px;
+  background-color: #f3f4f6;
+  border-radius: 9999px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.job-detail-section-skills-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}

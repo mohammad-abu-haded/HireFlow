@@ -5,10 +5,19 @@ import EditIcon from "../../assets/icons/edit.svg?react";
 import OpenIcon from "../../assets/icons/open.svg?react";
 import CloseIcon from "../../assets/icons/close.svg?react";
 import ClockPlusIcon from "../../assets/icons/clock-plus.svg?react";
+import UserIcon from "../../assets/icons/persons.svg?react";
+import EyeIcon from "../../assets/icons/eye.svg?react";
+import ClockIcon from "../../assets/icons/clock.svg?react";
+import RightIcon from "../../assets/icons/right-arrow.svg?react";
+import CorrectIcon from "../../assets/icons/correct.svg?react";
 import type { IForm } from "../../types";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { getStatus } from "../../utils/getStatus ";
 import { AuthContext } from "../../context/authContext";
+import StatCard from "../../components/StatCard/StatCard ";
+import { getDaysAgo } from "../../utils/getDaysAgo";
+import JobDetailSection from "../../components/JobDetailSection/JobDetailSection";
+
 const JobDetails = () => {
   const { id } = useParams();
   const { token } = useContext(AuthContext);
@@ -82,6 +91,26 @@ const JobDetails = () => {
       fetchData();
     }
   }, [id]);
+
+  const DASHBOARD_STATS = [
+    {
+      title: "Total Applicants",
+      value: job?.applicationsCount || 0,
+      icon: UserIcon,
+    },
+    {
+      title: "Days Active",
+      value: getDaysAgo(job?.createdAt),
+      icon: ClockIcon,
+    },
+    {
+      title: "Profile Views",
+      value: job?.profileViews || 0,
+      subtitle: "",
+      icon: EyeIcon,
+    },
+  ];
+
   return (
     <div className="job-details-main">
       <div className="header-job-details">
@@ -136,6 +165,41 @@ const JobDetails = () => {
             <p>{buttonLabel}</p>
           </button>
         </div>
+      </div>
+      <div className="my-jobs-stats">
+        {DASHBOARD_STATS.map((stat) => (
+          <StatCard
+            key={stat.title}
+            title={stat.title}
+            value={stat.value}
+            subtitle={stat.subtitle}
+            icon={stat.icon}
+          />
+        ))}
+      </div>
+      <div className="job-details-content">
+        <JobDetailSection
+          title="Job Description"
+          type="DESCRIPTION"
+          content={job?.jobDescription}
+        />
+        <JobDetailSection
+          title="Key Responsibilities"
+          type="KEY_RESPONSIBILITIES"
+          list={job?.keyResponsibilities}
+          Icon={CorrectIcon}
+        />
+        <JobDetailSection
+          title="Requirements"
+          type="REQUIREMENTS"
+          list={job?.requirements}
+          Icon={RightIcon}
+        />
+        <JobDetailSection
+          title="Skills"
+          type="SKILLS"
+          list={job?.skills}
+        />
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import AddIcon from "../../assets/icons/add.svg?react";
 import DeleteIcon from "../../assets/icons/delete.svg?react";
 interface IProps {
@@ -6,14 +6,17 @@ interface IProps {
   state: string[];
   label: string;
   placeholder: string;
-  isEditMode: boolean;
+  pathname: string;
 }
 const DynamicList = (props: IProps) => {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const [shouldFocusLast, setShouldFocusLast] = useState(false);
 
   useEffect(() => {
+    if(!shouldFocusLast) return;
+    setShouldFocusLast(false);
     const lastIndex = props.state.length - 1;
-    if (lastIndex >= 0 && props.isEditMode == false) {
+    if (lastIndex >= 0) {
       inputRefs.current[lastIndex]?.focus();
     }
   }, [props.state.length]);
@@ -25,6 +28,7 @@ const DynamicList = (props: IProps) => {
   };
 
   const handleAdd = () => {
+    setShouldFocusLast(true);
     const newState = [...props.state, ""];
     props.setState(newState);
   };

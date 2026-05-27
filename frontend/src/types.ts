@@ -3,10 +3,10 @@ export interface IForm {
   jobTitle: string;
   companyName: string;
   location: string;
-  jobType: string;
-  workSetting: string;
-  experienceLevel: string;
-  employmentType: string;
+  jobType: JobType;
+  workSetting: WorkSetting;
+  experienceLevel: ExperienceLevel;
+  employmentType: EmploymentType;
   duration: string;
   salaryMin: string;
   salaryMax: string;
@@ -16,7 +16,7 @@ export interface IForm {
   requirements: string[];
   skills: string[];
   benefits: string[];
-  status: "ACTIVE" | "CLOSED" | "EXPIRED" | "";
+  status: JobDetailStatus;
   createdAt: string;
   email: string;
   applicationsCount: number;
@@ -46,3 +46,18 @@ export type JobDetailSectionType =
   | "KEY_RESPONSIBILITIES"
   | "REQUIREMENTS"
   | "SKILLS";
+
+export type JobDetailStatus = "ACTIVE" | "CLOSED" | "EXPIRED" | "";
+
+export type JobType =
+  | "full-time"
+  | "part-time"
+  | "contract"
+  | "internship"
+  | "";
+
+export type WorkSetting = "on-site" | "remote" | "hybrid" | "";
+
+export type ExperienceLevel = "entry" | "mid" | "senior" | "";
+
+export type EmploymentType = "permanent" | "temporary" | "";

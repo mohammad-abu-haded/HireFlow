@@ -7,7 +7,13 @@ import ContentIcon from "../../assets/icons/content.svg?react";
 import DoneIcon from "../../assets/icons/done.svg?react";
 import { useContext, useEffect, useRef, useState } from "react";
 import DynamicList from "../DynamicList/DynamicList";
-import type { IForm } from "../../types";
+import type {
+  EmploymentType,
+  ExperienceLevel,
+  IForm,
+  JobType,
+  WorkSetting,
+} from "../../types";
 import { AuthContext } from "../../context/authContext";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 const PostJobForm = () => {
@@ -112,6 +118,7 @@ const PostJobForm = () => {
     setIsSubmitted(true);
     setTimeout(() => {
       setIsSubmitted(false);
+      navigate("/my-jobs");
     }, 3000);
   };
 
@@ -177,6 +184,28 @@ const PostJobForm = () => {
       return () => clearTimeout(timer);
     }
   }, [scrollToDate]);
+
+  const formatDateTimeLocal = (
+    value: string | Date | null | undefined,
+  ): string => {
+    if (!value) return "";
+
+    const date = new Date(value);
+
+    const pad = (n: number) => n.toString().padStart(2, "0");
+
+    return (
+      date.getFullYear() +
+      "-" +
+      pad(date.getMonth() + 1) +
+      "-" +
+      pad(date.getDate()) +
+      "T" +
+      pad(date.getHours()) +
+      ":" +
+      pad(date.getMinutes())
+    );
+  };
   return (
     <div className="post-job-form">
       <div className={isSubmitted ? "success-message" : ""}>
@@ -239,9 +268,10 @@ const PostJobForm = () => {
               id="job-type"
               value={form.jobType}
               onChange={(e) => {
+                const value = e.target.value as JobType;
                 setForm((prev) => ({
                   ...prev,
-                  jobType: e.target.value,
+                  jobType: value,
                   employmentType: "",
                   duration: "",
                   workSetting: "",
@@ -264,9 +294,10 @@ const PostJobForm = () => {
             <select
               id="work-setting"
               value={form.workSetting}
-              onChange={(e) =>
-                setForm((prev) => ({ ...prev, workSetting: e.target.value }))
-              }
+              onChange={(e) => {
+                const value = e.target.value as WorkSetting;
+                setForm((prev) => ({ ...prev, workSetting: value }));
+              }}
               required
             >
               <option value="" disabled hidden>
@@ -282,12 +313,13 @@ const PostJobForm = () => {
             <select
               id="experience-level"
               value={form.experienceLevel}
-              onChange={(e) =>
+              onChange={(e) => {
+                const value = e.target.value as ExperienceLevel;
                 setForm((prev) => ({
                   ...prev,
-                  experienceLevel: e.target.value,
-                }))
-              }
+                  experienceLevel: value,
+                }));
+              }}
               required
             >
               <option value="" disabled hidden>
@@ -305,9 +337,10 @@ const PostJobForm = () => {
                 id="employment-type"
                 value={form.employmentType}
                 onChange={(e) => {
+                  const value = e.target.value as EmploymentType;
                   setForm((prev) => ({
                     ...prev,
-                    employmentType: e.target.value,
+                    employmentType: value,
                     duration: "",
                   }));
                 }}
@@ -382,11 +415,11 @@ const PostJobForm = () => {
           <div className="form-group">
             <label htmlFor="application-deadline">Application Deadline</label>
             <input
-              type="date"
+              type="datetime-local"
               ref={dateRef}
-              id='application-deadline'
+              id="application-deadline"
               className={highlightDate ? "date-highlight" : ""}
-              value={form.applicationDeadline}
+              value={formatDateTimeLocal(form.applicationDeadline)}
               onChange={(e) =>
                 setForm((prev) => ({
                   ...prev,
@@ -451,16 +484,29 @@ const PostJobForm = () => {
           />
         </div>
         <div className="form-actions">
+          {location.pathname.includes("/update-job") && (
+            <button
+              type="button"
+              className="cancel-publish-job-posting"
+              onClick={() => navigate(location.state?.from || "/")}
+            >
+              Back
+            </button>
+          )}
           <button
             type="button"
             className="cancel-publish-job-posting"
             onClick={handleCancel}
           >
-            {location.pathname.includes("/update-job") ? "Clear" : "Cancel"}
+            Clear
           </button>
           <input
             type="submit"
-            value={location.pathname.includes("/update-job") ? "Update Job Posting" : "Publish Job Posting"}
+            value={
+              location.pathname.includes("/update-job")
+                ? "Update Job Posting"
+                : "Publish Job Posting"
+            }
             id="publish-job-posting"
           />
         </div>

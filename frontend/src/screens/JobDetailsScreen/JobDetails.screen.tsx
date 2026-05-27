@@ -12,7 +12,6 @@ import RightIcon from "../../assets/icons/right-arrow.svg?react";
 import CorrectIcon from "../../assets/icons/correct.svg?react";
 import type { IForm } from "../../types";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { getStatus } from "../../utils/getStatus ";
 import { AuthContext } from "../../context/authContext";
 import StatCard from "../../components/StatCard/StatCard ";
 import { getDaysAgo } from "../../utils/getDaysAgo";
@@ -67,14 +66,9 @@ const JobDetails = () => {
 
     const data = await response.json();
     if (data.success) {
-      setJob((oldValue) => {
-        if (!oldValue) return oldValue;
-        return {
-          ...oldValue,
-          status,
-        };
-      });
-      updateButtonData(status);
+      const data: IForm = await getJobById(id!);
+      setJob(data);
+      updateButtonData(data.status);
     } else {
       console.log("Update failed");
     }
@@ -83,9 +77,8 @@ const JobDetails = () => {
   useEffect(() => {
     const fetchData = async () => {
       const data: IForm = await getJobById(id!);
-      const status: IForm["status"] = getStatus(data);
-      setJob({ ...data, status });
-      updateButtonData(status);
+      setJob(data);
+      updateButtonData(data.status);
     };
     if (id) {
       fetchData();
@@ -195,11 +188,7 @@ const JobDetails = () => {
           list={job?.requirements}
           Icon={RightIcon}
         />
-        <JobDetailSection
-          title="Skills"
-          type="SKILLS"
-          list={job?.skills}
-        />
+        <JobDetailSection title="Skills" type="SKILLS" list={job?.skills} />
       </div>
     </div>
   );

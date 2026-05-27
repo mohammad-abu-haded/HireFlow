@@ -10,13 +10,49 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../context/authContext";
 import MyJobCard from "../../components/myJobCard/MyJobCard";
-import { getStatus } from "../../utils/getStatus ";
+
 const MyJobsScreen = () => {
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const { token } = useContext(AuthContext);
-  const [myJobsFiltered, setMyJobsFiltered] = useState<IForm[]>([]);
   const [jobs, setJobs] = useState<IForm[]>([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const limit = 6;
+
+  const [pagination, setPagination] = useState<number[]>([]);
+
+  const getPagination = (current: number, total: number) => {
+    const delta = 2;
+
+    const range: number[] = [];
+    const rangeWithDots: number[] = [];
+
+    for (
+      let i = Math.max(2, current - delta);
+      i <= Math.min(total - 1, current + delta);
+      i++
+    ) {
+      range.push(i);
+    }
+
+    if (current - delta > 2) {
+      rangeWithDots.push(1, -1);
+    } else {
+      rangeWithDots.push(1);
+    }
+
+    rangeWithDots.push(...range);
+
+    if (current + delta < total - 1) {
+      rangeWithDots.push(-1, total);
+    } else {
+      rangeWithDots.push(total);
+    }
+
+    setPagination(rangeWithDots);
+  };
+
   const deleteJob = async (id: string) => {
     if (!token) return;
     try {
@@ -30,70 +66,68 @@ const MyJobsScreen = () => {
       const data = await res.json();
 
       if (data.success) {
-        setJobs((prev) => prev.filter((job) => job._id !== id));
+        fetchJobs();
       }
     } catch (error) {
       console.error("Error deleting job:", error);
     }
   };
-  const fetchJobs = async () => {
+
+  const fetchJobs = async (pageNumber = 1) => {
     if (!token) return;
 
-    const res = await fetch(`http://localhost:5000/jobs`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
+    const query = params.get("q") || "";
+    const status = params.get("status") || "";
+
+    const res = await fetch(
+      `http://localhost:5000/jobs/range?limit=${limit}&page=${pageNumber}&q=${query}&status=${status}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       },
-    });
+    );
 
     const data = await res.json();
-    setJobs(data);
+
+    setJobs(data.data);
   };
 
   useEffect(() => {
     if (!token) return;
-    fetchJobs();
-  }, [token]);
+    fetchJobs(page);
+  }, [token, page, params]);
 
   useEffect(() => {
-    const query = (params.get("q") || "")
-      .toLowerCase()
-      .trim()
-      .replace(/\s+/g, " ");
-    const queryWords = query.split(" ").filter(Boolean);
-    const status = params.get("status");
-    let filtered: IForm[] = [...jobs];
-    if (query) {
-      filtered = filtered.filter((job) => {
-        const searchableText = [
-          job.jobTitle,
-          job.companyName,
-          job.location,
-          job.jobType,
-          job.workSetting,
-          job.experienceLevel,
-        ]
-          .join(" ")
-          .toLowerCase();
+    if (!token) return;
 
-        return queryWords.every((word) => searchableText.includes(word));
-      });
+    const fetchCount = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/jobs/count", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await res.json();
+        const count = data.count | 0;
+        const pagesCount = Math.ceil(count / limit);
+        setTotalPages(pagesCount);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchCount();
+  }, [token, params, jobs]);
+
+  useEffect(() => {
+    if (totalPages < page) {
+      setPage(page - 1);
     }
-    filtered = filtered.filter((job) => {
-      if (!status) return true;
-      const jobStatus = getStatus(job);
-      if (status === "Active") {
-        return jobStatus === "ACTIVE";
-      }
-      if (status === "Closed") {
-        return jobStatus === "CLOSED";
-      }
-      if (status === "Expired") {
-        return jobStatus === "EXPIRED";
-      }
-      return true;
-    });
-    setMyJobsFiltered(filtered);
-  }, [params, jobs]);
+  }, [totalPages]);
+
+  useEffect(() => {
+    getPagination(page, totalPages);
+  }, [page, totalPages]);
   const getJobsStats = (jobs: IForm[]) => {
     const now = new Date();
 
@@ -127,7 +161,7 @@ const MyJobsScreen = () => {
     return diff;
   };
 
-  const activeJobs = jobs.filter((job: IForm) => getStatus(job) === "ACTIVE");
+  const activeJobs = jobs.filter((job: IForm) => job.status === "ACTIVE");
   const diff = getJobsStats(activeJobs);
   const subtitle: string =
     diff > 0
@@ -183,20 +217,22 @@ const MyJobsScreen = () => {
       </div>
       <div className="filters-container">
         <div className="search-container">
-          <input
-            className="search-input"
-            type="text"
-            placeholder="Search by job title, company or keyword..."
-            value={params.get("q") || ""}
-            onChange={(e) => {
-              params.set("q", e.target.value);
-              setParams(params);
-              if (e.target.value === "") {
-                params.delete("q");
+          <form>
+            <input
+              className="search-input"
+              type="text"
+              placeholder="Search by job title, company or keyword..."
+              value={params.get("q") || ""}
+              onChange={(e) => {
+                params.set("q", e.target.value);
                 setParams(params);
-              }
-            }}
-          />
+                if (e.target.value === "") {
+                  params.delete("q");
+                  setParams(params);
+                }
+              }}
+            />
+          </form>
           <SearchIcon className="search-icon" />
         </div>
         <div className="status-filter-container">
@@ -238,13 +274,16 @@ const MyJobsScreen = () => {
           </div>
         </div>
       </div>
+
       <div className="my-jobs-list">
         {jobs.length === 0 ? (
-          <p className="no-jobs-message">You have not posted any jobs yet.</p>
-        ) : myJobsFiltered.length === 0 ? (
-          <p className="no-jobs-message">No jobs match your search/filter.</p>
+          params.get("q") || params.get("status") ? (
+            <p className="no-jobs-message">No jobs match your search/filter.</p>
+          ) : (
+            <p className="no-jobs-message">You have not posted any jobs yet.</p>
+          )
         ) : (
-          myJobsFiltered.map((job) => (
+          jobs.map((job) => (
             <MyJobCard
               key={job._id}
               jobId={job._id!}
@@ -252,7 +291,7 @@ const MyJobsScreen = () => {
               companyName={job.companyName}
               location={job.location}
               workSetting={job.workSetting}
-              status={getStatus(job)}
+              status={job.status}
               applicationsCount={job.applicationsCount}
               createdAt={job.createdAt}
               deleteJob={deleteJob}
@@ -261,6 +300,29 @@ const MyJobsScreen = () => {
           ))
         )}
       </div>
+      {totalPages > 1 && (
+        <div className="jobs-count">
+          {pagination.map((item, index) => {
+            if (item === -1) {
+              return (
+                <span key={index} className="pagination-dots">
+                  ...
+                </span>
+              );
+            }
+
+            return (
+              <button
+                key={index}
+                onClick={() => setPage(item)}
+                className={`pagination-item ${page === item ? "pagination-item-active" : ""}`}
+              >
+                {item}
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };

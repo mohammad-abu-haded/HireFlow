@@ -123,53 +123,51 @@ app.post("/", authMiddleware, async (req, res) => {
   res.json(job);
 });
 
-// COUNT (for pagination)
-app.get("/count", authMiddleware, async (req, res) => {
-  try {
-    await updateExpiredJobs(req.user.id);
-
-    const count = await Job.countDocuments(
-      buildFilter(req.user.id, req.query.q, req.query.status),
-    );
-
-    res.json({ success: true, count });
-  } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: err.message,
-    });
-  }
-});
-
 // RANGE (pagination)
 app.get("/range", authMiddleware, async (req, res) => {
   try {
     await updateExpiredJobs(req.user.id);
 
-    const limit = parseInt(req.query.limit) || 10;
-    const page = parseInt(req.query.page) || 1;
+    const limit = Math.max(parseInt(req.query.limit) || 10, 1);
+    let page = Math.max(parseInt(req.query.page) || 1, 1);
 
-    const skip = (page - 1) * limit;
+    const baseFilter = buildFilter(
+      req.user.id,
+      req.query.q || "",
+      req.query.status || ""
+    );
 
-    const filter = buildFilter(req.user.id, req.query.q, req.query.status);
+    const total = await Job.countDocuments(baseFilter);
+    const totalPages = Math.max(Math.ceil(total / limit), 1);
 
-    const jobs = await Job.find(filter)
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
+    if (page > totalPages) page = totalPages;
 
-    const total = await Job.countDocuments(filter);
+    const allIds = await Job.find(baseFilter)
+      .sort({ createdAt: -1, _id: -1 })
+      .select("_id");
+
+    const start = (page - 1) * limit;
+    const pageIds = allIds.slice(start, start + limit).map(j => j._id);
+
+    const jobs = await Job.find({
+      _id: { $in: pageIds }
+    }).sort({ createdAt: -1, _id: -1 });
+
+    const activeCount = await Job.countDocuments({
+      userId: req.user.id,
+      status: "ACTIVE",
+    });
 
     res.json({
       data: jobs,
       total,
+      activeCount,
       page,
       limit,
     });
+
   } catch (err) {
-    res.status(500).json({
-      message: err.message,
-    });
+    res.status(500).json({ message: err.message });
   }
 });
 

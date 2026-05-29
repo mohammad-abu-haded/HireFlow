@@ -4,9 +4,9 @@ export interface IForm {
   companyName: string;
   location: string;
   jobType: JobType;
+  employmentType: EmploymentType;
   workSetting: WorkSetting;
   experienceLevel: ExperienceLevel;
-  employmentType: EmploymentType;
   duration: string;
   salaryMin: string;
   salaryMax: string;

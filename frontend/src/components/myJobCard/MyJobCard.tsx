@@ -59,7 +59,7 @@ const MyJobCard = (props: IProps) => {
           <div className="post-date">{getTimeAgo(props.createdAt)}</div>
         </div>
       </div>
-      <div className="company-name-card">{props.companyName}</div>
+      <div className="company-name-card"><p>{props.companyName}</p></div>
       <div className="job-location-salary">
         <div className="location-container">
           <LocationIcon className="location-icon" />

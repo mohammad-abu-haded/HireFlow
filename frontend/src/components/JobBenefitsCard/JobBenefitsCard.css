@@ -1,0 +1,52 @@
+.job-benefits-card {
+  display: flex;
+  flex-direction: column;
+  row-gap: 20px;
+  width: 100%;
+  height: fit-content;
+  background-color: #ffffff;
+  padding-top: 26px;
+  padding-bottom: 20px;
+  border-radius: 12px;
+  border: 1px solid #f2800d33;
+  box-shadow: 0px 4px 8px #f2800d1a;
+}
+
+.job-benefits-header {
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e0e2e6;
+}
+
+.job-benefits-title {
+  padding-left: 24px;
+  display: flex;
+  align-items: center;
+  column-gap: 8px;
+}
+
+.benefits-list {
+  display: flex;
+  flex-direction: column;
+  row-gap: 12px;
+  padding: 0 20px;
+}
+
+.benefits-icon,
+.benefits-title-icon {
+  width: 16px;
+  height: 16px;
+  color: #eb7d0f;
+}
+
+.benefit-item {
+  display: flex;
+  align-items: flex-start;
+  column-gap: 12px;
+  font-size: 14px;
+  color: #16181d;
+}
+
+.job-benefits-title > h3 {
+  font-size: 14px;
+  color: #16181d;
+}

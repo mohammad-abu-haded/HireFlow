@@ -234,8 +234,18 @@
   font-weight: bold;
   color: #171a1fcc;
   margin-top: 16px;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+.company-name-card > p {
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .job-location-salary {
   display: flex;
   align-items: flex-start;

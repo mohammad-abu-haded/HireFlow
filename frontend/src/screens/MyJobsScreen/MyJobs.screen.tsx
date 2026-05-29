@@ -18,6 +18,8 @@ const MyJobsScreen = () => {
   const [jobs, setJobs] = useState<IForm[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [totalJobs, setTotalJobs] = useState(0);
+  const [totalJobsActive, setTotalJobsActive] = useState(0);
   const limit = 6;
 
   const [pagination, setPagination] = useState<number[]>([]);
@@ -66,7 +68,9 @@ const MyJobsScreen = () => {
       const data = await res.json();
 
       if (data.success) {
-        fetchJobs();
+        const newTotalJobs = totalJobs - 1;
+        setTotalJobs(newTotalJobs);        
+        fetchJobs(page);
       }
     } catch (error) {
       console.error("Error deleting job:", error);
@@ -78,18 +82,18 @@ const MyJobsScreen = () => {
 
     const query = params.get("q") || "";
     const status = params.get("status") || "";
-
-    const res = await fetch(
-      `http://localhost:5000/jobs/range?limit=${limit}&page=${pageNumber}&q=${query}&status=${status}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
+     const res = await fetch(
+        `http://localhost:5000/jobs/range?limit=${limit}&page=${pageNumber}&q=${query}&status=${status}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      },
-    );
+      );
 
     const data = await res.json();
-
+    setTotalJobs(data.total);
+    setTotalJobsActive(data.activeCount);    
     setJobs(data.data);
   };
 
@@ -101,26 +105,12 @@ const MyJobsScreen = () => {
   useEffect(() => {
     if (!token) return;
 
-    const fetchCount = async () => {
-      try {
-        const res = await fetch("http://localhost:5000/jobs/count", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const data = await res.json();
-        const count = data.count | 0;
-        const pagesCount = Math.ceil(count / limit);
-        setTotalPages(pagesCount);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchCount();
-  }, [token, params, jobs]);
+    const pagesCount = Math.ceil(totalJobs / limit);
+    setTotalPages(pagesCount);
+  }, [token, params, totalJobs]);
 
   useEffect(() => {
-    if (totalPages < page) {
+    if (totalPages < page && totalPages > 0) {
       setPage(page - 1);
     }
   }, [totalPages]);
@@ -128,6 +118,7 @@ const MyJobsScreen = () => {
   useEffect(() => {
     getPagination(page, totalPages);
   }, [page, totalPages]);
+
   const getJobsStats = (jobs: IForm[]) => {
     const now = new Date();
 
@@ -161,7 +152,7 @@ const MyJobsScreen = () => {
     return diff;
   };
 
-  const activeJobs = jobs.filter((job: IForm) => job.status === "ACTIVE");
+  const activeJobs = jobs.filter((job: IForm) => job.status.toUpperCase() === "ACTIVE");
   const diff = getJobsStats(activeJobs);
   const subtitle: string =
     diff > 0
@@ -172,7 +163,7 @@ const MyJobsScreen = () => {
   const DASHBOARD_STATS = [
     {
       title: "Total Active Jobs",
-      value: activeJobs.length,
+      value: totalJobsActive,
       subtitle: subtitle,
       icon: JobIcon,
     },
@@ -240,6 +231,7 @@ const MyJobsScreen = () => {
             onClick={() => {
               params.delete("status");
               setParams(params);
+              setPage(1);
             }}
             className={`${!params.get("status") ? "status-filter-active" : ""} status-filter`}
           >
@@ -249,6 +241,7 @@ const MyJobsScreen = () => {
             onClick={() => {
               params.set("status", "Active");
               setParams(params);
+              setPage(1);
             }}
             className={`${params.get("status") === "Active" ? "status-filter-active" : ""} status-filter`}
           >
@@ -258,6 +251,7 @@ const MyJobsScreen = () => {
             onClick={() => {
               params.set("status", "Closed");
               setParams(params);
+              setPage(1);
             }}
             className={`${params.get("status") === "Closed" ? "status-filter-active" : ""} status-filter`}
           >
@@ -267,6 +261,7 @@ const MyJobsScreen = () => {
             onClick={() => {
               params.set("status", "Expired");
               setParams(params);
+              setPage(1);
             }}
             className={`${params.get("status") === "Expired" ? "status-filter-active" : ""} status-filter`}
           >

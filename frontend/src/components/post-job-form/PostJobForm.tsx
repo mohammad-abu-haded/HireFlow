@@ -16,6 +16,7 @@ import type {
 } from "../../types";
 import { AuthContext } from "../../context/authContext";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { formatDateTimeLocal } from "../../utils/dateFormatter";
 const PostJobForm = () => {
   const { email } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -185,31 +186,15 @@ const PostJobForm = () => {
     }
   }, [scrollToDate]);
 
-  const formatDateTimeLocal = (
-    value: string | Date | null | undefined,
-  ): string => {
-    if (!value) return "";
-
-    const date = new Date(value);
-
-    const pad = (n: number) => n.toString().padStart(2, "0");
-
-    return (
-      date.getFullYear() +
-      "-" +
-      pad(date.getMonth() + 1) +
-      "-" +
-      pad(date.getDate()) +
-      "T" +
-      pad(date.getHours()) +
-      ":" +
-      pad(date.getMinutes())
-    );
-  };
   return (
     <div className="post-job-form">
       <div className={isSubmitted ? "success-message" : ""}>
-        {isSubmitted && <DoneIcon />}
+        {isSubmitted && (
+          <div className="success-box">
+            <DoneIcon className="success-icon" />
+            <span>Application Submitted Successfully</span>
+          </div>
+        )}
       </div>
       <form onSubmit={handleSubmit}>
         <div className="section-header">

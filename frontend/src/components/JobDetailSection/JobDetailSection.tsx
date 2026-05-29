@@ -46,8 +46,8 @@ const JobDetailSection = (props: IProps) => {
   const renderSkills = (): React.ReactNode => (
     <div className="job-detail-section-skills-container">
       {!!props.list?.length ? (
-        props.list.map((skill) => (
-          <div className="job-detail-section-skill">
+        props.list.map((skill, index) => (
+          <div className="job-detail-section-skill" key={index}>
             {skill}
           </div>
         ))

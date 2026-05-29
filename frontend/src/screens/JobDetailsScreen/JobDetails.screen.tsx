@@ -16,8 +16,34 @@ import { AuthContext } from "../../context/authContext";
 import StatCard from "../../components/StatCard/StatCard ";
 import { getDaysAgo } from "../../utils/getDaysAgo";
 import JobDetailSection from "../../components/JobDetailSection/JobDetailSection";
+import JobBenefitsCard from "../../components/JobBenefitsCard/JobBenefitsCard";
+import DeleteIcon from "../../assets/icons/trash.svg?react";
+import JobOverviewCard from "../../components/JobOverviewCard/JobOverviewCard";
 
 const JobDetails = () => {
+    const deleteJob = async () => {
+    if (!token) return;
+    try {
+      const res = await fetch(`http://localhost:5000/jobs/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        navigate("/my-jobs", {
+          state: {
+            message: "Job deleted successfully",
+          },
+        });
+      }
+    } catch (error) {
+      console.error("Error deleting job:", error);
+    }
+  };
   const { id } = useParams();
   const { token } = useContext(AuthContext);
   const [job, setJob] = useState<IForm>();
@@ -138,7 +164,14 @@ const JobDetails = () => {
             <EditIcon className="edit-icon-job-details" />
             <p>Edit Job</p>
           </button>
-
+          <button
+            className="delete-button"
+            title="Delete Job"
+            onClick={() => deleteJob()}
+          >
+            <DeleteIcon className="delete-icon-myJobCard" />
+            <p>Delete</p>
+          </button>
           <button
             className="close-open-button-job-details"
             title={buttonLabel}
@@ -170,25 +203,40 @@ const JobDetails = () => {
           />
         ))}
       </div>
-      <div className="job-details-content">
-        <JobDetailSection
-          title="Job Description"
-          type="DESCRIPTION"
-          content={job?.jobDescription}
-        />
-        <JobDetailSection
-          title="Key Responsibilities"
-          type="KEY_RESPONSIBILITIES"
-          list={job?.keyResponsibilities}
-          Icon={CorrectIcon}
-        />
-        <JobDetailSection
-          title="Requirements"
-          type="REQUIREMENTS"
-          list={job?.requirements}
-          Icon={RightIcon}
-        />
-        <JobDetailSection title="Skills" type="SKILLS" list={job?.skills} />
+      <div className="job-details-body">
+        <div className="job-details-content">
+          <JobDetailSection
+            title="Job Description"
+            type="DESCRIPTION"
+            content={job?.jobDescription}
+          />
+          <JobDetailSection
+            title="Key Responsibilities"
+            type="KEY_RESPONSIBILITIES"
+            list={job?.keyResponsibilities}
+            Icon={CorrectIcon}
+          />
+          <JobDetailSection
+            title="Requirements"
+            type="REQUIREMENTS"
+            list={job?.requirements}
+            Icon={RightIcon}
+          />
+          <JobDetailSection title="Skills" type="SKILLS" list={job?.skills} />
+        </div>
+        <div className="job-details-overview">
+
+        <JobOverviewCard
+          jobType={job?.jobType || ""}
+          salaryRange={`$${job?.salaryMin} - $${job?.salaryMax}`}
+          workSetting={job?.workSetting || ""}
+          experienceLevel={job?.experienceLevel || ""}
+          Deadline={job?.applicationDeadline || ""}
+          employmentType={job?.employmentType || ""}
+          Duration={job?.duration || ""}
+          />
+        <JobBenefitsCard benefits={job?.benefits || []} />
+          </div>
       </div>
     </div>
   );

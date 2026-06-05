@@ -250,6 +250,20 @@ app.delete("/:id", authMiddleware, async (req, res) => {
     });
   }
 
+  try {
+    await fetch(
+      `http://localhost:5003/job/${req.params.id}/applications`,
+      {
+        method: "DELETE",
+      }
+    );
+  } catch (err) {
+    console.error(
+      "Failed to delete applications:",
+      err
+    );
+  }
+
   res.json({ success: true });
 });
 

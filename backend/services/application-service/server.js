@@ -26,7 +26,7 @@ const storage = multer.diskStorage({
       Date.now() +
         "-" +
         Math.round(Math.random() * 1e9) +
-        path.extname(file.originalname)
+        path.extname(file.originalname),
     );
   },
 });
@@ -46,11 +46,7 @@ const upload = multer({
     if (allowedTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {
-      cb(
-        new Error(
-          "Only PDF, DOC and DOCX files are allowed"
-        )
-      );
+      cb(new Error("Only PDF, DOC and DOCX files are allowed"));
     }
   },
 });
@@ -68,33 +64,25 @@ const ApplicationSchema = new mongoose.Schema(
       default: "PENDING",
     },
   },
-  { strict: false, timestamps: true }
+  { strict: false, timestamps: true },
 );
 
 const JobSchema = new mongoose.Schema(
   {
     userId: String,
   },
-  { strict: false }
+  { strict: false },
 );
 
-const Application = mongoose.model(
-  "Application",
-  ApplicationSchema
-);
+const Application = mongoose.model("Application", ApplicationSchema);
 
 const Job = mongoose.model("Job", JobSchema);
 
 // ================= AUTH =================
 
-const authMiddleware = (
-  req,
-  res,
-  next
-) => {
+const authMiddleware = (req, res, next) => {
   try {
-    const token =
-      req.headers.authorization?.split(" ")[1];
+    const token = req.headers.authorization?.split(" ")[1];
 
     if (!token) {
       return res.status(401).json({
@@ -102,10 +90,7 @@ const authMiddleware = (
       });
     }
 
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET
-    );
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     req.user = decoded;
 
@@ -123,10 +108,27 @@ const authMiddleware = (
 
 app.post(
   "/apply",
+  authMiddleware,
   upload.single("resume"),
   async (req, res) => {
     try {
       const {
+        jobId,
+        fullName,
+        email,
+        phoneNumber,
+        linkedinProfile,
+        coverLetter,
+      } = req.body;
+      const applicantId = req.user.id;
+      if (!jobId || !fullName || !email || !phoneNumber) {
+        return res.status(400).json({
+          success: false,
+          message: "Missing required fields",
+        });
+      }
+
+      const application = await Application.create({
         jobId,
         applicantId,
         fullName,
@@ -134,43 +136,22 @@ app.post(
         phoneNumber,
         linkedinProfile,
         coverLetter,
-      } = req.body;
-
-      if (
-        !jobId ||
-        !fullName ||
-        !email ||
-        !phoneNumber
-      ) {
-        return res.status(400).json({
-          success: false,
-          message: "Missing required fields",
-        });
-      }
-
-      const application =
-        await Application.create({
-          jobId,
-          applicantId,
-          fullName,
-          email,
-          phoneNumber,
-          linkedinProfile,
-          coverLetter,
-          resume: req.file
-            ? {
-                filename:
-                  req.file.filename,
-                originalName:
-                  req.file.originalname,
-                path: req.file.path,
-                mimetype:
-                  req.file.mimetype,
-                size: req.file.size,
-              }
-            : null,
-          status: "PENDING",
-        });
+        resume: req.file
+          ? {
+              filename: req.file.filename,
+              originalName: req.file.originalname,
+              path: req.file.path,
+              mimetype: req.file.mimetype,
+              size: req.file.size,
+            }
+          : null,
+        status: "PENDING",
+      });
+      await Job.findByIdAndUpdate(jobId, {
+        $inc: {
+          applicationsCount: 1,
+        },
+      });
 
       res.status(201).json({
         success: true,
@@ -182,110 +163,191 @@ app.post(
         message: err.message,
       });
     }
-  }
+  },
 );
 
 // GET ALL APPLICATIONS FOR MY JOBS
 
-app.get(
-  "/",
-  authMiddleware,
-  async (req, res) => {
-    try {
-      const jobs = await Job.find({
-        userId: req.user.id,
-      }).select("_id");
+app.get("/", authMiddleware, async (req, res) => {
+  try {
+    const jobs = await Job.find({
+      userId: req.user.id,
+    }).select("_id");
 
-      const jobIds = jobs.map((job) =>
-        job._id.toString()
-      );
+    const jobIds = jobs.map((job) => job._id.toString());
 
-      const applications =
-        await Application.find({
-          jobId: { $in: jobIds },
-        }).sort({
-          createdAt: -1,
-        });
+    const applications = await Application.find({
+      jobId: { $in: jobIds },
+    }).sort({
+      createdAt: -1,
+    });
 
-      res.json(applications);
-    } catch (err) {
-      res.status(500).json({
-        success: false,
-        message: err.message,
-      });
-    }
+    res.json(applications);
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
   }
-);
+});
 
 // GET APPLICATIONS FOR SPECIFIC JOB
 
-app.get(
-  "/job/:jobId",
-  authMiddleware,
-  async (req, res) => {
-    try {
-      const job = await Job.findOne({
-        _id: req.params.jobId,
-        userId: req.user.id,
-      });
+app.get("/job/:jobId", authMiddleware, async (req, res) => {
+  try {
+    const job = await Job.findOne({
+      _id: req.params.jobId,
+      userId: req.user.id,
+    });
 
-      if (!job) {
-        return res.status(404).json({
-          success: false,
-          message: "Job not found",
-        });
-      }
-
-      const applications =
-        await Application.find({
-          jobId: req.params.jobId,
-        }).sort({
-          createdAt: -1,
-        });
-
-      res.json(applications);
-    } catch (err) {
-      res.status(500).json({
+    if (!job) {
+      return res.status(404).json({
         success: false,
-        message: err.message,
+        message: "Job not found",
       });
     }
+
+    const applications = await Application.find({
+      jobId: req.params.jobId,
+    }).sort({
+      createdAt: -1,
+    });
+
+    res.json(applications);
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
   }
-);
+});
+
+// GET TOTAL APPLICATIONS SUBMITTED BY USER
+
+app.get("/my/applications/count", authMiddleware, async (req, res) => {
+  try {
+    const count = await Application.countDocuments({
+      applicantId: req.user.id,
+    });
+
+    res.json({
+      success: true,
+      totalApplications: count,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
+
+// GET TOTAL APPLICATIONS FOR JOB
+
+app.get("/jobs/:jobId/applications/count", async (req, res) => {
+  try {
+    const count = await Application.countDocuments({
+      jobId: req.params.jobId,
+    });
+
+    res.json({
+      success: true,
+      jobId: req.params.jobId,
+      totalApplications: count,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
 
 // GET ONE APPLICATION
 
+app.get("/:id", authMiddleware, async (req, res) => {
+  try {
+    const application = await Application.findById(req.params.id);
+
+    if (!application) {
+      return res.status(404).json({
+        success: false,
+        message: "Application not found",
+      });
+    }
+
+    const job = await Job.findOne({
+      _id: application.jobId,
+      userId: req.user.id,
+    });
+
+    if (!job) {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied",
+      });
+    }
+
+    res.json(application);
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
+
+// GET APPLICATION STATISTICS (THIS WEEK VS LAST WEEK)
+
 app.get(
-  "/:id",
+  "/stats/applications",
   authMiddleware,
   async (req, res) => {
     try {
-      const application =
-        await Application.findById(
-          req.params.id
-        );
+      const now = new Date();
 
-      if (!application) {
-        return res.status(404).json({
-          success: false,
-          message:
-            "Application not found",
-        });
-      }
+      const startOfThisWeek = new Date(now);
+      startOfThisWeek.setDate(now.getDate() - 7);
 
-      const job = await Job.findOne({
-        _id: application.jobId,
-        userId: req.user.id,
+      const startOfLastWeek = new Date(now);
+      startOfLastWeek.setDate(now.getDate() - 14);
+
+      const thisWeek = await Application.countDocuments({
+        createdAt: {
+          $gte: startOfThisWeek,
+        },
       });
 
-      if (!job) {
-        return res.status(403).json({
-          success: false,
-          message: "Access denied",
-        });
-      }
+      const lastWeek = await Application.countDocuments({
+        createdAt: {
+          $gte: startOfLastWeek,
+          $lt: startOfThisWeek,
+        },
+      });
 
-      res.json(application);
+      const totalApplications =
+        await Application.countDocuments();
+
+      const difference =
+        thisWeek - lastWeek;
+
+      const percentage =
+        lastWeek === 0
+          ? 100
+          : (
+              (difference / lastWeek) *
+              100
+            );
+
+      res.json({
+        totalApplications,
+        thisWeek,
+        lastWeek,
+        difference,
+        percentage: Number(
+          percentage.toFixed(1)
+        ),
+      });
     } catch (err) {
       res.status(500).json({
         success: false,
@@ -297,44 +359,59 @@ app.get(
 
 // UPDATE APPLICATION STATUS
 
-app.patch(
-  "/:id/status",
-  authMiddleware,
+app.patch("/:id/status", authMiddleware, async (req, res) => {
+  try {
+    const application = await Application.findById(req.params.id);
+
+    if (!application) {
+      return res.status(404).json({
+        success: false,
+        message: "Application not found",
+      });
+    }
+
+    const job = await Job.findOne({
+      _id: application.jobId,
+      userId: req.user.id,
+    });
+
+    if (!job) {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied",
+      });
+    }
+
+    application.status = req.body.status;
+
+    await application.save();
+
+    res.json({
+      success: true,
+      application,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
+
+// DELETE ALL APPLICATIONS FOR A JOB
+
+app.delete(
+  "/job/:jobId/applications",
   async (req, res) => {
     try {
-      const application =
-        await Application.findById(
-          req.params.id
-        );
-
-      if (!application) {
-        return res.status(404).json({
-          success: false,
-          message:
-            "Application not found",
+      const result =
+        await Application.deleteMany({
+          jobId: req.params.jobId,
         });
-      }
-
-      const job = await Job.findOne({
-        _id: application.jobId,
-        userId: req.user.id,
-      });
-
-      if (!job) {
-        return res.status(403).json({
-          success: false,
-          message: "Access denied",
-        });
-      }
-
-      application.status =
-        req.body.status;
-
-      await application.save();
 
       res.json({
         success: true,
-        application,
+        deletedCount: result.deletedCount,
       });
     } catch (err) {
       res.status(500).json({
@@ -345,13 +422,6 @@ app.patch(
   }
 );
 
-app.listen(
-  process.env.PORT || 5003,
-  () => {
-    console.log(
-      `Application service running on ${
-        process.env.PORT || 5003
-      }`
-    );
-  }
-);
+app.listen(process.env.PORT || 5003, () => {
+  console.log(`Application service running on ${process.env.PORT || 5003}`);
+});

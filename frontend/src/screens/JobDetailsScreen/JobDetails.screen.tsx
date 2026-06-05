@@ -49,6 +49,7 @@ const JobDetails = () => {
   const [job, setJob] = useState<IForm>();
   const [buttonLabel, setButtonLabel] = useState("");
   const [buttonIcon, setButtonIcon] = useState<React.ReactNode>(null);
+  const [totalApplications, setTotalApplications] = useState(0);
   const navigate = useNavigate();
   const location = useLocation();
   const getJobById = async (id: string) => {
@@ -63,9 +64,10 @@ const JobDetails = () => {
       });
     }
     const data = await res.json();
-    
+    setTotalApplications(data.applicationsCount || 0);
     return data;
   };
+
 
   const updateButtonData = (status: IForm["status"]) => {
     if (status === "ACTIVE") {
@@ -110,7 +112,7 @@ const JobDetails = () => {
   const DASHBOARD_STATS = [
     {
       title: "Total Applicants",
-      value: job?.applicationsCount || 0,
+      value: totalApplications,
       icon: UserIcon,
     },
     {

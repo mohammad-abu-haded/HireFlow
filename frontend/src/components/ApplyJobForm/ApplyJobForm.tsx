@@ -97,7 +97,6 @@ const ApplyJobForm = () => {
   };
   return (
     <div className="apply-job-form-container">
-      {message == "" ? (
         <form onSubmit={handleSubmit}>
           <div className="apply-job-form-content">
             <div className="fieldset-apply-job-form-container">
@@ -210,9 +209,12 @@ const ApplyJobForm = () => {
             </div>
           </div>
         </form>
-      ) : (
-        <Notification message={message} type={messageType} />
-      )}
+        {
+          message !== "" &&
+          (
+            <Notification message={message} type={messageType} />
+          )
+        }
     </div>
   );
 };

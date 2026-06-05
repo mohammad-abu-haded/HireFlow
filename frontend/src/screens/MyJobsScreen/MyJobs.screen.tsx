@@ -20,6 +20,10 @@ const MyJobsScreen = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [totalJobs, setTotalJobs] = useState(0);
   const [totalJobsActive, setTotalJobsActive] = useState(0);
+  const [totalApplications, setTotalApplications] = useState(0);
+  const [applicationsSubtitle, setApplicationsSubtitle] = useState(
+    "No change vs last week",
+  );
   const limit = 6;
 
   const [pagination, setPagination] = useState<number[]>([]);
@@ -69,7 +73,7 @@ const MyJobsScreen = () => {
 
       if (data.success) {
         const newTotalJobs = totalJobs - 1;
-        setTotalJobs(newTotalJobs);        
+        setTotalJobs(newTotalJobs);
         fetchJobs(page);
       }
     } catch (error) {
@@ -82,8 +86,27 @@ const MyJobsScreen = () => {
 
     const query = params.get("q") || "";
     const status = params.get("status") || "";
-     const res = await fetch(
-        `http://localhost:5000/jobs/range?limit=${limit}&page=${pageNumber}&q=${query}&status=${status}`,
+    const res = await fetch(
+      `http://localhost:5000/jobs/range?limit=${limit}&page=${pageNumber}&q=${query}&status=${status}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    const data = await res.json();
+    setTotalJobs(data.total);
+    setTotalJobsActive(data.activeCount);
+    setJobs(data.data);
+  };
+
+  const fetchTotalApplications = async () => {
+    if (!token) return;
+
+    try {
+      const res = await fetch(
+        "http://localhost:5000/applications/my/applications/count",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -91,10 +114,38 @@ const MyJobsScreen = () => {
         },
       );
 
-    const data = await res.json();
-    setTotalJobs(data.total);
-    setTotalJobsActive(data.activeCount);    
-    setJobs(data.data);
+      const data = await res.json();
+      setTotalApplications(data.totalApplications);
+    } catch (error) {
+      console.error("Error fetching total applications:", error);
+    }
+  };
+
+  const fetchApplicationsStats = async () => {
+    if (!token) return;
+
+    try {
+      const res = await fetch(
+        "http://localhost:5000/applications/stats/applications",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      const data = await res.json();
+
+      if (data.difference > 0) {
+        setApplicationsSubtitle(`↑ +${data.percentage}% vs last week`);
+      } else if (data.difference < 0) {
+        setApplicationsSubtitle(`↓ -${Math.abs(data.percentage)}% vs last week`);
+      } else {
+        setApplicationsSubtitle("No change vs last week");
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   useEffect(() => {
@@ -118,6 +169,17 @@ const MyJobsScreen = () => {
   useEffect(() => {
     getPagination(page, totalPages);
   }, [page, totalPages]);
+
+  useEffect(() => {
+    if (!token) return;
+    fetchTotalApplications();
+  }, [token, jobs]);
+
+  useEffect(() => {
+    if (!token) return;
+
+    fetchApplicationsStats();
+  }, [token]);
 
   const getJobsStats = (jobs: IForm[]) => {
     const now = new Date();
@@ -152,7 +214,9 @@ const MyJobsScreen = () => {
     return diff;
   };
 
-  const activeJobs = jobs.filter((job: IForm) => job.status.toUpperCase() === "ACTIVE");
+  const activeJobs = jobs.filter(
+    (job: IForm) => job.status.toUpperCase() === "ACTIVE",
+  );
   const diff = getJobsStats(activeJobs);
   const subtitle: string =
     diff > 0
@@ -169,8 +233,8 @@ const MyJobsScreen = () => {
     },
     {
       title: "Total Applications",
-      value: 452,
-      subtitle: "+12% vs last week",
+      value: totalApplications,
+      subtitle: applicationsSubtitle,
       icon: UserIcon,
     },
     {

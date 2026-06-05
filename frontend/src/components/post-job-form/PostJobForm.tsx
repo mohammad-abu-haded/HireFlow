@@ -4,7 +4,7 @@ import DollarIcon from "../../assets/icons/dollar-sign.svg?react";
 import ConfigurationIcon from "../../assets/icons/configuration.svg?react";
 import DetailsIcon from "../../assets/icons/details.svg?react";
 import ContentIcon from "../../assets/icons/content.svg?react";
-import DoneIcon from "../../assets/icons/done.svg?react";
+import Notification from "../Notification/Notification";
 import { useContext, useEffect, useRef, useState } from "react";
 import DynamicList from "../DynamicList/DynamicList";
 import type {
@@ -17,6 +17,7 @@ import type {
 import { AuthContext } from "../../context/authContext";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { formatDateTimeLocal } from "../../utils/dateFormatter";
+import { initialState } from "../../constants/formInitialState";
 const PostJobForm = () => {
   const { email } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -28,28 +29,6 @@ const PostJobForm = () => {
   const [formData, setFormData] = useState<IForm | null>(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [prevLocation, setPrevLocation] = useState<string>("");
-  const initialState: IForm = {
-    jobTitle: "",
-    companyName: "",
-    location: "",
-    jobType: "",
-    workSetting: "",
-    experienceLevel: "",
-    employmentType: "",
-    duration: "",
-    salaryMin: "",
-    salaryMax: "",
-    applicationDeadline: "",
-    jobDescription: "",
-    requirements: [],
-    skills: [],
-    benefits: [],
-    keyResponsibilities: [],
-    status: "",
-    createdAt: "",
-    email: "",
-    applicationsCount: 0,
-  };
 
   const [form, setForm] = useState<IForm>(initialState);
   const createJob = async (job: IForm) => {
@@ -84,13 +63,12 @@ const PostJobForm = () => {
       },
     });
 
-    const data = await res.json();
-
     if (!res.ok) {
       navigate("/not-found", {
         state: { message: "Job not found" },
       });
     }
+    const data = await res.json();
 
     return data;
   };
@@ -190,10 +168,10 @@ const PostJobForm = () => {
     <div className="post-job-form">
       <div className={isSubmitted ? "success-message" : ""}>
         {isSubmitted && (
-          <div className="success-box">
-            <DoneIcon className="success-icon" />
-            <span>Application Submitted Successfully</span>
-          </div>
+          <Notification
+            message="Job posting submitted successfully! Redirecting..."
+            type="success"
+          />
         )}
       </div>
       <form onSubmit={handleSubmit}>

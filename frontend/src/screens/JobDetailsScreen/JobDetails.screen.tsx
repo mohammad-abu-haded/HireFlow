@@ -21,7 +21,7 @@ import DeleteIcon from "../../assets/icons/trash.svg?react";
 import JobOverviewCard from "../../components/JobOverviewCard/JobOverviewCard";
 
 const JobDetails = () => {
-    const deleteJob = async () => {
+  const deleteJob = async () => {
     if (!token) return;
     try {
       const res = await fetch(`http://localhost:5000/jobs/${id}`, {
@@ -57,14 +57,13 @@ const JobDetails = () => {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     });
-    const data = await res.json();
-
     if (!res.ok) {
       navigate("/not-found", {
         state: { message: "Job not found" },
       });
     }
-
+    const data = await res.json();
+    
     return data;
   };
 
@@ -95,8 +94,6 @@ const JobDetails = () => {
       const data: IForm = await getJobById(id!);
       setJob(data);
       updateButtonData(data.status);
-    } else {
-      console.log("Update failed");
     }
   };
 
@@ -106,9 +103,8 @@ const JobDetails = () => {
       setJob(data);
       updateButtonData(data.status);
     };
-    if (id) {
-      fetchData();
-    }
+
+    fetchData();
   }, [id]);
 
   const DASHBOARD_STATS = [
@@ -225,18 +221,17 @@ const JobDetails = () => {
           <JobDetailSection title="Skills" type="SKILLS" list={job?.skills} />
         </div>
         <div className="job-details-overview">
-
-        <JobOverviewCard
-          jobType={job?.jobType || ""}
-          salaryRange={`$${job?.salaryMin} - $${job?.salaryMax}`}
-          workSetting={job?.workSetting || ""}
-          experienceLevel={job?.experienceLevel || ""}
-          Deadline={job?.applicationDeadline || ""}
-          employmentType={job?.employmentType || ""}
-          Duration={job?.duration || ""}
+          <JobOverviewCard
+            jobType={job?.jobType || ""}
+            salaryRange={`$${job?.salaryMin} - $${job?.salaryMax}`}
+            workSetting={job?.workSetting || ""}
+            experienceLevel={job?.experienceLevel || ""}
+            Deadline={job?.applicationDeadline || ""}
+            employmentType={job?.employmentType || ""}
+            Duration={job?.duration || ""}
           />
-        <JobBenefitsCard benefits={job?.benefits || []} />
-          </div>
+          <JobBenefitsCard benefits={job?.benefits || []} />
+        </div>
       </div>
     </div>
   );

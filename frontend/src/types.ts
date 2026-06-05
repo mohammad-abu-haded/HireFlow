@@ -30,7 +30,7 @@ export interface IUser {
 }
 
 export interface IApplication {
-  id: string;
+  _id: string;
   jobId: number;
   fullName: string;
   email: string;
@@ -39,7 +39,15 @@ export interface IApplication {
   cvFile?: string;
   coverLetter: string;
   appliedAt: string;
+  status: ApplicationStatus;
 }
+
+export type ApplicationStatus =
+  | "PENDING"
+  | "REVIEWING"
+  | "INTERVIEW"
+  | "ACCEPTED"
+  | "REJECTED";
 
 export type JobDetailSectionType =
   | "DESCRIPTION"
@@ -61,3 +69,5 @@ export type WorkSetting = "on-site" | "remote" | "hybrid" | "";
 export type ExperienceLevel = "entry" | "mid" | "senior" | "";
 
 export type EmploymentType = "permanent" | "temporary" | "";
+
+export type NotificationType = "success" | "error" | "info";

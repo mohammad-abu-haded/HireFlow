@@ -15,6 +15,7 @@ import MyJobsScreen from "./screens/MyJobsScreen/MyJobs.screen";
 import NotFoundScreen from "./screens/NotFound/NotFound.screen";
 import VerifyOtp from "./screens/VerifyOtp/VerifyOtp.screen";
 import JobDetails from "./screens/JobDetailsScreen/JobDetails.screen";
+import ApplyJob from "./screens/ApplyJob/ApplyJob.screen";
 
 function App() {
   return (
@@ -36,6 +37,8 @@ function App() {
             <Route path="/post-job" element={<PostJobScreen />} />
             <Route path="/update-job/:id" element={<PostJobScreen />} />
             <Route path="/applications" element={<ApplicationsScreen />} />
+            <Route path="/applications/:id" element={<ApplicationsScreen />} />
+            <Route path="/apply-job/:id" element={<ApplyJob />} />
             <Route path="/not-found" element={<NotFoundScreen />} />
             <Route path="*" element={<Navigate to="/not-found" replace />} />
           </Route>

@@ -24,26 +24,6 @@
   z-index: 999;
 }
 
-.success-message .success-box {
-  background: #fff8ef;
-  color: #f28602;
-
-  padding: 24px 32px;
-  border-radius: 16px;
-
-  border: 2px solid #f28602;
-  box-shadow: 0 20px 50px rgba(242, 134, 2, 0.25);
-
-  display: flex;
-  align-items: center;
-  gap: 12px;
-
-  font-size: 18px;
-  font-weight: 600;
-
-  animation: pop 0.25s ease-out;
-}
-
 .success-icon {
   font-size: 32px !important;
   color: #f28602;

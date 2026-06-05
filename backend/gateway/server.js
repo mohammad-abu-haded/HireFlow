@@ -38,6 +38,21 @@ app.use(
   })
 );
 
+// APPLICATIONS
+app.use(
+  "/applications",
+  createProxyMiddleware({
+    target: "http://localhost:5003",
+    changeOrigin: true,
+    logLevel: "debug",
+    onProxyReq: (proxyReq, req) => {
+      if (req.headers.authorization) {
+        proxyReq.setHeader("authorization", req.headers.authorization);
+      }
+    },
+  })
+);
+
 app.listen(5000, () => {
   console.log("API Gateway running on 5000");
 });

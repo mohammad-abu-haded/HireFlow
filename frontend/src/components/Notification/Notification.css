@@ -1,0 +1,61 @@
+.alert-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(4px);
+}
+
+.alert {
+    width: min(500px, 90%);
+    padding: 24px;
+
+    text-align: center;
+
+    border-radius: 16px;
+    background: #ffffff;
+
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.5;
+
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.12),
+        0 4px 12px rgba(0, 0, 0, 0.08);
+
+    animation: alertShow 0.25s ease;
+}
+
+.alert-success {
+    color: #166534;
+    border: 2px solid #86efac;
+    background: #f0fdf4;
+}
+
+.alert-error {
+    color: #991b1b;
+    border: 2px solid #fca5a5;
+    background: #fef2f2;
+}
+
+.alert-info {
+    color: #1e40af;
+    border: 2px solid #93c5fd;
+    background: #eff6ff;
+}
+
+@keyframes alertShow {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}

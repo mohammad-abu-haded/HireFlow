@@ -1,0 +1,146 @@
+.apply-job-form-container {
+  display: flex;
+  flex-direction: column;
+  padding: 42px;
+  width: 100%;
+  height: fit-content;
+  border-radius: 14px;
+   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #f4f4f6;
+}
+
+.apply-job-form-content {
+  display: flex;
+  flex-direction: column;
+  row-gap: 32px;
+}
+.fieldset-icon {
+  width: 20px;
+  height: 20px;
+  color: #f28602;
+}
+
+.fieldset-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  background-color: #f286021a;
+  border-radius: 12px;
+}
+
+.apply-job-form-section-heading {
+  padding-bottom: 17px;
+  border-bottom: 1px solid #f4f4f6;
+  display: flex;
+  align-items: center;
+  column-gap: 12px;
+}
+
+.apply-job-form-section-heading > h2 {
+  font-size: 18px;
+  font-weight: bold;
+  color: #17191c;
+}
+
+.input-apply-job-form-container {
+    display: flex;
+    flex-direction: column;
+    margin-top: 24px;
+    width: 100%;
+    row-gap: 24px;
+}
+
+.input-apply-job-form-container input,
+.apply-job-form-content textarea {
+  all: unset;
+  height: 40px;
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 10px;
+  border: 1px solid #dedfe3;
+  background-color: #ffffff;
+  padding: 0 16px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  transition: transform 0.3s ease, border 0.3s ease;
+}
+
+.apply-job-form-content textarea {
+  height: 120px;
+  padding: 12px 16px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  resize: vertical;
+}
+
+.input-apply-job-form-container input:focus,
+.apply-job-form-content textarea:focus {
+  border-color: #f28602;
+  box-shadow: 0 0 0 2px #f286021a;
+}
+
+.input-apply-job-form-container label {
+  color: #17191c;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.apply-job-form-group {
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+    align-items: flex-start;
+    width: 100%;
+}
+
+label > span {
+  color: #f28602;
+}
+
+.input-apply-job-form-group {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.fieldset-apply-job-form-container {
+  display: flex;
+  flex-direction: column;
+  row-gap: 27px;
+}
+
+.apply-job-form-group-label {
+  color: #17191c;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.submit-apply-job-form-button {
+  all: unset;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  color: #17191C;
+  background-color: #f28602;
+  font-size: 18px;
+  font-weight: 600;
+  transition:
+    background-color 0.2s,
+    transform 0.2s;
+}
+
+.submit-apply-job-form-button:hover,
+.submit-apply-job-form-button:focus-visible {
+   transform: scale(1.05);
+}

@@ -171,6 +171,26 @@ app.get("/range", authMiddleware, async (req, res) => {
   }
 });
 
+// GET jobs names + ids
+app.get("/list", authMiddleware, async (req, res) => {
+  try {
+    const jobs = await Job.find(
+      { userId: req.user.id },
+      {
+        _id: 1,
+        jobTitle: 1,
+      },
+    ).sort({ createdAt: -1 });
+
+    res.json(jobs);
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
+
 // GET ONE
 app.get("/:id", authMiddleware, async (req, res) => {
   await updateExpiredJobs(req.user.id);

@@ -19,6 +19,7 @@ import JobDetailSection from "../../components/JobDetailSection/JobDetailSection
 import JobBenefitsCard from "../../components/JobBenefitsCard/JobBenefitsCard";
 import DeleteIcon from "../../assets/icons/trash.svg?react";
 import JobOverviewCard from "../../components/JobOverviewCard/JobOverviewCard";
+import { formatSalary } from "../../utils/formatSalary";
 
 const JobDetails = () => {
   const deleteJob = async () => {
@@ -225,7 +226,7 @@ const JobDetails = () => {
         <div className="job-details-overview">
           <JobOverviewCard
             jobType={job?.jobType || ""}
-            salaryRange={`$${job?.salaryMin} - $${job?.salaryMax}`}
+            salaryRange={formatSalary(job?.salaryMin || "0", job?.salaryMax || "0")}
             workSetting={job?.workSetting || ""}
             experienceLevel={job?.experienceLevel || ""}
             Deadline={job?.applicationDeadline || ""}

@@ -10,6 +10,8 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../context/authContext";
 import MyJobCard from "../../components/myJobCard/MyJobCard";
+import { formatSalary } from "../../utils/formatSalary";
+import { getPagination } from "../../utils/getPaginationRange";
 
 const MyJobsScreen = () => {
   const navigate = useNavigate();
@@ -27,37 +29,6 @@ const MyJobsScreen = () => {
   const limit = 6;
 
   const [pagination, setPagination] = useState<number[]>([]);
-
-  const getPagination = (current: number, total: number) => {
-    const delta = 2;
-
-    const range: number[] = [];
-    const rangeWithDots: number[] = [];
-
-    for (
-      let i = Math.max(2, current - delta);
-      i <= Math.min(total - 1, current + delta);
-      i++
-    ) {
-      range.push(i);
-    }
-
-    if (current - delta > 2) {
-      rangeWithDots.push(1, -1);
-    } else {
-      rangeWithDots.push(1);
-    }
-
-    rangeWithDots.push(...range);
-
-    if (current + delta < total - 1) {
-      rangeWithDots.push(-1, total);
-    } else {
-      rangeWithDots.push(total);
-    }
-
-    setPagination(rangeWithDots);
-  };
 
   const deleteJob = async (id: string) => {
     if (!token) return;
@@ -167,7 +138,7 @@ const MyJobsScreen = () => {
   }, [totalPages]);
 
   useEffect(() => {
-    getPagination(page, totalPages);
+    setPagination(getPagination(page, totalPages));
   }, [page, totalPages]);
 
   useEffect(() => {
@@ -354,7 +325,7 @@ const MyJobsScreen = () => {
               applicationsCount={job.applicationsCount}
               createdAt={job.createdAt}
               deleteJob={deleteJob}
-              salary={`$${job.salaryMin} - $${job.salaryMax}`}
+              salary={formatSalary(job.salaryMin, job.salaryMax)}
             />
           ))
         )}

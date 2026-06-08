@@ -134,7 +134,7 @@ app.get("/range", authMiddleware, async (req, res) => {
     const baseFilter = buildFilter(
       req.user.id,
       req.query.q || "",
-      req.query.status || ""
+      req.query.status || "",
     );
 
     const total = await Job.countDocuments(baseFilter);
@@ -147,10 +147,10 @@ app.get("/range", authMiddleware, async (req, res) => {
       .select("_id");
 
     const start = (page - 1) * limit;
-    const pageIds = allIds.slice(start, start + limit).map(j => j._id);
+    const pageIds = allIds.slice(start, start + limit).map((j) => j._id);
 
     const jobs = await Job.find({
-      _id: { $in: pageIds }
+      _id: { $in: pageIds },
     }).sort({ createdAt: -1, _id: -1 });
 
     const activeCount = await Job.countDocuments({
@@ -165,7 +165,6 @@ app.get("/range", authMiddleware, async (req, res) => {
       page,
       limit,
     });
-
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -190,6 +189,74 @@ app.get("/list", authMiddleware, async (req, res) => {
     });
   }
 });
+
+
+const optionalAuthMiddleware = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader) {
+    req.user = null;
+    return next();
+  }
+
+  try {
+    const token = authHeader.split(" ")[1];
+    req.user = jwt.verify(token, process.env.JWT_SECRET);
+  } catch {
+    req.user = null;
+  }
+
+  next();
+};
+
+app.get("/jobs", optionalAuthMiddleware, async (req, res) => {
+  console.log(req.user);
+  try {
+    const limit = Math.max(parseInt(req.query.limit) || 10, 1);
+    let page = Math.max(parseInt(req.query.page) || 1, 1);
+
+    const filter = {};
+
+    if (req.query.q) {
+      filter.$or = [
+        { jobTitle: { $regex: req.query.q, $options: "i" } },
+        { companyName: { $regex: req.query.q, $options: "i" } },
+        { location: { $regex: req.query.q, $options: "i" } },
+      ];
+    }
+
+    if (req.user) {
+      filter.userId = { $ne: req.user.id };
+    }
+
+    const total = await Job.countDocuments(filter);
+    const totalPages = Math.max(Math.ceil(total / limit), 1);
+
+    if (page > totalPages) {
+      page = totalPages;
+    }
+
+    const jobs = await Job.find(filter)
+      .select(
+        "createdAt jobTitle companyName location jobType employmentType workSetting experienceLevel duration salaryMin salaryMax applicationDeadline",
+      )
+      .sort({ createdAt: -1, _id: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    res.json({
+      data: jobs,
+      total,
+      page,
+      limit,
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: err.message,
+    });
+  }
+});
+
 
 // GET ONE
 app.get("/:id", authMiddleware, async (req, res) => {
@@ -236,6 +303,7 @@ app.put("/:id", authMiddleware, async (req, res) => {
   res.json(job);
 });
 
+
 // DELETE
 app.delete("/:id", authMiddleware, async (req, res) => {
   const job = await Job.findOneAndDelete({
@@ -251,17 +319,11 @@ app.delete("/:id", authMiddleware, async (req, res) => {
   }
 
   try {
-    await fetch(
-      `http://localhost:5003/job/${req.params.id}/applications`,
-      {
-        method: "DELETE",
-      }
-    );
+    await fetch(`http://localhost:5003/job/${req.params.id}/applications`, {
+      method: "DELETE",
+    });
   } catch (err) {
-    console.error(
-      "Failed to delete applications:",
-      err
-    );
+    console.error("Failed to delete applications:", err);
   }
 
   res.json({ success: true });

@@ -1,10 +1,60 @@
 import "./Jobs.screen.css";
 import { useSearchParams } from "react-router-dom";
 import SearchIcon from "../../assets/icons/search.svg?react";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import FilterSidebar from "../../components/FilterSidebar/FilterSidebar";
+import type { FilterSection, JobCardProps } from "../../types";
+import FilterIcon from "../../assets/icons/filter.svg?react";
+import { AuthContext } from "../../context/authContext";
+import JobCard from "../../components/JobCard/JobCard";
+
+export const JOB_FILTERS_DATA: FilterSection[] = [
+  {
+    id: "job_type",
+    title: "JOB TYPE",
+    items: [
+      { id: "full-time", label: "Full-time" },
+      { id: "contract", label: "Contract" },
+      { id: "part-time", label: "Part-time" },
+      { id: "internship", label: "Internship" },
+    ],
+  },
+  {
+    id: "salary_range",
+    title: "SALARY RANGE",
+    items: [
+      { id: "50k-80k", label: "$50k - $80k" },
+      { id: "80k-120k", label: "$80k - $120k" },
+      { id: "120k-160k", label: "$120k - $160k" },
+      { id: "160k+", label: "$160k+" },
+    ],
+  },
+  {
+    id: "experience",
+    title: "EXPERIENCE LEVEL",
+    items: [
+      { id: "entry", label: "Entry Level" },
+      { id: "mid", label: "Mid Level" },
+      { id: "senior", label: "Senior" },
+    ],
+  },
+  {
+    id: "date_posted",
+    title: "DATE POSTED",
+    items: [
+      { id: "anytime", label: "Any Time" },
+      { id: "24h", label: "Last 24 Hours" },
+      { id: "7d", label: "Last 7 Days" },
+    ],
+  },
+];
+
 const JobsScreen = () => {
   const [params, setParams] = useSearchParams();
   const [search, setSearch] = useState(params.get("q") || "");
+  const [clear, setClear] = useState(false);
+  const [jobs, setJobs] = useState<JobCardProps[]>([]);
+  const { token } = useContext(AuthContext);
   const handleSearch = (e: any) => {
     e.preventDefault();
     params.set("q", search);
@@ -12,20 +62,58 @@ const JobsScreen = () => {
     if (search === "") {
       params.delete("q");
       setParams(params);
-    } else {
-      fetchJobs(search);
     }
   };
 
-  const fetchJobs = (query: string | null) => {};
+  const clearSearch = () => {
+    setClear(true);
+    JOB_FILTERS_DATA.map((item) => {
+      params.delete(item.id);
+    });
+    setParams(params);
+  };
 
-  useEffect(() => {
-    const query = params.get("q");
+  const fetchJobs = async (
+    query: string | null,
+    selectedFilters: string[][],
+  ) => {
+    const params = new URLSearchParams();
+
+    params.append("page", "1");
+    params.append("limit", "10");
 
     if (query) {
-      fetchJobs(query);
+      params.append("q", query);
     }
-  }, []);
+
+    selectedFilters.forEach((values, index) => {
+      const filterId = JOB_FILTERS_DATA[index].id;
+
+      values.forEach((value) => {
+        params.append(filterId, value);
+      });
+    });
+
+    const res = await fetch("http://localhost:5000/jobs/jobs?page=1&limit=10", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const response = await res.json();
+    setJobs(response.data);
+  };
+
+  useEffect(() => {
+    const searchQuery = params.get("q");
+
+    const selectedFilters = JOB_FILTERS_DATA.map((filter) =>
+      params.getAll(filter.id),
+    );
+
+    fetchJobs(searchQuery, selectedFilters);
+  }, [params]);
+
   return (
     <div className="jobs-screen-container">
       <div className="job-header">
@@ -39,7 +127,10 @@ const JobsScreen = () => {
           </p>
           <form onSubmit={handleSearch}>
             <div className="search-job-container">
-              <SearchIcon className="search-job-icon" onClick={() => document.getElementById("search")?.focus()}/>
+              <SearchIcon
+                className="search-job-icon"
+                onClick={() => document.getElementById("search")?.focus()}
+              />
               <input
                 className="search-jobs"
                 type="text"
@@ -51,17 +142,53 @@ const JobsScreen = () => {
                   if (e.target.value === "") {
                     params.delete("q");
                     setParams(params);
-                    fetchJobs(null);
                   }
                 }}
               />
-              <div
-                className="search-job-button-container"
-              >
-                <input className="search-job-button" value="Search" type="submit"/>
+              <div className="search-job-button-container">
+                <input
+                  className="search-job-button"
+                  value="Search"
+                  type="submit"
+                />
               </div>
             </div>
           </form>
+        </div>
+      </div>
+
+      <div className="job-main">
+        <div className="job-search-sidebar-container">
+          <div className="job-search-sidebar-header">
+            <div className="job-search-sidebar-header-title">
+              <FilterIcon className="job-search-sidebar-icon" />
+              <p>Filters</p>
+            </div>
+            <button onClick={clearSearch} className="job-search-sidebar-clear">
+              Clear All
+            </button>
+          </div>
+
+          <div className="job-search-sidebar-content">
+            {JOB_FILTERS_DATA.map((item) => (
+              <FilterSidebar
+                key={item.id}
+                section={item}
+                setClear={setClear}
+                clear={clear}
+                setParams={setParams}
+                params={params}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className="jobs-container">
+          {
+            jobs.map((job, index) => (
+              <JobCard {...job} key={index}/>
+            ))
+          }
         </div>
       </div>
     </div>

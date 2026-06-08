@@ -1,5 +1,5 @@
 import "./PostJob.css";
-import PostJobForm from "../../components/post-job-form/PostJobForm";
+import PostJobForm from "../../components/PostJobForm/PostJobForm";
 import { useLocation } from "react-router-dom";
 const PostJobScreen = () => {
   const location = useLocation();

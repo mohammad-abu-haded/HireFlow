@@ -58,23 +58,29 @@ const Sidebar = () => {
       </div>
 
       <nav className="sidebar-nav">
-        {navItems.filter((item) => (isAuthenticated? true: !item.requiresAuth))
-        .map((item) => {
-          const Icon = item.icon;
+        {navItems
+          .filter((item) => (isAuthenticated ? true : !item.requiresAuth))
+          .map((item) => {
+            const Icon = item.icon;
 
-          return (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={({ isActive }) =>
-                isActive ? "nav-item active" : "nav-item"
-              }
-            >
-              <Icon className="nav-icon" />
-              <span className="nav-label">{item.label}</span>
-            </NavLink>
-          );
-        })}
+            return (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                onClick={(e) => {
+                  if (location.pathname === item.path) {
+                    e.preventDefault();
+                  }
+                }}
+                className={({ isActive }) =>
+                  isActive ? "nav-item active" : "nav-item"
+                }
+              >
+                <Icon className="nav-icon" />
+                <span className="nav-label">{item.label}</span>
+              </NavLink>
+            );
+          })}
       </nav>
       {isAuthenticated && (
         <div className="sidebar-auth logout" onClick={handleLogout}>

@@ -6,7 +6,7 @@ import CoverIcon from "../../assets/icons/document-general-letter.svg?react";
 import FileUpload from "../FileUpload/FileUpload";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import Notification from "../Notification/Notification";
+import NotificationOverlay from "../NotificationOverlay/NotificationOverlay";
 import type { NotificationType } from "../../types";
 const ApplyJobForm = () => {
   const [resume, setResume] = useState<File | null>(null);
@@ -212,7 +212,7 @@ const ApplyJobForm = () => {
         {
           message !== "" &&
           (
-            <Notification message={message} type={messageType} />
+            <NotificationOverlay message={message} type={messageType} />
           )
         }
     </div>

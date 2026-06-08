@@ -1,0 +1,57 @@
+.job-card-container {
+  display: flex;
+  column-gap: 36px;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.job-card-details-container {
+  display: flex;
+  column-gap: 20px;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.job-card-details-profile {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  background-color: #f28602;
+  flex-shrink: 0;
+}
+
+.job-card-details {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.job-card-apply-button {
+  all: unset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 122px;
+  height: 40px;
+  box-sizing: border-box;
+  padding: 24px 0px;
+  border-radius: 10px;
+  cursor: pointer;
+  background-color: #f28602;
+  transition:
+    background-color 0.2s,
+    transform 0.2s;
+}
+
+.job-card-apply-button:hover,
+.job-card-apply-button:focus-visible {
+  transform: scale(1.05);
+}

@@ -9,7 +9,7 @@ import DashboardScreen from "./screens/Dashboard/Dashboard.screen";
 import ApplicationsScreen from "./screens/Applications/Applications.screen";
 
 import AuthGuard from "./routes/AuthGuard";
-import AppLayout from "./components/layouts/AppLayout";
+import AppLayout from "./components/Layouts/AppLayout";
 import JobsScreen from "./screens/JobsScreen/Jobs.screen";
 import MyJobsScreen from "./screens/MyJobsScreen/MyJobs.screen";
 import NotFoundScreen from "./screens/NotFound/NotFound.screen";

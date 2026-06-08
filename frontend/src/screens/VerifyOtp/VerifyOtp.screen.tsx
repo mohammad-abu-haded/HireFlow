@@ -1,12 +1,12 @@
 import "./VerifyOtp.css";
 import VerifyIcon from "../../assets/icons/security.svg?react";
 import ErrorMessageIcon from "../../assets/icons/emblem-important.svg?react";
-import SuccessMessageIcon from "../../assets/icons/success.svg?react";
 import TimerIcon from "../../assets/icons/timer.svg?react";
 import ResendIcon from "../../assets/icons/resend-email.svg?react";
 import { useContext, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/authContext";
+import NotificationOverlay from "../../components/NotificationOverlay/NotificationOverlay";
 
 const VerifyOtp = () => {
   const { verifyOtp, resendOtp } = useContext(AuthContext);
@@ -132,8 +132,7 @@ const VerifyOtp = () => {
           )}
           {successMessage && (
             <div className="success-verify-container">
-              <SuccessMessageIcon className="success-verify-icon" />
-              {successMessage}
+              <NotificationOverlay type="success" message={successMessage}/>
             </div>
           )}
           {resendMessage && (

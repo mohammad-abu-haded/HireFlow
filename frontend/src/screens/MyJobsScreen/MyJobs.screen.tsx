@@ -9,7 +9,7 @@ import type { IForm } from "../../types";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../context/authContext";
-import MyJobCard from "../../components/myJobCard/MyJobCard";
+import MyJobCard from "../../components/MyJobCard/MyJobCard";
 import { formatSalary } from "../../utils/formatSalary";
 import { getPagination } from "../../utils/getPaginationRange";
 

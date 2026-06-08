@@ -1,0 +1,66 @@
+.filter-sidebar-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: fit-content;
+    row-gap: 13px;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+.filter-sidebar-title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #17191C;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.filter-sidebar-items {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    row-gap: 6px;
+}
+
+.filter-sidebar-item {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    column-gap: 6px;
+}
+
+.filter-sidebar-item > label {
+    color: #606163;
+    font-size: 14px;
+    font-weight: 400;
+    cursor: pointer;
+}
+
+.filter-sidebar-checkbox {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 1px solid #606163;
+    border-radius: 4px;
+    cursor: pointer;
+    position: relative;
+}
+
+.filter-sidebar-checkbox:checked {
+    background-color: #c36c02;
+    border-color: #c36c02;
+}
+
+.filter-sidebar-checkbox:checked::after {
+    content: "✓";
+    color: white;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -55%);
+    font-size: 12px;
+    font-weight: bold;
+}

@@ -23,6 +23,23 @@ export interface IForm {
   profileViews?: number;
 }
 
+export type JobCardProps = Pick<
+  IForm,
+  | "_id"
+  | "jobTitle"
+  | "companyName"
+  | "location"
+  | "jobType"
+  | "employmentType"
+  | "workSetting"
+  | "experienceLevel"
+  | "duration"
+  | "salaryMin"
+  | "salaryMax"
+  | "applicationDeadline"
+  | "createdAt"
+>;
+
 export interface IUser {
   email: string;
   password: string;
@@ -40,6 +57,17 @@ export interface IApplication {
   coverLetter: string;
   appliedAt: string;
   status: ApplicationStatus;
+}
+
+export interface FilterItem {
+  id: string;
+  label: string;
+}
+
+export interface FilterSection {
+  id: string;
+  title: string;
+  items: FilterItem[];
 }
 
 export type ApplicationStatus =

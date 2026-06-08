@@ -4,7 +4,7 @@ import DollarIcon from "../../assets/icons/dollar-sign.svg?react";
 import ConfigurationIcon from "../../assets/icons/configuration.svg?react";
 import DetailsIcon from "../../assets/icons/details.svg?react";
 import ContentIcon from "../../assets/icons/content.svg?react";
-import Notification from "../Notification/Notification";
+import NotificationOverlay from "../NotificationOverlay/NotificationOverlay";
 import { useContext, useEffect, useRef, useState } from "react";
 import DynamicList from "../DynamicList/DynamicList";
 import type {
@@ -168,7 +168,7 @@ const PostJobForm = () => {
     <div className="post-job-form">
       <div className={isSubmitted ? "success-message" : ""}>
         {isSubmitted && (
-          <Notification
+          <NotificationOverlay
             message="Job posting submitted successfully! Redirecting..."
             type="success"
           />

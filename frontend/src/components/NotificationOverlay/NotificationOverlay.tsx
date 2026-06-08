@@ -1,10 +1,10 @@
 import type { NotificationType } from '../../types';
-import './Notification.css'
+import './NotificationOverlay.css'
 interface NotificationProps {
     message: string;
     type: NotificationType;
 }
-const Notification = ({ message, type }: NotificationProps) => {
+const NotificationOverlay = ({ message, type }: NotificationProps) => {
   return (
     <div className="alert-overlay">
         <div className={`alert alert-${type}`}>
@@ -14,4 +14,4 @@ const Notification = ({ message, type }: NotificationProps) => {
   )
 }
 
-export default Notification
+export default NotificationOverlay

@@ -96,13 +96,6 @@
   transform: scale(1.05);
 }
 
-.job-search-sidebar-container {
-  display: flex;
-  flex-direction: column;
-  row-gap: 24px;
-  width: 16%;
-}
-
 .job-search-sidebar-icon {
   color: #f28602;
   width: 20px;
@@ -157,7 +150,9 @@
 .job-main {
   width: 100%;
   height: fit-content;
-  display: flex;
+  display: grid;
+  grid-template-columns: 16% 80%;
+  row-gap: 24px;
   column-gap: 40px;
   padding: 56px 112px 40px 112px;
 }
@@ -172,9 +167,8 @@
 }
 
 .jobs-container {
-  display: flex;
-  row-gap: 16px;
-  justify-content: center;
-  align-items: flex-start;
-  width: 80%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
 }
+

@@ -210,14 +210,15 @@ const optionalAuthMiddleware = (req, res, next) => {
 };
 
 app.get("/jobs", optionalAuthMiddleware, async (req, res) => {
-  console.log(req.user);
   try {
     const limit = Math.max(parseInt(req.query.limit) || 10, 1);
     let page = Math.max(parseInt(req.query.page) || 1, 1);
 
-    const filter = {};
+    const filter = {
+      status: "ACTIVE",
+    };
 
-    if (req.query.q) {
+    if (req.query.q?.trim()) {
       filter.$or = [
         { jobTitle: { $regex: req.query.q, $options: "i" } },
         { companyName: { $regex: req.query.q, $options: "i" } },
@@ -225,20 +226,106 @@ app.get("/jobs", optionalAuthMiddleware, async (req, res) => {
       ];
     }
 
-    if (req.user) {
+    if (req.user?.id) {
       filter.userId = { $ne: req.user.id };
+    }
+
+    if (req.query.job_type) {
+      const values = Array.isArray(req.query.job_type)
+        ? req.query.job_type
+        : [req.query.job_type];
+
+      filter.jobType = { $in: values };
+    }
+
+    if (req.query.experience) {
+      const values = Array.isArray(req.query.experience)
+        ? req.query.experience
+        : [req.query.experience];
+
+      filter.experienceLevel = { $in: values };
+    }
+
+    if (req.query.salary_range) {
+      const values = Array.isArray(req.query.salary_range)
+        ? req.query.salary_range
+        : [req.query.salary_range];
+
+      const salaryFilters = [];
+
+      values.forEach((v) => {
+        if (v === "50k-80k") {
+          salaryFilters.push({
+            salaryMin: { $gte: 50000 },
+            salaryMax: { $lte: 80000 },
+          });
+        }
+
+        if (v === "80k-120k") {
+          salaryFilters.push({
+            salaryMin: { $gte: 80000 },
+            salaryMax: { $lte: 120000 },
+          });
+        }
+
+        if (v === "120k-160k") {
+          salaryFilters.push({
+            salaryMin: { $gte: 120000 },
+            salaryMax: { $lte: 160000 },
+          });
+        }
+
+        if (v === "160k+") {
+          salaryFilters.push({
+            salaryMin: { $gte: 160000 },
+          });
+        }
+      });
+
+      if (salaryFilters.length) {
+        filter.$or = filter.$or
+          ? [...filter.$or, ...salaryFilters]
+          : salaryFilters;
+      }
+    }
+
+    if (req.query.date_posted) {
+      const now = new Date();
+      const values = Array.isArray(req.query.date_posted)
+        ? req.query.date_posted
+        : [req.query.date_posted];
+
+      const dateFilters = [];
+
+      values.forEach((v) => {
+        if (v === "24h") {
+          const d = new Date(now);
+          d.setHours(now.getHours() - 24);
+          dateFilters.push({ createdAt: { $gte: d } });
+        }
+
+        if (v === "7d") {
+          const d = new Date(now);
+          d.setDate(now.getDate() - 7);
+          dateFilters.push({ createdAt: { $gte: d } });
+        }
+      });
+
+      if (dateFilters.length) {
+        filter.$or = filter.$or
+          ? [...filter.$or, ...dateFilters]
+          : dateFilters;
+      }
     }
 
     const total = await Job.countDocuments(filter);
     const totalPages = Math.max(Math.ceil(total / limit), 1);
 
-    if (page > totalPages) {
-      page = totalPages;
-    }
+    if (page > totalPages) page = totalPages;
 
     const jobs = await Job.find(filter)
       .select(
-        "createdAt jobTitle companyName location jobType employmentType workSetting experienceLevel duration salaryMin salaryMax applicationDeadline",
+        "createdAt jobTitle companyName location jobType employmentType workSetting experienceLevel duration salaryMin salaryMax applicationDeadline"
       )
       .sort({ createdAt: -1, _id: -1 })
       .skip((page - 1) * limit)
@@ -256,7 +343,6 @@ app.get("/jobs", optionalAuthMiddleware, async (req, res) => {
     });
   }
 });
-
 
 // GET ONE
 app.get("/:id", authMiddleware, async (req, res) => {

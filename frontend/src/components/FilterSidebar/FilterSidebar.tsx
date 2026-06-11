@@ -20,7 +20,6 @@ const FilterSidebar = (props: IProps) => {
     const query = props.section.id;
     if (type === "add") {
       props.params.append(query, item_id);
-      console.log("a");
     } else {
       props.params.delete(query, item_id);      
     }

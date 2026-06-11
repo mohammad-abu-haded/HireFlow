@@ -11,6 +11,9 @@
   border-radius: 16px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
 .my-job-card::before {
@@ -23,6 +26,10 @@
   background-color: #f2800d;
 }
 
+.my-job-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
 .job-title-card {
   display: flex;
   justify-content: flex-start;

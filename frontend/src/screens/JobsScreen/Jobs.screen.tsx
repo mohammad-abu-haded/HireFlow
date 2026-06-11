@@ -42,7 +42,6 @@ export const JOB_FILTERS_DATA: FilterSection[] = [
     id: "date_posted",
     title: "DATE POSTED",
     items: [
-      { id: "anytime", label: "Any Time" },
       { id: "24h", label: "Last 24 Hours" },
       { id: "7d", label: "Last 7 Days" },
     ],
@@ -54,6 +53,7 @@ const JobsScreen = () => {
   const [search, setSearch] = useState(params.get("q") || "");
   const [clear, setClear] = useState(false);
   const [jobs, setJobs] = useState<JobCardProps[]>([]);
+  const [totalJobs, setTotalJobs] = useState(0);
   const { token } = useContext(AuthContext);
   const handleSearch = (e: any) => {
     e.preventDefault();
@@ -76,14 +76,16 @@ const JobsScreen = () => {
   const fetchJobs = async (
     query: string | null,
     selectedFilters: string[][],
+    page: number = 1,
+    limit: number = 10,
   ) => {
     const params = new URLSearchParams();
 
-    params.append("page", "1");
-    params.append("limit", "10");
+    params.append("page", page.toString());
+    params.append("limit", limit.toString());
 
-    if (query) {
-      params.append("q", query);
+    if (query?.trim()) {
+      params.append("q", query.trim());
     }
 
     selectedFilters.forEach((values, index) => {
@@ -94,16 +96,25 @@ const JobsScreen = () => {
       });
     });
 
-    const res = await fetch("http://localhost:5000/jobs/jobs?page=1&limit=10", {
-      headers: {
-        Authorization: `Bearer ${token}`,
+    const res = await fetch(
+      `http://localhost:5000/jobs/jobs?${params.toString()}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       },
-    });
+    );
+
+    if (!res.ok) {
+      throw new Error("Failed to fetch jobs");
+    }
 
     const response = await res.json();
-    setJobs(response.data);
-  };
 
+    setJobs(response.data);
+    setTotalJobs(response.total)
+    return response;
+  };
   useEffect(() => {
     const searchQuery = params.get("q");
 
@@ -158,37 +169,41 @@ const JobsScreen = () => {
       </div>
 
       <div className="job-main">
-        <div className="job-search-sidebar-container">
-          <div className="job-search-sidebar-header">
-            <div className="job-search-sidebar-header-title">
-              <FilterIcon className="job-search-sidebar-icon" />
-              <p>Filters</p>
-            </div>
-            <button onClick={clearSearch} className="job-search-sidebar-clear">
-              Clear All
-            </button>
+        <div className="job-search-sidebar-header">
+          <div className="job-search-sidebar-header-title">
+            <FilterIcon className="job-search-sidebar-icon" />
+            <p>Filters</p>
           </div>
-
-          <div className="job-search-sidebar-content">
-            {JOB_FILTERS_DATA.map((item) => (
-              <FilterSidebar
-                key={item.id}
-                section={item}
-                setClear={setClear}
-                clear={clear}
-                setParams={setParams}
-                params={params}
-              />
-            ))}
-          </div>
+          <button onClick={clearSearch} className="job-search-sidebar-clear">
+            Clear All
+          </button>
         </div>
 
+        <div className="job-search-sidebar-header">
+          <div className="job-search-sidebar-header-title">
+            SHOWING <b>{totalJobs}</b> ACTIVE OPPORTUNITIES
+          </div>
+          <button onClick={clearSearch} className="job-search-sidebar-clear">
+            Clear All
+          </button>
+        </div>
+
+        <div className="job-search-sidebar-content">
+          {JOB_FILTERS_DATA.map((item) => (
+            <FilterSidebar
+              key={item.id}
+              section={item}
+              setClear={setClear}
+              clear={clear}
+              setParams={setParams}
+              params={params}
+            />
+          ))}
+        </div>
         <div className="jobs-container">
-          {
-            jobs.map((job, index) => (
-              <JobCard {...job} key={index}/>
-            ))
-          }
+          {jobs.map((job, index) => (
+            <JobCard {...job} key={index} />
+          ))}
         </div>
       </div>
     </div>

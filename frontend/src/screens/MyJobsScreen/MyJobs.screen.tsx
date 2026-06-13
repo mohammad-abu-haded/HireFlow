@@ -12,6 +12,7 @@ import { AuthContext } from "../../context/authContext";
 import MyJobCard from "../../components/MyJobCard/MyJobCard";
 import { formatSalary } from "../../utils/formatSalary";
 import { getPagination } from "../../utils/getPaginationRange";
+import Pagination from "../../components/Pagination/Pagination";
 
 const MyJobsScreen = () => {
   const navigate = useNavigate();
@@ -110,7 +111,9 @@ const MyJobsScreen = () => {
       if (data.difference > 0) {
         setApplicationsSubtitle(`↑ +${data.percentage}% vs last week`);
       } else if (data.difference < 0) {
-        setApplicationsSubtitle(`↓ -${Math.abs(data.percentage)}% vs last week`);
+        setApplicationsSubtitle(
+          `↓ -${Math.abs(data.percentage)}% vs last week`,
+        );
       } else {
         setApplicationsSubtitle("No change vs last week");
       }
@@ -331,27 +334,15 @@ const MyJobsScreen = () => {
         )}
       </div>
       {totalPages > 1 && (
-        <div className="jobs-count">
-          {pagination.map((item, index) => {
-            if (item === -1) {
-              return (
-                <span key={index} className="pagination-dots">
-                  ...
-                </span>
-              );
-            }
-
-            return (
-              <button
-                key={index}
-                onClick={() => setPage(item)}
-                className={`pagination-item ${page === item ? "pagination-item-active" : ""}`}
-              >
-                {item}
-              </button>
-            );
-          })}
-        </div>
+        <Pagination
+          page={page}
+          setPage={setPage}
+          pagination={pagination}
+          totalPages={totalPages}
+          totalJobs={totalJobs}
+          limit={limit}
+          displayedJobs={jobs.length}
+        />
       )}
     </div>
   );

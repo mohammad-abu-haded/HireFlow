@@ -13,9 +13,10 @@ interface IProps {
   salaryRange: string;
   workSetting: string;
   experienceLevel: string;
-  Deadline: string;
+  deadline: string;
   employmentType?: string;
-  Duration?: string;
+  duration?: string;
+  durationUnit?: string;
 }
 const JobOverviewCard = (props: IProps) => {
   return (
@@ -35,9 +36,13 @@ const JobOverviewCard = (props: IProps) => {
         <JobOverviewItem
           title="Job Type"
           value={formatText(
-            `${props.jobType} / ${
-              props.employmentType ? ` - ${props.employmentType}` : ""
-            }${props.Duration ? ` - ${props.Duration}` : ""}`,
+            [
+              props.jobType,
+              props.employmentType && `- ${props.employmentType}`,
+              props.duration && `- ${props.duration} ${props.durationUnit}`,
+            ]
+              .filter(Boolean)
+              .join(" / "),
             {
               replaceSeparators: true,
               capitalizeWords: true,
@@ -57,7 +62,7 @@ const JobOverviewCard = (props: IProps) => {
         />
         <JobOverviewItem
           title="Application Deadline"
-          value={formatDisplayDateTime(props.Deadline)}
+          value={formatDisplayDateTime(props.deadline)}
           Icon={DateIcon}
         />
       </div>

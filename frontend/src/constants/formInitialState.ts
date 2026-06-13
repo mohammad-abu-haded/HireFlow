@@ -9,6 +9,7 @@ export const initialState: IForm = {
   experienceLevel: "",
   employmentType: "",
   duration: "",
+  durationUnit: "",
   salaryMin: "",
   salaryMax: "",
   applicationDeadline: "",

@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   padding: 40px;
-  width: 80%;
+  width: 90%;
   height: fit-content;
 }
 
@@ -146,50 +146,4 @@
   color: #303840;
   text-align: center;
   margin-top: 40px;
-}
-
-.jobs-count {
-  display: flex;
-  align-items: center;
-  height: fit-content;
-  column-gap: 6px;
-}
-
-.pagination-item {
-  all: unset;
-  cursor: pointer;
-  height: 24px;
-  color: #fff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0 6px;
-  background-color: #f28602;
-  border-radius: 6px;
-  transition:
-    background-color 0.2s ease,
-    transform 0.15s ease,
-    box-shadow 0.2s ease;
-}
-
-.pagination-item:hover {
-  background-color: #d97300;
-  transform: translateY(-1px);
-}
-
-.pagination-item:focus-visible {
-  outline: 2px solid #fff;
-  outline-offset: 2px;
-  box-shadow: 0 0 0 4px rgba(242, 134, 2, 0.35);
-}
-
-.pagination-item-active {
-  background-color: #ff9d21;
-  color: #fff;
-  font-weight: 600;
-  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.2);
-}
-
-.pagination-item-active:hover {
-  background-color: #ffab3d;
 }

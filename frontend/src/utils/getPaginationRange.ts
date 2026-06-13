@@ -1,30 +1,58 @@
-export const getPagination = (current: number, total: number) => {
-    const delta = 2;
+export const getPagination = (
+  currentPage: number,
+  totalPages: number,
+  siblingCount = 1
+): number[] => {
+  const totalPageNumbers = siblingCount + 5;
 
-    const range: number[] = [];
-    const rangeWithDots: number[] = [];
+  if (totalPageNumbers >= totalPages) {
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
+  }
 
-    for (
-      let i = Math.max(2, current - delta);
-      i <= Math.min(total - 1, current + delta);
-      i++
-    ) {
-      range.push(i);
-    }
+  const leftSiblingIndex = Math.max(currentPage - siblingCount, 1);
+  const rightSiblingIndex = Math.min(
+    currentPage + siblingCount,
+    totalPages
+  );
 
-    if (current - delta > 2) {
-      rangeWithDots.push(1, -1);
-    } else {
-      rangeWithDots.push(1);
-    }
+  const showLeftDots = leftSiblingIndex > 2;
+  const showRightDots = rightSiblingIndex < totalPages - 1;
 
-    rangeWithDots.push(...range);
+  const firstPage = 1;
+  const lastPage = totalPages;
 
-    if (current + delta < total - 1) {
-      rangeWithDots.push(-1, total);
-    } else {
-      rangeWithDots.push(total);
-    }
+  if (!showLeftDots && showRightDots) {
+    const leftRange = Array.from(
+      { length: 3 + 2 * siblingCount },
+      (_, i) => i + 1
+    );
 
-    return rangeWithDots;
-  };
+    return [...leftRange, -1, lastPage];
+  }
+
+  if (showLeftDots && !showRightDots) {
+    const rightRange = Array.from(
+      { length: 3 + 2 * siblingCount },
+      (_, i) => totalPages - (2 + 2 * siblingCount) + i
+    );
+
+    return [firstPage, -1, ...rightRange];
+  }
+
+  if (showLeftDots && showRightDots) {
+    const middleRange = Array.from(
+      { length: rightSiblingIndex - leftSiblingIndex + 1 },
+      (_, i) => leftSiblingIndex + i
+    );
+
+    return [
+      firstPage,
+      -1,
+      ...middleRange,
+      -1,
+      lastPage,
+    ];
+  }
+
+  return Array.from({ length: totalPages }, (_, i) => i + 1);
+};

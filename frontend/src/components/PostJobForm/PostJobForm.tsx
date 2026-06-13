@@ -237,6 +237,7 @@ const PostJobForm = () => {
                   jobType: value,
                   employmentType: "",
                   duration: "",
+                  durationUnit: "",
                   workSetting: "",
                   experienceLevel: "",
                 }));
@@ -305,6 +306,7 @@ const PostJobForm = () => {
                     ...prev,
                     employmentType: value,
                     duration: "",
+                    durationUnit: ""
                   }));
                 }}
                 required
@@ -319,21 +321,46 @@ const PostJobForm = () => {
           )}
           {(form.employmentType === "temporary" ||
             ["contract", "internship"].includes(form.jobType)) && (
-            <div className="form-group">
-              <label htmlFor="duration">Duration</label>
-              <input
-                type="text"
-                placeholder="e.g. 6 months"
-                value={form.duration}
-                onChange={(e) =>
-                  setForm((prev) => ({ ...prev, duration: e.target.value }))
-                }
-                id="duration"
-                required
-              />
-            </div>
+            <>
+              <div className="form-group">
+                <label htmlFor="duration">Duration</label>
+                <input
+                  type="number"
+                  placeholder="e.g. 6 "
+                  value={form.duration}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, duration: e.target.value }))
+                  }
+                  id="duration"
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="durationUnit">Duration Unit</label>
+                <select
+                  id="durationUnit"
+                  value={form.durationUnit}
+                  onChange={(e) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      durationUnit: e.target.value,
+                    }))
+                  }
+                  required
+                >
+                  <option value="" disabled hidden>
+                    Duration Unit
+                  </option>
+                  <option value="Hours">Hours</option>
+                  <option value="Day">Day</option>
+                  <option value="Months">Months</option>
+                  <option value="Years">Years</option>
+                </select>
+              </div>
+            </>
           )}
         </div>
+        
         <div className="section-header">
           <DollarIcon className="form-icon" />
           <p>Compensation</p>

@@ -1,42 +1,35 @@
 import type { JobCardProps } from "../../types";
-import { formatSalary } from "../../utils/formatSalary";
+import LocationIcon from '../../assets/icons/location.svg?react'
 import "./JobCard.css";
 
 const JobCard = (props: JobCardProps) => {
   return (
     <div className="job-card-container">
-      <div className="job-card-details-container">
-        <div className="job-card-details-profile">{props.companyName[0]}</div>
+      <div className="job-card-header">
+        <div className="job-card-profile">
+          {props.companyName[0]}
+        </div>
 
-        <div className="job-card-details">
-          <div className="job-card-details-section">
-            <div className="job-card-job-title">{props.jobTitle}</div>
-
-            <div className="job-card-salary">
-              {formatSalary(props.salaryMin, props.salaryMax)}
-            </div>
+        <div className="job-card-info">
+          <div className="job-card-title">
+            {props.jobTitle}
           </div>
-          <div className="job-card-details-section">
+          <div className="job-card-work-settings">
             <div className="job-card-company">
               {props.companyName}
             </div>
 
             <div className="job-card-location">
-              {props.location}
-            </div>
-
-            <div className="job-card-work-setting">
-              ({props.workSetting})
+              <p>•</p>
+              <LocationIcon className="job-card-location-icon" />
+              <p>{props.location} ({props.workSetting})</p>
             </div>
           </div>
         </div>
-      </div>
-
-      <div className="job-card-actions-container">
-        <button className="job-card-apply-button">Apply Now</button>
       </div>
     </div>
   );
 };
 
 export default JobCard;
+// formatSalary(props.salaryMin, props.salaryMax)

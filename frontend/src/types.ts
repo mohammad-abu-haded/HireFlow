@@ -8,6 +8,7 @@ export interface IForm {
   workSetting: WorkSetting;
   experienceLevel: ExperienceLevel;
   duration: string;
+  durationUnit: string;
   salaryMin: string;
   salaryMax: string;
   applicationDeadline: string;

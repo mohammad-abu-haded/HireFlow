@@ -229,9 +229,10 @@ const JobDetails = () => {
             salaryRange={formatSalary(job?.salaryMin || "0", job?.salaryMax || "0")}
             workSetting={job?.workSetting || ""}
             experienceLevel={job?.experienceLevel || ""}
-            Deadline={job?.applicationDeadline || ""}
+            deadline={job?.applicationDeadline || ""}
             employmentType={job?.employmentType || ""}
-            Duration={job?.duration || ""}
+            duration={job?.duration || ""}
+            durationUnit={job?.durationUnit || ""}
           />
           <JobBenefitsCard benefits={job?.benefits || []} />
         </div>

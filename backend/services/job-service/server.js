@@ -1,3 +1,6 @@
+import { createAuthIndexes } from "./db/indexes.js";
+await createAuthIndexes(db);
+
 require("dotenv").config();
 
 const express = require("express");
@@ -97,7 +100,6 @@ const buildFilter = (userId, q, status) => {
   return filter;
 };
 
-// ================= ROUTES =================
 
 // GET ALL (NO pagination)
 app.get("/", authMiddleware, async (req, res) => {

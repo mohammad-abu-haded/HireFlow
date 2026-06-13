@@ -1,3 +1,6 @@
+import { createAuthIndexes } from "./db/indexes.js";
+await createAuthIndexes(db);
+
 require("dotenv").config();
 const sendEmail = require("./utils/sendEmail");
 const express = require("express");

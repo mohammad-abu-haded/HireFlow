@@ -1,4 +1,4 @@
-export async function createApplicationIndexes(db) {
+async function createApplicationIndexes(db) {
   try {
     await db.collection("applications").createIndex({ jobId: 1 });
 
@@ -13,3 +13,5 @@ export async function createApplicationIndexes(db) {
     console.error(error);
   }
 }
+
+module.exports = { createApplicationIndexes };

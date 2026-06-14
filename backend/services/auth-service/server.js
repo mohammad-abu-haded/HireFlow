@@ -1,7 +1,6 @@
-import { createAuthIndexes } from "./db/indexes.js";
-await createAuthIndexes(db);
-
 require("dotenv").config();
+
+const { createAuthIndexes } = require("./db/indexes");
 const sendEmail = require("./utils/sendEmail");
 const express = require("express");
 const mongoose = require("mongoose");
@@ -21,8 +20,23 @@ app.use(
 
 app.use(express.json());
 
-mongoose.connect(process.env.MONGO_URI);
+const startServer = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("MongoDB connected");
 
+    await createAuthIndexes(mongoose.connection.db);
+
+    app.listen(5001, () => {
+      console.log("Auth service running on 5001");
+    });
+
+  } catch (err) {
+    console.error("DB connection error:", err);
+  }
+};
+
+startServer();
 const redis = new Redis(process.env.REDIS_URL);
 
 const UserSchema = new mongoose.Schema({
@@ -32,7 +46,6 @@ const UserSchema = new mongoose.Schema({
 });
 
 const User = mongoose.model("User", UserSchema);
-
 app.post("/register", async (req, res) => {
   const { userName, email, password } = req.body;
 

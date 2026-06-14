@@ -1,8 +1,6 @@
-import { createAuthIndexes } from "./db/indexes.js";
-await createAuthIndexes(db);
-
 require("dotenv").config();
 
+const { createApplicationIndexes } = require("./db/indexes");
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -15,7 +13,22 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-mongoose.connect(process.env.MONGO_URI);
+const startServer = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("MongoDB connected");
+
+    await createApplicationIndexes(mongoose.connection.db);
+
+    app.listen(5002, () => {
+      console.log("Application service running on 5002");
+    });
+  } catch (err) {
+    console.error("DB connection error:", err);
+  }
+};
+
+startServer();
 
 // ================= MULTER =================
 
@@ -302,63 +315,49 @@ app.get("/:id", authMiddleware, async (req, res) => {
 
 // GET APPLICATION STATISTICS (THIS WEEK VS LAST WEEK)
 
-app.get(
-  "/stats/applications",
-  authMiddleware,
-  async (req, res) => {
-    try {
-      const now = new Date();
+app.get("/stats/applications", authMiddleware, async (req, res) => {
+  try {
+    const now = new Date();
 
-      const startOfThisWeek = new Date(now);
-      startOfThisWeek.setDate(now.getDate() - 7);
+    const startOfThisWeek = new Date(now);
+    startOfThisWeek.setDate(now.getDate() - 7);
 
-      const startOfLastWeek = new Date(now);
-      startOfLastWeek.setDate(now.getDate() - 14);
+    const startOfLastWeek = new Date(now);
+    startOfLastWeek.setDate(now.getDate() - 14);
 
-      const thisWeek = await Application.countDocuments({
-        createdAt: {
-          $gte: startOfThisWeek,
-        },
-      });
+    const thisWeek = await Application.countDocuments({
+      createdAt: {
+        $gte: startOfThisWeek,
+      },
+    });
 
-      const lastWeek = await Application.countDocuments({
-        createdAt: {
-          $gte: startOfLastWeek,
-          $lt: startOfThisWeek,
-        },
-      });
+    const lastWeek = await Application.countDocuments({
+      createdAt: {
+        $gte: startOfLastWeek,
+        $lt: startOfThisWeek,
+      },
+    });
 
-      const totalApplications =
-        await Application.countDocuments();
+    const totalApplications = await Application.countDocuments();
 
-      const difference =
-        thisWeek - lastWeek;
+    const difference = thisWeek - lastWeek;
 
-      const percentage =
-        lastWeek === 0
-          ? 100
-          : (
-              (difference / lastWeek) *
-              100
-            );
+    const percentage = lastWeek === 0 ? 100 : (difference / lastWeek) * 100;
 
-      res.json({
-        totalApplications,
-        thisWeek,
-        lastWeek,
-        difference,
-        percentage: Number(
-          percentage.toFixed(1)
-        ),
-      });
-    } catch (err) {
-      res.status(500).json({
-        success: false,
-        message: err.message,
-      });
-    }
+    res.json({
+      totalApplications,
+      thisWeek,
+      lastWeek,
+      difference,
+      percentage: Number(percentage.toFixed(1)),
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
   }
-);
+});
 
 // UPDATE APPLICATION STATUS
 
@@ -403,27 +402,23 @@ app.patch("/:id/status", authMiddleware, async (req, res) => {
 
 // DELETE ALL APPLICATIONS FOR A JOB
 
-app.delete(
-  "/job/:jobId/applications",
-  async (req, res) => {
-    try {
-      const result =
-        await Application.deleteMany({
-          jobId: req.params.jobId,
-        });
+app.delete("/job/:jobId/applications", async (req, res) => {
+  try {
+    const result = await Application.deleteMany({
+      jobId: req.params.jobId,
+    });
 
-      res.json({
-        success: true,
-        deletedCount: result.deletedCount,
-      });
-    } catch (err) {
-      res.status(500).json({
-        success: false,
-        message: err.message,
-      });
-    }
+    res.json({
+      success: true,
+      deletedCount: result.deletedCount,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
   }
-);
+});
 
 app.listen(process.env.PORT || 5003, () => {
   console.log(`Application service running on ${process.env.PORT || 5003}`);

@@ -1,8 +1,6 @@
-import { createAuthIndexes } from "./db/indexes.js";
-await createAuthIndexes(db);
-
 require("dotenv").config();
 
+const { createJobIndexes } = require("./db/indexes");
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -12,8 +10,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-mongoose.connect(process.env.MONGO_URI);
-
 const JobSchema = new mongoose.Schema(
   {
     userId: String,
@@ -22,6 +18,23 @@ const JobSchema = new mongoose.Schema(
 );
 
 const Job = mongoose.model("Job", JobSchema);
+
+const startServer = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("MongoDB connected");
+
+    await createJobIndexes(mongoose.connection.db);
+
+    app.listen(5003, () => {
+      console.log("Job service running on 5003");
+    });
+  } catch (err) {
+    console.error("Server startup error:", err);
+  }
+};
+
+startServer();
 
 // ================= AUTH =================
 const authMiddleware = (req, res, next) => {
@@ -99,7 +112,6 @@ const buildFilter = (userId, q, status) => {
 
   return filter;
 };
-
 
 // GET ALL (NO pagination)
 app.get("/", authMiddleware, async (req, res) => {
@@ -191,7 +203,6 @@ app.get("/list", authMiddleware, async (req, res) => {
     });
   }
 });
-
 
 const optionalAuthMiddleware = (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -314,9 +325,7 @@ app.get("/jobs", optionalAuthMiddleware, async (req, res) => {
       });
 
       if (dateFilters.length) {
-        filter.$or = filter.$or
-          ? [...filter.$or, ...dateFilters]
-          : dateFilters;
+        filter.$or = filter.$or ? [...filter.$or, ...dateFilters] : dateFilters;
       }
     }
 
@@ -327,7 +336,7 @@ app.get("/jobs", optionalAuthMiddleware, async (req, res) => {
 
     const jobs = await Job.find(filter)
       .select(
-        "createdAt jobTitle companyName location jobType employmentType workSetting experienceLevel duration salaryMin salaryMax applicationDeadline"
+        "createdAt jobTitle companyName location jobType employmentType workSetting experienceLevel duration salaryMin salaryMax applicationDeadline",
       )
       .sort({ createdAt: -1, _id: -1 })
       .skip((page - 1) * limit)
@@ -390,7 +399,6 @@ app.put("/:id", authMiddleware, async (req, res) => {
 
   res.json(job);
 });
-
 
 // DELETE
 app.delete("/:id", authMiddleware, async (req, res) => {

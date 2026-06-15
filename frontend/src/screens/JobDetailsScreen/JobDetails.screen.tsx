@@ -51,24 +51,69 @@ const JobDetails = () => {
   const [buttonLabel, setButtonLabel] = useState("");
   const [buttonIcon, setButtonIcon] = useState<React.ReactNode>(null);
   const [totalApplications, setTotalApplications] = useState(0);
+  const [isOwner, setIsOwner] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const getJobById = async (id: string) => {
-    const res = await fetch(`http://localhost:5000/jobs/${id}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
-    if (!res.ok) {
+
+  const checkIsOwner = async (jobId: string) => {
+    try {
+      const res = await fetch(`http://localhost:5000/jobs/${jobId}/ownership`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      if (!res.ok) {
+        setIsOwner(false);
+        return false;
+      }
+
+      const data = await res.json();
+      setIsOwner(data.isOwner);
+
+      return data.isOwner;
+    } catch (err) {
+      console.error("Error checking ownership:", err);
+      setIsOwner(false);
+      return false;
+    }
+  };
+
+  const getJobById = async (id: string, isOwner?: boolean) => {
+    try {
+      let url = "";
+
+      if (isOwner) {
+        url = `http://localhost:5000/jobs/${id}`;
+      } else {
+        url = `http://localhost:5000/jobs/public/jobs/${id}`;
+      }
+
+      const res = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      if (!res.ok) {
+        navigate("/not-found", {
+          state: { message: "Job not found" },
+        });
+        return;
+      }
+
+      const data = await res.json();
+
+      setTotalApplications(data.applicationsCount || 0);
+
+      return data;
+    } catch (err) {
+      console.error(err);
       navigate("/not-found", {
         state: { message: "Job not found" },
       });
     }
-    const data = await res.json();
-    setTotalApplications(data.applicationsCount || 0);
-    return data;
   };
-
 
   const updateButtonData = (status: IForm["status"]) => {
     if (status === "ACTIVE") {
@@ -94,20 +139,26 @@ const JobDetails = () => {
 
     const data = await response.json();
     if (data.success) {
-      const data: IForm = await getJobById(id!);
+      const data: IForm = await getJobById(id!, isOwner);
       setJob(data);
       updateButtonData(data.status);
     }
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const data: IForm = await getJobById(id!);
+    const loadData = async () => {
+      if (!id) return;
+
+      const isOwnerResult = await checkIsOwner(id);
+      setIsOwner(isOwnerResult);
+
+      const data: IForm = await getJobById(id, isOwnerResult);
+
       setJob(data);
       updateButtonData(data.status);
     };
 
-    fetchData();
+    loadData();
   }, [id]);
 
   const DASHBOARD_STATS = [
@@ -149,59 +200,74 @@ const JobDetails = () => {
             </div>
           </div>
         </div>
-        <div className="job-details-actions">
-          <div className="status-job-details">{job?.status}</div>
-          <button
-            className="edit-button-job-details"
-            title="Edit Job"
-            onClick={() =>
-              navigate(`/update-job/${job?._id}`, {
-                state: { from: location.pathname },
-              })
-            }
-          >
-            <EditIcon className="edit-icon-job-details" />
-            <p>Edit Job</p>
-          </button>
-          <button
-            className="delete-button"
-            title="Delete Job"
-            onClick={() => deleteJob()}
-          >
-            <DeleteIcon className="delete-icon-myJobCard" />
-            <p>Delete</p>
-          </button>
-          <button
-            className="close-open-button-job-details"
-            title={buttonLabel}
-            onClick={() => {
-              if (job?.status === "ACTIVE") {
-                updateStatus("CLOSED");
-              } else if (job?.status === "CLOSED") {
-                updateStatus("ACTIVE");
-              } else if (job?.status === "EXPIRED") {
+        {isOwner ? (
+          <div className="job-details-actions">
+            <div className="status-job-details">{job?.status}</div>
+            <button
+              className="edit-button-job-details"
+              title="Edit Job"
+              onClick={() =>
                 navigate(`/update-job/${job?._id}`, {
-                  state: { from: location.pathname, scrollToDate: true },
-                });
+                  state: { from: location.pathname },
+                })
               }
-            }}
-          >
-            {buttonIcon}
-            <p>{buttonLabel}</p>
-          </button>
+            >
+              <EditIcon className="edit-icon-job-details" />
+              <p>Edit Job</p>
+            </button>
+            <button
+              className="delete-button"
+              title="Delete Job"
+              onClick={() => deleteJob()}
+            >
+              <DeleteIcon className="delete-icon-myJobCard" />
+              <p>Delete</p>
+            </button>
+            <button
+              className="close-open-button-job-details"
+              title={buttonLabel}
+              onClick={() => {
+                if (job?.status === "ACTIVE") {
+                  updateStatus("CLOSED");
+                } else if (job?.status === "CLOSED") {
+                  updateStatus("ACTIVE");
+                } else if (job?.status === "EXPIRED") {
+                  navigate(`/update-job/${job?._id}`, {
+                    state: { from: location.pathname, scrollToDate: true },
+                  });
+                }
+              }}
+            >
+              {buttonIcon}
+              <p>{buttonLabel}</p>
+            </button>
+          </div>
+        ) : (
+          <div className="job-details-actions">
+            <button
+              className="job-details-action-apply"
+              onClick={() => {
+                navigate(`/apply-job/${id}`);
+              }}
+            >
+              Apply Now
+            </button>
+          </div>
+        )}
+      </div>
+      {isOwner && (
+        <div className="my-jobs-stats">
+          {DASHBOARD_STATS.map((stat) => (
+            <StatCard
+              key={stat.title}
+              title={stat.title}
+              value={stat.value}
+              subtitle={stat.subtitle}
+              icon={stat.icon}
+            />
+          ))}
         </div>
-      </div>
-      <div className="my-jobs-stats">
-        {DASHBOARD_STATS.map((stat) => (
-          <StatCard
-            key={stat.title}
-            title={stat.title}
-            value={stat.value}
-            subtitle={stat.subtitle}
-            icon={stat.icon}
-          />
-        ))}
-      </div>
+      )}
       <div className="job-details-body">
         <div className="job-details-content">
           <JobDetailSection
@@ -226,7 +292,10 @@ const JobDetails = () => {
         <div className="job-details-overview">
           <JobOverviewCard
             jobType={job?.jobType || ""}
-            salaryRange={formatSalary(job?.salaryMin || "0", job?.salaryMax || "0")}
+            salaryRange={formatSalary(
+              job?.salaryMin || "0",
+              job?.salaryMax || "0",
+            )}
             workSetting={job?.workSetting || ""}
             experienceLevel={job?.experienceLevel || ""}
             deadline={job?.applicationDeadline || ""}

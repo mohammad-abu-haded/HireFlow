@@ -142,3 +142,25 @@
   width: 22%;
   height: fit-content;
 }
+
+.job-details-action-apply {
+  all: unset;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #eb7d0f;
+  height: 36px;
+  padding: 0px 16px;
+  color: #fff;
+  border-radius: 6px;
+
+  transition:
+    background-color 0.2s,
+    transform 0.2s;
+}
+
+.job-details-action-apply:hover,
+.job-details-action-apply:focus-visible {
+  transform: scale(1.05);
+}

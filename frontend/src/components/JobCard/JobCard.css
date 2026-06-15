@@ -1,11 +1,13 @@
 .job-card-container {
   position: relative;
   display: flex;
+  flex-direction: column;
   padding: 24px;
   border-radius: 10px;
+  row-gap: 26px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
   width: 100%;
-  align-items: center;
+  justify-content: flex-start;
   transition:
     transform 0.25s ease,
     box-shadow 0.25s ease;
@@ -17,7 +19,7 @@
 }
 
 .job-card-header {
-  height: fit-content;
+  height: 48px;
   display: flex;
   column-gap: 16px;
   align-items: center;
@@ -71,4 +73,85 @@
 .job-card-location-icon {
   width: 16px;
   height: 16px;
+}
+
+.job-card-type {
+  display: flex;
+  border-radius: 9999px;
+  color: #f28602;
+  background-color: #fff8f0;
+  font-size: 12px;
+  padding: 4px 6px;
+  width: fit-content;
+}
+
+.job-card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.job-card-salary {
+  font-size: 14px;
+  color: #171a1f;
+  display: flex;
+  align-items: center;
+  column-gap: 8px;
+}
+
+.job-card-salary-icon {
+  width: 16px;
+  height: 16px;
+  color: #f28602;
+}
+
+.job-card-date {
+  display: flex;
+  align-items: center;
+  column-gap: 8px;
+  color: #565d6d;
+  font-size: 14px;
+}
+
+.job-card-date-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.job-card-actions {
+  display: flex;
+  column-gap: 12px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.job-card-action {
+  all: unset;
+  cursor: pointer;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  border-radius: 6px;
+  transition:
+    background-color 0.2s,
+    transform 0.2s;
+}
+
+.job-card-action:hover,
+.job-card-action:focus-visible {
+  transform: scale(1.05);
+}
+
+.job-card-action-apply {
+  background-color: #F28602;
+  color: #ffffff;
+}
+
+.job-card-action-view {
+  background-color: #ffffff;
+  color: #171a1f;
+  border: 1px solid #dee1e6;
 }

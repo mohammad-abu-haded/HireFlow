@@ -5,9 +5,11 @@ import DashboardIcon from "../../assets/icons/dashboard.svg?react";
 import PostJobIcon from "../../assets/icons/plus-circle.svg?react";
 import ApplicationsIcon from "../../assets/icons/persons.svg?react";
 import LogoutIcon from "../../assets/icons/logout.svg?react";
+import OpenSidebar from "../../assets/icons/sidebar-right.svg?react";
+import CloseSidebar from "../../assets/icons/sidebar-left.svg?react";
 import JobsIcon from "../../assets/icons/list.svg?react";
 import { AuthContext } from "../../context/authContext";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 const navItems = [
   {
     path: "/dashboard",
@@ -44,12 +46,32 @@ const navItems = [
 const Sidebar = () => {
   const navigate = useNavigate();
   const { isAuthenticated, logout } = useContext(AuthContext);
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(() => {
+    const saved = localStorage.getItem("sidebar");
+    return saved ? JSON.parse(saved) : true;
+  });
+
+  useEffect(() => {
+    localStorage.setItem("sidebar", JSON.stringify(isSidebarOpen));
+  }, [isSidebarOpen]);
+
   const handleLogout = () => {
     logout();
     navigate("/login");
   };
   return (
-    <div className="sidebar">
+    <div className={`sidebar ${!isSidebarOpen && "sidebar-closed"}`}>
+      {isSidebarOpen ? (
+        <CloseSidebar
+          className="sidebar-toggle"
+          onClick={() => setIsSidebarOpen((prev) => !prev)}
+        />
+      ) : (
+        <OpenSidebar
+          className="sidebar-toggle"
+          onClick={() => setIsSidebarOpen((prev) => !prev)}
+        />
+      )}
       <div className="sidebar-logo">
         <div className="logo-icon-container">
           <BagIcon className="logo-icon-sidebar" />

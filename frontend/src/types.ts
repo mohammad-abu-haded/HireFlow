@@ -34,6 +34,7 @@ export type JobCardProps = Pick<
   | "employmentType"
   | "workSetting"
   | "experienceLevel"
+  | "skills"
   | "duration"
   | "salaryMin"
   | "salaryMax"

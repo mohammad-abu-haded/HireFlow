@@ -8,6 +8,23 @@ interface IProps {
   list?: string[];
   Icon?: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
 }
+
+export const renderSkills = (list: IProps["list"]): React.ReactNode => (
+  <div className="job-detail-section-skills-container">
+    {list?.length ? (
+      list.map((skill, index) => (
+        <div className="job-detail-section-skill" key={index}>
+          {skill}
+        </div>
+      ))
+    ) : (
+      <p className="job-detail-section-empty-message">
+        No information provided
+      </p>
+    )}
+  </div>
+);
+
 const JobDetailSection = (props: IProps) => {
   const renderDescription = (): React.ReactNode => {
     return !!props.content?.trim() ? (
@@ -43,26 +60,11 @@ const JobDetailSection = (props: IProps) => {
     );
   };
 
-  const renderSkills = (): React.ReactNode => (
-    <div className="job-detail-section-skills-container">
-      {!!props.list?.length ? (
-        props.list.map((skill, index) => (
-          <div className="job-detail-section-skill" key={index}>
-            {skill}
-          </div>
-        ))
-      ) : (
-        <p className="job-detail-section-empty-message">
-          No information provided
-        </p>
-      )}
-    </div>
-  );
   const renderSectionContent = (): React.ReactNode => {
     if (props.type === "DESCRIPTION") return renderDescription();
     if (props.type === "KEY_RESPONSIBILITIES" || props.type === "REQUIREMENTS")
       return renderListSection();
-    if (props.type === "SKILLS") return renderSkills();
+    if (props.type === "SKILLS") return renderSkills(props.list);
   };
   return (
     <div className="job-detail-section-main">

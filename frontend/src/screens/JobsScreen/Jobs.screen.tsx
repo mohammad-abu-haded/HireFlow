@@ -7,6 +7,8 @@ import type { FilterSection, JobCardProps } from "../../types";
 import FilterIcon from "../../assets/icons/filter.svg?react";
 import { AuthContext } from "../../context/authContext";
 import JobCard from "../../components/JobCard/JobCard";
+import Pagination from "../../components/Pagination/Pagination";
+import { getPagination } from "../../utils/getPaginationRange";
 
 export const JOB_FILTERS_DATA: FilterSection[] = [
   {
@@ -55,10 +57,16 @@ const JobsScreen = () => {
   const [jobs, setJobs] = useState<JobCardProps[]>([]);
   const [totalJobs, setTotalJobs] = useState(0);
   const { token } = useContext(AuthContext);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const limit = 6;
+
+  const [pagination, setPagination] = useState<number[]>([]);
   const handleSearch = (e: any) => {
     e.preventDefault();
     params.set("q", search);
     setParams(params);
+    setPage(1);
     if (search === "") {
       params.delete("q");
       setParams(params);
@@ -76,16 +84,16 @@ const JobsScreen = () => {
   const fetchJobs = async (
     query: string | null,
     selectedFilters: string[][],
-    page: number = 1,
-    limit: number = 10,
+    page: number,
+    limit: number,
   ) => {
     const params = new URLSearchParams();
 
-    params.append("page", page.toString());
-    params.append("limit", limit.toString());
+    params.set("page", page.toString());
+    params.set("limit", limit.toString());
 
     if (query?.trim()) {
-      params.append("q", query.trim());
+      params.set("q", query.trim());
     }
 
     selectedFilters.forEach((values, index) => {
@@ -105,16 +113,16 @@ const JobsScreen = () => {
       },
     );
 
-    if (!res.ok) {
-      throw new Error("Failed to fetch jobs");
-    }
+    if (!res.ok) throw new Error("Failed to fetch jobs");
 
     const response = await res.json();
 
     setJobs(response.data);
-    setTotalJobs(response.total)
+    setTotalJobs(response.total);
+
     return response;
   };
+
   useEffect(() => {
     const searchQuery = params.get("q");
 
@@ -122,8 +130,19 @@ const JobsScreen = () => {
       params.getAll(filter.id),
     );
 
-    fetchJobs(searchQuery, selectedFilters);
-  }, [params]);
+    fetchJobs(searchQuery, selectedFilters, page, limit);
+  }, [params, page]);
+
+  useEffect(() => {
+    if (!token) return;
+
+    const pagesCount = Math.ceil(totalJobs / limit);
+    setTotalPages(pagesCount);
+  }, [token, params, totalJobs]);
+
+  useEffect(() => {
+    setPagination(getPagination(page, totalPages));
+  }, [page, totalPages]);
 
   return (
     <div className="jobs-screen-container">
@@ -183,9 +202,6 @@ const JobsScreen = () => {
           <div className="job-search-sidebar-header-title">
             SHOWING <b>{totalJobs}</b> ACTIVE OPPORTUNITIES
           </div>
-          <button onClick={clearSearch} className="job-search-sidebar-clear">
-            Clear All
-          </button>
         </div>
 
         <div className="job-search-sidebar-content">
@@ -200,10 +216,25 @@ const JobsScreen = () => {
             />
           ))}
         </div>
-        <div className="jobs-container">
-          {jobs.map((job, index) => (
-            <JobCard {...job} key={index} />
-          ))}
+
+        <div className="jobs-results-container">
+          <div className="jobs-container">
+            {jobs.map((job, index) => (
+              <JobCard {...job} key={index} />
+            ))}
+          </div>
+
+          {totalPages > 1 && (
+            <Pagination
+              page={page}
+              setPage={setPage}
+              pagination={pagination}
+              totalPages={totalPages}
+              totalJobs={totalJobs}
+              limit={limit}
+              displayedJobs={jobs.length}
+            />
+          )}
         </div>
       </div>
     </div>

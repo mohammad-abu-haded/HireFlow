@@ -6,6 +6,7 @@ import ClockIcon from "../../assets/icons/clock.svg?react";
 import SalaryIcon from "../../assets/icons/dollar-sign.svg?react";
 import DeleteIcon from "../../assets/icons/trash.svg?react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { getTimeAgo } from "../../utils/formatTimeAgo";
 interface IProps {
   jobId: string;
   jobTitle: string;
@@ -18,17 +19,6 @@ interface IProps {
   salary: string;
   deleteJob: (id: string) => void;
 }
-
-const getTimeAgo = (date: string) => {
-  const now = new Date().getTime();
-  const posted = new Date(date).getTime();
-
-  const diff = Math.floor((now - posted) / (1000 * 60 * 60 * 24));
-
-  if (diff === 0) return "Posted today";
-  if (diff === 1) return "Posted 1 day ago";
-  return `Posted ${diff} days ago`;
-};
 
 const MyJobCard = (props: IProps) => {
   const navigate = useNavigate();

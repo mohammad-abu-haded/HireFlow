@@ -227,116 +227,163 @@ app.get("/jobs", optionalAuthMiddleware, async (req, res) => {
     const limit = Math.max(parseInt(req.query.limit) || 10, 1);
     let page = Math.max(parseInt(req.query.page) || 1, 1);
 
-    const filter = {
-      status: "ACTIVE",
-    };
-
-    if (req.query.q?.trim()) {
-      filter.$or = [
-        { jobTitle: { $regex: req.query.q, $options: "i" } },
-        { companyName: { $regex: req.query.q, $options: "i" } },
-        { location: { $regex: req.query.q, $options: "i" } },
-      ];
-    }
+    const andFilters = [
+      {
+        status: "ACTIVE",
+      },
+    ];
 
     if (req.user?.id) {
-      filter.userId = { $ne: req.user.id };
+      andFilters.push({
+        userId: { $ne: req.user.id },
+      });
     }
 
+    // Search
+    if (req.query.q?.trim()) {
+      andFilters.push({
+        $or: [
+          { jobTitle: { $regex: req.query.q, $options: "i" } },
+          { companyName: { $regex: req.query.q, $options: "i" } },
+          { location: { $regex: req.query.q, $options: "i" } },
+        ],
+      });
+    }
+
+    // Job Type
     if (req.query.job_type) {
       const values = Array.isArray(req.query.job_type)
         ? req.query.job_type
         : [req.query.job_type];
 
-      filter.jobType = { $in: values };
+      andFilters.push({
+        jobType: { $in: values },
+      });
     }
 
+    // Experience
     if (req.query.experience) {
       const values = Array.isArray(req.query.experience)
         ? req.query.experience
         : [req.query.experience];
 
-      filter.experienceLevel = { $in: values };
+      andFilters.push({
+        experienceLevel: { $in: values },
+      });
     }
 
+    // Salary Range
     if (req.query.salary_range) {
       const values = Array.isArray(req.query.salary_range)
         ? req.query.salary_range
         : [req.query.salary_range];
 
-      const salaryFilters = [];
+      const salaryConditions = [];
 
       values.forEach((v) => {
         if (v === "50k-80k") {
-          salaryFilters.push({
-            salaryMin: { $gte: 50000 },
-            salaryMax: { $lte: 80000 },
+          salaryConditions.push({
+            $expr: {
+              $and: [
+                { $gte: [{ $toInt: "$salaryMin" }, 50000] },
+                { $lte: [{ $toInt: "$salaryMax" }, 80000] },
+              ],
+            },
           });
         }
 
         if (v === "80k-120k") {
-          salaryFilters.push({
-            salaryMin: { $gte: 80000 },
-            salaryMax: { $lte: 120000 },
+          salaryConditions.push({
+            $expr: {
+              $and: [
+                { $gte: [{ $toInt: "$salaryMin" }, 80000] },
+                { $lte: [{ $toInt: "$salaryMax" }, 120000] },
+              ],
+            },
           });
         }
 
         if (v === "120k-160k") {
-          salaryFilters.push({
-            salaryMin: { $gte: 120000 },
-            salaryMax: { $lte: 160000 },
+          salaryConditions.push({
+            $expr: {
+              $and: [
+                { $gte: [{ $toInt: "$salaryMin" }, 120000] },
+                { $lte: [{ $toInt: "$salaryMax" }, 160000] },
+              ],
+            },
           });
         }
 
         if (v === "160k+") {
-          salaryFilters.push({
-            salaryMin: { $gte: 160000 },
+          salaryConditions.push({
+            $expr: {
+              $gte: [{ $toInt: "$salaryMin" }, 160000],
+            },
           });
         }
       });
 
-      if (salaryFilters.length) {
-        filter.$or = filter.$or
-          ? [...filter.$or, ...salaryFilters]
-          : salaryFilters;
+      if (salaryConditions.length) {
+        andFilters.push({
+          $or: salaryConditions,
+        });
       }
     }
 
+    // Date Posted
     if (req.query.date_posted) {
-      const now = new Date();
       const values = Array.isArray(req.query.date_posted)
         ? req.query.date_posted
         : [req.query.date_posted];
 
-      const dateFilters = [];
+      const dateConditions = [];
+      const now = new Date();
 
       values.forEach((v) => {
         if (v === "24h") {
           const d = new Date(now);
-          d.setHours(now.getHours() - 24);
-          dateFilters.push({ createdAt: { $gte: d } });
+          d.setHours(d.getHours() - 24);
+
+          dateConditions.push({
+            createdAt: { $gte: d },
+          });
         }
 
         if (v === "7d") {
           const d = new Date(now);
-          d.setDate(now.getDate() - 7);
-          dateFilters.push({ createdAt: { $gte: d } });
+          d.setDate(d.getDate() - 7);
+
+          dateConditions.push({
+            createdAt: { $gte: d },
+          });
         }
       });
 
-      if (dateFilters.length) {
-        filter.$or = filter.$or ? [...filter.$or, ...dateFilters] : dateFilters;
+      if (dateConditions.length) {
+        andFilters.push({
+          $or: dateConditions,
+        });
       }
     }
 
+    const filter =
+      andFilters.length === 1
+        ? andFilters[0]
+        : {
+            $and: andFilters,
+          };
+
     const total = await Job.countDocuments(filter);
+
     const totalPages = Math.max(Math.ceil(total / limit), 1);
 
-    if (page > totalPages) page = totalPages;
+    if (page > totalPages) {
+      page = totalPages;
+    }
 
     const jobs = await Job.find(filter)
       .select(
-        "createdAt jobTitle companyName location jobType employmentType workSetting experienceLevel duration salaryMin salaryMax applicationDeadline",
+        "createdAt jobTitle companyName location jobType employmentType workSetting experienceLevel duration salaryMin salaryMax applicationDeadline skills"
       )
       .sort({ createdAt: -1, _id: -1 })
       .skip((page - 1) * limit)
@@ -349,7 +396,59 @@ app.get("/jobs", optionalAuthMiddleware, async (req, res) => {
       limit,
     });
   } catch (err) {
+    console.error(err);
+
     res.status(500).json({
+      message: err.message,
+    });
+  }
+});
+
+app.get("/public/jobs/:id", async (req, res) => {
+  try {
+    const job = await Job.findOne({
+      _id: req.params.id,
+      status: "ACTIVE",
+    }).select("-applicationsCount -profileViews");
+
+    if (!job) {
+      return res.status(404).json({
+        success: false,
+        message: "Job not found",
+      });
+    }
+
+    res.json(job);
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
+
+app.get("/:id/ownership", authMiddleware, async (req, res) => {
+  try {
+    const job = await Job.findById(req.params.id);
+
+    if (!job) {
+      return res.status(404).json({
+        success: false,
+        message: "Job not found",
+      });
+    }
+
+    const isOwner = job.userId === req.user.id;
+
+    res.json({
+      success: true,
+      jobId: job._id,
+      ownerId: job.userId,
+      isOwner,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
       message: err.message,
     });
   }

@@ -90,8 +90,24 @@ const ApplyJobForm = () => {
         }, 1000);
       }
     } catch (err) {
-      setMessage("Failed to submit application.");
+      let seconds = 3;
+      setMessage(
+        `Failed to submit application. Closing in ${seconds}s`,
+      );
       setMessageType("error");
+
+      const interval = setInterval(() => {
+        seconds--;
+
+        if (seconds > 0) {
+          setMessage(
+            `Failed to submit application. Closing in ${seconds}s`,
+          );
+        } else {
+          clearInterval(interval);
+          setMessage("");
+        }
+      }, 1000);
       console.error(err);
     }
   };

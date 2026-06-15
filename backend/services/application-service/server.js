@@ -13,22 +13,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const startServer = async () => {
-  try {
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log("MongoDB connected");
-
-    await createApplicationIndexes(mongoose.connection.db);
-
-    app.listen(5002, () => {
-      console.log("Application service running on 5002");
-    });
-  } catch (err) {
-    console.error("DB connection error:", err);
-  }
-};
-
-startServer();
+const PORT = process.env.PORT || 5003;
 
 // ================= MULTER =================
 
@@ -143,7 +128,6 @@ app.post(
           message: "Missing required fields",
         });
       }
-
       const application = await Application.create({
         jobId,
         applicantId,
@@ -238,26 +222,6 @@ app.get("/job/:jobId", authMiddleware, async (req, res) => {
   }
 });
 
-// GET TOTAL APPLICATIONS SUBMITTED BY USER
-
-app.get("/my/applications/count", authMiddleware, async (req, res) => {
-  try {
-    const count = await Application.countDocuments({
-      applicantId: req.user.id,
-    });
-
-    res.json({
-      success: true,
-      totalApplications: count,
-    });
-  } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: err.message,
-    });
-  }
-});
-
 // GET TOTAL APPLICATIONS FOR JOB
 
 app.get("/jobs/:jobId/applications/count", async (req, res) => {
@@ -279,32 +243,18 @@ app.get("/jobs/:jobId/applications/count", async (req, res) => {
   }
 });
 
-// GET ONE APPLICATION
+// GET TOTAL APPLICATIONS SUBMITTED BY USER
 
-app.get("/:id", authMiddleware, async (req, res) => {
+app.get("/my/applications/count", authMiddleware, async (req, res) => {
   try {
-    const application = await Application.findById(req.params.id);
-
-    if (!application) {
-      return res.status(404).json({
-        success: false,
-        message: "Application not found",
-      });
-    }
-
-    const job = await Job.findOne({
-      _id: application.jobId,
-      userId: req.user.id,
+    const count = await Application.countDocuments({
+      applicantId: req.user.id,
     });
 
-    if (!job) {
-      return res.status(403).json({
-        success: false,
-        message: "Access denied",
-      });
-    }
-
-    res.json(application);
+    res.json({
+      success: true,
+      totalApplications: count,
+    });
   } catch (err) {
     res.status(500).json({
       success: false,
@@ -420,6 +370,53 @@ app.delete("/job/:jobId/applications", async (req, res) => {
   }
 });
 
-app.listen(process.env.PORT || 5003, () => {
-  console.log(`Application service running on ${process.env.PORT || 5003}`);
+// GET ONE APPLICATION
+
+app.get("/:id", authMiddleware, async (req, res) => {
+  try {
+    const application = await Application.findById(req.params.id);
+
+    if (!application) {
+      return res.status(404).json({
+        success: false,
+        message: "Application not found",
+      });
+    }
+
+    const job = await Job.findOne({
+      _id: application.jobId,
+      userId: req.user.id,
+    });
+
+    if (!job) {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied",
+      });
+    }
+
+    res.json(application);
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
 });
+
+const startServer = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("MongoDB connected");
+
+    await createApplicationIndexes(mongoose.connection.db);
+
+    app.listen(PORT, () => {
+      console.log(`Application service running on ${PORT}`);
+    });
+  } catch (err) {
+    console.error("DB connection error:", err);
+  }
+};
+
+startServer();

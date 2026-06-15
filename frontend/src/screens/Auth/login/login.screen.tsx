@@ -42,9 +42,10 @@ const LoginScreen = () => {
             <h2>HireFlow</h2>
           </div>
           <div className="login-screen-content">
-            <h2>Admin Portal</h2>
+            <h2>Job Portal</h2>
             <p>
-              Sign in to manage your job listings and review applicant profiles.
+              Sign in to explore job opportunities, post vacancies, and connect
+              employers with qualified candidates.
             </p>
           </div>
           <div
@@ -91,7 +92,7 @@ const LoginScreen = () => {
             </div>
             {errorMessage && (
               <div className="error-container">
-                <ErrorMessageIcon className="error-login-icon"/>
+                <ErrorMessageIcon className="error-login-icon" />
                 {errorMessage}
               </div>
             )}

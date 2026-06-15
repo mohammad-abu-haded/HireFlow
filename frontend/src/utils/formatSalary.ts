@@ -5,12 +5,12 @@ export const formatSalary = (
   const formatNumber = (value: number): string => {
     if (value >= 1_000_000) {
       const num = value / 1_000_000;
-      return `$${Number.isInteger(num) ? num : num.toFixed(1)}m`;
+      return `$${Number(num.toFixed(1))}m`;
     }
 
     if (value >= 1_000) {
       const num = value / 1_000;
-      return `$${Number.isInteger(num) ? num : num.toFixed(1)}k`;
+      return `$${Number(num.toFixed(1))}k`;
     }
 
     return `$${value}`;

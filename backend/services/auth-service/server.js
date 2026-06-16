@@ -19,24 +19,6 @@ app.use(
 );
 
 app.use(express.json());
-
-const startServer = async () => {
-  try {
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log("MongoDB connected");
-
-    await createAuthIndexes(mongoose.connection.db);
-
-    app.listen(5001, () => {
-      console.log("Auth service running on 5001");
-    });
-
-  } catch (err) {
-    console.error("DB connection error:", err);
-  }
-};
-
-startServer();
 const redis = new Redis(process.env.REDIS_URL);
 
 const UserSchema = new mongoose.Schema({
@@ -283,6 +265,22 @@ app.get("/me", async (req, res) => {
   res.json({ success: true, user });
 });
 
-app.listen(5001, () => {
-  console.log("Auth service running on 5001");
-});
+const startServer = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("MongoDB connected");
+
+    await createAuthIndexes(mongoose.connection.db);
+
+    const PORT = process.env.PORT;
+
+    app.listen(PORT, () => {
+      console.log(`Auth service running on ${PORT}`);
+    });
+
+  } catch (err) {
+    console.error("DB connection error:", err);
+  }
+};
+
+startServer();

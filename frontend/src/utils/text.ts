@@ -5,6 +5,7 @@ type TextFormatOptions = {
   capitalizeSentence?: boolean;
   uppercase?: boolean;
   lowercase?: boolean;
+  capitalizeFirstOnly?: boolean;
 };
 
 export const formatText = (
@@ -38,6 +39,11 @@ export const formatText = (
 
   if (options.capitalizeSentence) {
     return result.charAt(0).toUpperCase() + result.slice(1).toLowerCase();
+  }
+
+  if (options.capitalizeFirstOnly) {
+    result = result.toLowerCase();
+    return result.charAt(0).toUpperCase() + result.slice(1);
   }
 
   return result;

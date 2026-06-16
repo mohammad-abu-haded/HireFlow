@@ -19,23 +19,6 @@ const JobSchema = new mongoose.Schema(
 
 const Job = mongoose.model("Job", JobSchema);
 
-const startServer = async () => {
-  try {
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log("MongoDB connected");
-
-    await createJobIndexes(mongoose.connection.db);
-
-    app.listen(5003, () => {
-      console.log("Job service running on 5003");
-    });
-  } catch (err) {
-    console.error("Server startup error:", err);
-  }
-};
-
-startServer();
-
 // ================= AUTH =================
 const authMiddleware = (req, res, next) => {
   try {
@@ -550,6 +533,21 @@ app.patch("/:id/status", authMiddleware, async (req, res) => {
   }
 });
 
-app.listen(5002, () => {
-  console.log("Job service running on 5002");
-});
+const startServer = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("MongoDB connected");
+
+    await createJobIndexes(mongoose.connection.db);
+
+    const PORT = process.env.PORT;
+
+    app.listen(PORT, () => {
+      console.log(`Job service running on ${PORT}`);
+    });
+  } catch (err) {
+    console.error("Server startup error:", err);
+  }
+};
+
+startServer();

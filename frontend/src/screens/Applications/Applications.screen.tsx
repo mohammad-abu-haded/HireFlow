@@ -1,100 +1,87 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import type { IApplication } from "../../types";
-
+import ApplicationCard from "../../components/ApplicationCard/ApplicationCard";
+import "./Applications.screen.css";
 const ApplicationsScreen = () => {
-  const { id } = useParams();
+  // const getApplicationById = async (id: string) => {
+  //   const res = await fetch(`http://localhost:5000/applications/${id}`, {
+  //     headers: {
+  //       Authorization: `Bearer ${localStorage.getItem("token")}`,
+  //     },
+  //   });
+
+  //   if (!res.ok) {
+  //     navigate("/not-found", {
+  //       state: { message: "Application not found" },
+  //     });
+  //     return null;
+  //   }
+
+  //   const data = await res.json();
+
+  //   return data;
+  // };
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const data = await getApplicationById(id!);
+
+  //     if (data) {
+  //       setApplication(data);
+  //     }
+
+  //     setLoading(false);
+  //   };
+
+  //   fetchData();
+  // }, [id]);
+  // const [application, setApplication] = useState<IApplication | null>(null);
 
   const [applications, setApplications] = useState<IApplication[]>([]);
-  const [application, setApplication] = useState<IApplication | null>(null);
-  const [loading, setLoading] = useState(true);
+
+  const getApplications = async () => {
+    const token = localStorage.getItem("token");
+
+    try {
+      const res = await fetch("http://localhost:5000/applications", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch applications");
+      }
+
+      return await res.json();
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
+      const data = await getApplications();
 
-      try {
-        const token = localStorage.getItem("token");
-
-        if (id) {
-          // 🔹 single application
-          console.log(id);
-          
-          const res = await fetch(
-            `http://localhost:5000/applications/${id}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-
-          const data = await res.json();
-          setApplication(data);
-        } else {
-          // 🔹 all applications
-          const res = await fetch(
-            `http://localhost:5000/applications`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-
-          const data = await res.json();
-          setApplications(data);
-        }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
+      if (data) {
+        setApplications(data);
       }
     };
 
     fetchData();
-  }, [id]);
-
-  if (loading) return <div>Loading...</div>;
+  }, []);
 
   return (
-    <div style={{ padding: "20px" }}>
-      {/* ================= SINGLE ================= */}
-      {id && application && (
-        <div>
-          <h2>{application.fullName}</h2>
-          <p>{application.email}</p>
-          <p>{application.phone}</p>
-          <p>Status: {application.status}</p>
-          <p>{application.coverLetter}</p>
-        </div>
-      )}
-
-      {/* ================= LIST ================= */}
-      {!id && (
-        <div>
-          <h2>All Applications</h2>
-
-          {applications.map((app) => (
-            <div
-              key={app._id}
-              style={{
-                border: "1px solid #ddd",
-                padding: "10px",
-                marginBottom: "10px",
-              }}
-            >
-              <h3>{app.fullName}</h3>
-              <p>{app.email}</p>
-              <p>Status: {app.status}</p>
-
-              <a href={`/applications/${app._id}`}>
-                View Details
-              </a>
-            </div>
-          ))}
-        </div>
-      )}
+    <div className="application-cards-container">
+      {applications.map((application, index) => (
+        <ApplicationCard
+          key={index}
+          _id={application?._id}
+          appliedAt={application?.appliedAt}
+          email={application?.email}
+          fullName={application?.fullName}
+          status={application?.status}
+        />
+      ))}
     </div>
   );
 };

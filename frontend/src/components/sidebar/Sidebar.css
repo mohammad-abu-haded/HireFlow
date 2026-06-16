@@ -145,15 +145,15 @@
 }
 
 .sidebar-toggle {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   color: #f28602;
   cursor: pointer;
   display: none;
   position: absolute;
   position: absolute;
   top: 50%;
-  right: -16px;
+  right: -14px;
   transform: translateY(-50%);
   z-index: 10;
 }

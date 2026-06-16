@@ -199,9 +199,13 @@ const JobsScreen = () => {
         </div>
 
         <div className="job-search-sidebar-header">
-          <div className="job-search-sidebar-header-title">
-            SHOWING <b>{totalJobs}</b> ACTIVE OPPORTUNITIES
-          </div>
+          {totalJobs > 0 ? (
+            <div className="job-search-sidebar-header-title">
+              SHOWING <b>{totalJobs}</b> ACTIVE OPPORTUNITIES
+            </div>
+          ) : (
+            <div className="job-search-sidebar-empty">No active jobs available yet</div>
+          )}
         </div>
 
         <div className="job-search-sidebar-content">
@@ -217,25 +221,27 @@ const JobsScreen = () => {
           ))}
         </div>
 
-        <div className="jobs-results-container">
-          <div className="jobs-container">
-            {jobs.map((job, index) => (
-              <JobCard {...job} key={index} />
-            ))}
-          </div>
+        {jobs.length > 0 && (
+          <div className="jobs-results-container">
+            <div className="jobs-container">
+              {jobs.map((job, index) => (
+                <JobCard {...job} key={index} />
+              ))}
+            </div>
 
-          {totalPages > 1 && (
-            <Pagination
-              page={page}
-              setPage={setPage}
-              pagination={pagination}
-              totalPages={totalPages}
-              totalJobs={totalJobs}
-              limit={limit}
-              displayedJobs={jobs.length}
-            />
-          )}
-        </div>
+            {totalPages > 1 && (
+              <Pagination
+                page={page}
+                setPage={setPage}
+                pagination={pagination}
+                totalPages={totalPages}
+                totalJobs={totalJobs}
+                limit={limit}
+                displayedJobs={jobs.length}
+              />
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

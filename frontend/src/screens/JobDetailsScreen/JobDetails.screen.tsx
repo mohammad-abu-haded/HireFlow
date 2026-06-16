@@ -20,6 +20,7 @@ import JobBenefitsCard from "../../components/JobBenefitsCard/JobBenefitsCard";
 import DeleteIcon from "../../assets/icons/trash.svg?react";
 import JobOverviewCard from "../../components/JobOverviewCard/JobOverviewCard";
 import { formatSalary } from "../../utils/formatSalary";
+import { formatText } from "../../utils/text";
 
 const JobDetails = () => {
   const deleteJob = async () => {
@@ -193,7 +194,7 @@ const JobDetails = () => {
               {["remote", "hybrid"].some((setting) =>
                 job?.workSetting?.includes(setting),
               ) ? (
-                <p>({job?.workSetting})</p>
+                <p>({formatText(job?.workSetting, { capitalizeWords: true })})</p>
               ) : (
                 ""
               )}
@@ -303,7 +304,7 @@ const JobDetails = () => {
             duration={job?.duration || ""}
             durationUnit={job?.durationUnit || ""}
           />
-          <JobBenefitsCard benefits={job?.benefits || []} />
+          {job?.benefits && job?.benefits.length > 0 && <JobBenefitsCard benefits={job?.benefits || []} />}
         </div>
       </div>
     </div>

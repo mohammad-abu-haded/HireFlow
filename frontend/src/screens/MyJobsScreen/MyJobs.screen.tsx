@@ -5,7 +5,11 @@ import UserIcon from "../../assets/icons/persons.svg?react";
 import CalendarIcon from "../../assets/icons/calender.svg?react";
 import PlusIcon from "../../assets/icons/plus.svg?react";
 import SearchIcon from "../../assets/icons/search.svg?react";
-import type { IForm } from "../../types";
+import {
+  JobDetailStatus,
+  type IForm,
+  type StatusFilterOption,
+} from "../../types";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../context/authContext";
@@ -13,8 +17,9 @@ import MyJobCard from "../../components/MyJobCard/MyJobCard";
 import { formatSalary } from "../../utils/formatSalary";
 import { getPagination } from "../../utils/getPaginationRange";
 import Pagination from "../../components/Pagination/Pagination";
+import StatusFilter from "../../components/StatusFilter/StatusFilter";
 
-const MyJobsScreen = () => {
+const MyJobsScreen = () => {    
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const { token } = useContext(AuthContext);
@@ -218,6 +223,23 @@ const MyJobsScreen = () => {
       icon: CalendarIcon,
     },
   ];
+
+  const STATUS_FILTER_CONFIG: StatusFilterOption[] = [
+    {
+      label: "ALL",
+      isAll: true,
+    },
+    {
+      label: JobDetailStatus.ACTIVE,
+    },
+    {
+      label: JobDetailStatus.CLOSED,
+    },
+    {
+      label: JobDetailStatus.EXPIRED,
+    },
+  ];
+  
   return (
     <div className="my-jobs">
       <div className="my-jobs-header-container">
@@ -264,48 +286,13 @@ const MyJobsScreen = () => {
           </form>
           <SearchIcon className="search-icon" />
         </div>
-        <div className="status-filter-container">
-          <div
-            onClick={() => {
-              params.delete("status");
-              setParams(params);
-              setPage(1);
-            }}
-            className={`${!params.get("status") ? "status-filter-active" : ""} status-filter`}
-          >
-            All
-          </div>
-          <div
-            onClick={() => {
-              params.set("status", "Active");
-              setParams(params);
-              setPage(1);
-            }}
-            className={`${params.get("status") === "Active" ? "status-filter-active" : ""} status-filter`}
-          >
-            Active
-          </div>
-          <div
-            onClick={() => {
-              params.set("status", "Closed");
-              setParams(params);
-              setPage(1);
-            }}
-            className={`${params.get("status") === "Closed" ? "status-filter-active" : ""} status-filter`}
-          >
-            Closed
-          </div>
-          <div
-            onClick={() => {
-              params.set("status", "Expired");
-              setParams(params);
-              setPage(1);
-            }}
-            className={`${params.get("status") === "Expired" ? "status-filter-active" : ""} status-filter`}
-          >
-            Expired
-          </div>
-        </div>
+
+        <StatusFilter
+          STATUS_FILTER_CONFIG={STATUS_FILTER_CONFIG}
+          params={params}
+          setParams={setParams}
+          setPage={setPage}
+        />
       </div>
 
       <div className="my-jobs-list">

@@ -13,8 +13,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const PORT = process.env.PORT || 5003;
-
 // ================= MULTER =================
 
 const storage = multer.diskStorage({
@@ -82,27 +80,23 @@ const Job = mongoose.model("Job", JobSchema);
 // ================= AUTH =================
 
 const authMiddleware = (req, res, next) => {
+  console.log("AUTH HEADER:", req.headers.authorization);
+
   try {
     const token = req.headers.authorization?.split(" ")[1];
 
     if (!token) {
-      return res.status(401).json({
-        message: "No token",
-      });
+      return res.status(401).json({ message: "No token" });
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
     req.user = decoded;
 
     next();
   } catch (err) {
-    return res.status(401).json({
-      message: "Invalid token",
-    });
+    return res.status(401).json({ message: "Invalid token" });
   }
 };
-
 // ================= ROUTES =================
 
 // APPLY FOR JOB
@@ -410,6 +404,7 @@ const startServer = async () => {
     console.log("MongoDB connected");
 
     await createApplicationIndexes(mongoose.connection.db);
+    const PORT = process.env.PORT;
 
     app.listen(PORT, () => {
       console.log(`Application service running on ${PORT}`);

@@ -72,12 +72,17 @@ export interface FilterSection {
   items: FilterItem[];
 }
 
-export type ApplicationStatus =
-  | "PENDING"
-  | "REVIEWING"
-  | "INTERVIEW"
-  | "ACCEPTED"
-  | "REJECTED";
+export interface StatusFilterOption {
+    label: JobDetailStatus | string;
+    isAll?: boolean;
+}
+
+export enum ApplicationStatus {
+  PENDING = "PENDING",
+  INTERVIEW = "INTERVIEW",
+  ACCEPTED = "ACCEPTED",
+  REJECTED = "REJECTED",
+}
 
 export type JobDetailSectionType =
   | "DESCRIPTION"
@@ -85,7 +90,11 @@ export type JobDetailSectionType =
   | "REQUIREMENTS"
   | "SKILLS";
 
-export type JobDetailStatus = "ACTIVE" | "CLOSED" | "EXPIRED" | "";
+export enum JobDetailStatus {
+  ACTIVE = "ACTIVE",
+  CLOSED = "CLOSED",
+  EXPIRED = "EXPIRED",
+}
 
 export type JobType =
   | "full-time"

@@ -170,5 +170,13 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 24px;
+  padding-bottom: 40px;
 }
 
+.job-search-sidebar-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}

@@ -10,7 +10,7 @@ import EyeIcon from "../../assets/icons/eye.svg?react";
 import ClockIcon from "../../assets/icons/clock.svg?react";
 import RightIcon from "../../assets/icons/right-arrow.svg?react";
 import CorrectIcon from "../../assets/icons/correct.svg?react";
-import type { IForm } from "../../types";
+import { JobDetailStatus, type IForm } from "../../types";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { AuthContext } from "../../context/authContext";
 import StatCard from "../../components/StatCard/StatCard ";
@@ -228,10 +228,10 @@ const JobDetails = () => {
               className="close-open-button-job-details"
               title={buttonLabel}
               onClick={() => {
-                if (job?.status === "ACTIVE") {
-                  updateStatus("CLOSED");
-                } else if (job?.status === "CLOSED") {
-                  updateStatus("ACTIVE");
+                if (job?.status === JobDetailStatus.ACTIVE) {
+                  updateStatus(JobDetailStatus.CLOSED);
+                } else if (job?.status === JobDetailStatus.CLOSED) {
+                  updateStatus(JobDetailStatus.ACTIVE);
                 } else if (job?.status === "EXPIRED") {
                   navigate(`/update-job/${job?._id}`, {
                     state: { from: location.pathname, scrollToDate: true },

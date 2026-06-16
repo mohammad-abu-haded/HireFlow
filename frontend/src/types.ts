@@ -94,6 +94,7 @@ export enum JobDetailStatus {
   ACTIVE = "ACTIVE",
   CLOSED = "CLOSED",
   EXPIRED = "EXPIRED",
+  EMPTY = "",
 }
 
 export type JobType =

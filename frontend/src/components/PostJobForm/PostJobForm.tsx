@@ -7,12 +7,13 @@ import ContentIcon from "../../assets/icons/content.svg?react";
 import NotificationOverlay from "../NotificationOverlay/NotificationOverlay";
 import { useContext, useEffect, useRef, useState } from "react";
 import DynamicList from "../DynamicList/DynamicList";
-import type {
-  EmploymentType,
-  ExperienceLevel,
-  IForm,
-  JobType,
-  WorkSetting,
+import {
+  JobDetailStatus,
+  type EmploymentType,
+  type ExperienceLevel,
+  type IForm,
+  type JobType,
+  type WorkSetting,
 } from "../../types";
 import { AuthContext } from "../../context/authContext";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -87,7 +88,7 @@ const PostJobForm = () => {
     }
     const newJob: IForm = {
       ...form,
-      status: "ACTIVE",
+      status: JobDetailStatus.ACTIVE,
       createdAt: new Date().toISOString(),
       email: email,
     };

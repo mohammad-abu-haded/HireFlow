@@ -1,4 +1,4 @@
-import type { IForm } from "../types";
+import { JobDetailStatus, type IForm } from "../types";
 
 export const initialState: IForm = {
   jobTitle: "",
@@ -18,7 +18,7 @@ export const initialState: IForm = {
   skills: [],
   benefits: [],
   keyResponsibilities: [],
-  status: "",
+  status: JobDetailStatus.EMPTY,
   createdAt: "",
   email: "",
   applicationsCount: 0,

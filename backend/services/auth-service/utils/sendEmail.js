@@ -9,12 +9,6 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendEmail = async (to, subject, otp) => {
-  /*
-   * RTL / translation flip fix:
-   * - dir="ltr" + unicode-bidi:embed on every wrapper around the OTP
-   * - Prevents Gmail auto-translate from reversing digits in Arabic/Hebrew locales
-   */
-
   const html = `
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -34,7 +28,7 @@ const sendEmail = async (to, subject, otp) => {
     doesn't pull random body text into the notification.
   -->
   <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:transparent;">
-    Your sign-in code: ${otp} — valid for 5 minutes. Do not share this code.&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;
+    Your sign-up code: ${otp} — valid for 5 minutes. Do not share this code.&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;
   </div>
 
   <table width="100%" cellpadding="0" cellspacing="0" border="0"
@@ -109,7 +103,7 @@ const sendEmail = async (to, subject, otp) => {
                 margin:0 0 28px;font-size:14px;color:#71717a;line-height:1.6;
                 font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
               ">
-                Enter this code to complete your sign-in. Never share it with anyone.
+                Enter this code to complete your sign-up. Never share it with anyone.
               </p>
 
               <!--
@@ -133,7 +127,7 @@ const sendEmail = async (to, subject, otp) => {
                         font-size:10px;font-weight:600;color:#a1a1aa;
                         letter-spacing:0.12em;text-transform:uppercase;
                         font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
-                      ">Your sign-in code</p>
+                      ">Your sign-up code</p>
 
                       <span dir="ltr" style="
                         direction:ltr;unicode-bidi:embed;

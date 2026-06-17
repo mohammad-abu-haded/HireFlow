@@ -19,7 +19,7 @@ import { getPagination } from "../../utils/getPaginationRange";
 import Pagination from "../../components/Pagination/Pagination";
 import StatusFilter from "../../components/StatusFilter/StatusFilter";
 
-const MyJobsScreen = () => {    
+const MyJobsScreen = () => {
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const { token } = useContext(AuthContext);
@@ -239,7 +239,7 @@ const MyJobsScreen = () => {
       label: JobDetailStatus.EXPIRED,
     },
   ];
-  
+
   return (
     <div className="my-jobs">
       <div className="my-jobs-header-container">
@@ -267,10 +267,10 @@ const MyJobsScreen = () => {
         ))}
       </div>
       <div className="filters-container">
-        <div className="search-container">
+        <div className="jobs-search-container">
           <form>
             <input
-              className="search-input"
+              className="jobs-search-input"
               type="text"
               placeholder="Search by job title, company or keyword..."
               value={params.get("q") || ""}
@@ -284,7 +284,7 @@ const MyJobsScreen = () => {
               }}
             />
           </form>
-          <SearchIcon className="search-icon" />
+          <SearchIcon className="jobs-search-icon" />
         </div>
 
         <StatusFilter
@@ -320,17 +320,15 @@ const MyJobsScreen = () => {
           ))
         )}
       </div>
-      {totalPages > 1 && (
-        <Pagination
-          page={page}
-          setPage={setPage}
-          pagination={pagination}
-          totalPages={totalPages}
-          totalJobs={totalJobs}
-          limit={limit}
-          displayedJobs={jobs.length}
-        />
-      )}
+      <Pagination
+        page={page}
+        setPage={setPage}
+        pagination={pagination}
+        totalPages={totalPages}
+        totalItems={totalJobs}
+        limit={limit}
+        displayedItems={jobs.length}
+      />
     </div>
   );
 };

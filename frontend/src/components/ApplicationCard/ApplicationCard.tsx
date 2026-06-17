@@ -4,14 +4,16 @@ import CalenderIcon from "../../assets/icons/calender.svg?react";
 import ClockIcon from "../../assets/icons/clock.svg?react";
 import AcceptedIcon from "../../assets/icons/clock.svg?react";
 import RejectIcon from "../../assets/icons/delete.svg?react";
+import { useNavigate } from "react-router-dom";
 
 interface IProps {
   _id: string;
   jobId?: number;
   fullName: string;
   email: string;
-  appliedAt: string;
+  createdAt: string;
   status: ApplicationStatus;
+  jobTitle: string;
 }
 
 const APPLICATION_STATUS_CONFIG = {
@@ -51,6 +53,7 @@ const ApplicationCard = (props: IProps) => {
   const background_color = config.background_color;
   const color = config.color;
   const border = config.border;
+  const navigate = useNavigate();
   return (
     <div className="application-card-container">
       <div className="application-card-header">
@@ -67,11 +70,38 @@ const ApplicationCard = (props: IProps) => {
 
         <div
           className="application-card-status"
-          style={{ backgroundColor: background_color, color: color, border: `1px solid ${border}` }}
+          style={{
+            backgroundColor: background_color,
+            color: color,
+            border: `1px solid ${border}`,
+          }}
         >
-          <Icon className="application-card-status-icon"/>
+          <Icon className="application-card-status-icon" />
           <p>{label}</p>
         </div>
+      </div>
+
+      <div className="application-card-title-date-container">
+        <div className="application-card-job-title">
+          <p>APPLIED FOR</p>
+          <h2>{props.jobTitle}</h2>
+        </div>
+
+        <div>
+          <p>DATE APPLIED</p>
+          <h2 style={{fontWeight: 500}}>{props.createdAt}</h2>
+        </div>
+      </div>
+
+      <div className="application-card-actions">
+        <button
+        className="application-card-action-application-details"
+        onClick={() => {
+          navigate(`/applications/${props._id}`)
+        }}
+        >
+          Application Details
+        </button>
       </div>
     </div>
   );

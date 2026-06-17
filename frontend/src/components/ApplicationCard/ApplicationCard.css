@@ -5,6 +5,7 @@
   padding: 25px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
   border-radius: 16px;
+  border: 1px solid #dee1e6;
   width: 100%;
   transition:
     transform 0.25s ease,
@@ -87,4 +88,59 @@
 
 .application-card-status > p {
   font-size: 12px;
+}
+
+.application-card-title-date-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.application-card-title-date-container > div {
+  display: flex;
+  flex-direction: column;
+  row-gap: 4px;
+  width: 100%;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.application-card-title-date-container > div > p {
+  font-size: 12px;
+  color: #565d6d;
+  font-weight: 600;
+}
+
+.application-card-title-date-container > div > h2 {
+  font-size: 14px;
+  color: #171a1f;
+  font-weight: bold;
+}
+
+.application-card-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.application-card-action-application-details {
+  all: unset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #171a1f;
+  border-radius: 10px;
+  border: 1px solid #dee1e6;
+  cursor: pointer;
+  padding: 8px 12px;
+  transition:
+    background-color 0.2s,
+    transform 0.2s;
+}
+
+.application-card-action-application-details:hover,
+.application-card-action-application-details:focus-visible {
+  transform: scale(1.05);
 }

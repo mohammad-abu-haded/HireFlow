@@ -8,7 +8,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/authContext";
 import NotificationOverlay from "../../components/NotificationOverlay/NotificationOverlay";
 
-const VerifyOtp = () => {
+const VerifyOtpScreen = () => {
   const { verifyOtp, resendOtp } = useContext(AuthContext);
   const numberOfDigits = 6;
   const [code, setCode] = useState<string[]>(Array(numberOfDigits).fill(""));
@@ -190,4 +190,4 @@ const VerifyOtp = () => {
   );
 };
 
-export default VerifyOtp;
+export default VerifyOtpScreen;

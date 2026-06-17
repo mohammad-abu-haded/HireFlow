@@ -13,9 +13,10 @@ import AppLayout from "./components/Layouts/AppLayout";
 import JobsScreen from "./screens/JobsScreen/Jobs.screen";
 import MyJobsScreen from "./screens/MyJobsScreen/MyJobs.screen";
 import NotFoundScreen from "./screens/NotFound/NotFound.screen";
-import VerifyOtp from "./screens/VerifyOtp/VerifyOtp.screen";
-import JobDetails from "./screens/JobDetailsScreen/JobDetails.screen";
-import ApplyJob from "./screens/ApplyJob/ApplyJob.screen";
+import VerifyOtpScreen from "./screens/VerifyOtp/VerifyOtp.screen";
+import JobDetailsScreen from "./screens/JobDetailsScreen/JobDetails.screen";
+import ApplyJobScreen from "./screens/ApplyJob/ApplyJob.screen";
+import ApplicationDetailsScreen from "./screens/ApplicationDetails/ApplicationDetails.screen";
 
 function App() {
   return (
@@ -24,7 +25,7 @@ function App() {
         <Route path="/" element={<Navigate to="/jobs" replace />} />
         <Route path="/login" element={<LoginScreen />} />
         <Route path="/signup" element={<SignupScreen />} />
-        <Route path="/verify-otp" element={<VerifyOtp />} />
+        <Route path="/verify-otp" element={<VerifyOtpScreen />} />
         <Route element={<AppLayout />}>
           <Route path="/jobs" element={<JobsScreen />} />
         </Route>
@@ -33,12 +34,12 @@ function App() {
           <Route element={<AppLayout />}>
             <Route path="/dashboard" element={<DashboardScreen />} />
             <Route path="/my-jobs" element={<MyJobsScreen />} />
-            <Route path="/job-details/:id" element={<JobDetails />} />
+            <Route path="/job-details/:id" element={<JobDetailsScreen />} />
             <Route path="/post-job" element={<PostJobScreen />} />
             <Route path="/update-job/:id" element={<PostJobScreen />} />
             <Route path="/applications" element={<ApplicationsScreen />} />
-            <Route path="/applications/:id" element={<ApplicationsScreen />} />
-            <Route path="/apply-job/:id" element={<ApplyJob />} />
+            <Route path="/applications/:id" element={<ApplicationDetailsScreen />} />
+            <Route path="/apply-job/:id" element={<ApplyJobScreen />} />
             <Route path="/not-found" element={<NotFoundScreen />} />
             <Route path="*" element={<Navigate to="/not-found" replace />} />
           </Route>

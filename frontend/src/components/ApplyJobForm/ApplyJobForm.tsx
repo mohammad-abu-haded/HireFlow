@@ -8,6 +8,7 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import NotificationOverlay from "../NotificationOverlay/NotificationOverlay";
 import type { NotificationType } from "../../types";
+
 const ApplyJobForm = () => {
   const [resume, setResume] = useState<File | null>(null);
   const { id } = useParams();
@@ -33,13 +34,23 @@ const ApplyJobForm = () => {
     );
 
     formData.append(
-      "phoneNumber",
+      "location",
+      (form.elements.namedItem("location") as HTMLInputElement).value,
+    );
+
+    formData.append(
+      "phone",
       (form.elements.namedItem("phoneNumber") as HTMLInputElement).value,
     );
 
     formData.append(
-      "linkedinProfile",
+      "linkedIn",
       (form.elements.namedItem("linkedinProfile") as HTMLInputElement).value,
+    );
+
+    formData.append(
+      "github",
+      (form.elements.namedItem("githubProfile") as HTMLInputElement).value,
     );
 
     formData.append(
@@ -48,7 +59,7 @@ const ApplyJobForm = () => {
     );
 
     if (resume) {
-      formData.append("resume", resume);
+      formData.append("cvFile", resume);
     }
 
     try {
@@ -89,18 +100,14 @@ const ApplyJobForm = () => {
       }
     } catch (err) {
       let seconds = 3;
-      setMessage(
-        `Failed to submit application. Closing in ${seconds}s`,
-      );
+      setMessage(`Failed to submit application. Closing in ${seconds}s`);
       setMessageType("error");
 
       const interval = setInterval(() => {
         seconds--;
 
         if (seconds > 0) {
-          setMessage(
-            `Failed to submit application. Closing in ${seconds}s`,
-          );
+          setMessage(`Failed to submit application. Closing in ${seconds}s`);
         } else {
           clearInterval(interval);
           setMessage("");
@@ -111,124 +118,144 @@ const ApplyJobForm = () => {
   };
   return (
     <div className="apply-job-form-container">
-        <form onSubmit={handleSubmit}>
-          <div className="apply-job-form-content">
-            <div className="fieldset-apply-job-form-container">
-              <div className="apply-job-form-section-heading">
-                <div className="fieldset-icon-container">
-                  <PersonalIcon className="fieldset-icon" />
-                </div>
-                <h2>Personal Information</h2>
+      <form onSubmit={handleSubmit}>
+        <div className="apply-job-form-content">
+          <div className="fieldset-apply-job-form-container">
+            <div className="apply-job-form-section-heading">
+              <div className="fieldset-icon-container">
+                <PersonalIcon className="fieldset-icon" />
               </div>
+              <h2>Personal Information</h2>
+            </div>
 
-              <div className="input-apply-job-form-container">
-                <div className="input-apply-job-form-group">
-                  <div className="apply-job-form-group">
-                    <label htmlFor="fullName">
-                      Full Name <span>&nbsp;*</span>
-                    </label>
-                    <input
-                      placeholder="John Doe"
-                      type="text"
-                      id="fullName"
-                      name="fullName"
-                      required
-                    />
-                  </div>
-                  <div className="apply-job-form-group">
-                    <label htmlFor="email">
-                      Email Address <span>&nbsp;*</span>
-                    </label>
-                    <input
-                      placeholder="john@example.com"
-                      type="email"
-                      autoComplete="email"
-                      id="email"
-                      name="email"
-                      required
-                    />
-                  </div>
+            <div className="input-apply-job-form-container">
+              <div className="input-apply-job-form-group">
+                <div className="apply-job-form-group">
+                  <label htmlFor="fullName">
+                    Full Name <span>&nbsp;*</span>
+                  </label>
+                  <input
+                    placeholder="John Doe"
+                    type="text"
+                    id="fullName"
+                    name="fullName"
+                    required
+                  />
                 </div>
-                <div className="input-apply-job-form-group">
-                  <div className="apply-job-form-group">
-                    <label htmlFor="phoneNumber">
-                      Phone Number <span>&nbsp;*</span>
-                    </label>
-                    <input
-                      placeholder="123-456-7890"
-                      type="tel"
-                      id="phoneNumber"
-                      name="phoneNumber"
-                      required
-                    />
-                  </div>
-                  <div className="apply-job-form-group">
-                    <label htmlFor="linkedinProfile">LinkedIn Profile</label>
-                    <input
-                      placeholder="linkedin.com/in/username"
-                      type="url"
-                      autoComplete="url"
-                      id="linkedinProfile"
-                      name="linkedinProfile"
-                    />
-                  </div>
+                <div className="apply-job-form-group">
+                  <label htmlFor="email">
+                    Email Address <span>&nbsp;*</span>
+                  </label>
+                  <input
+                    placeholder="john@example.com"
+                    type="email"
+                    autoComplete="email"
+                    id="email"
+                    name="email"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="input-apply-job-form-group">
+                <div className="apply-job-form-group">
+                  <label htmlFor="phoneNumber">
+                    Phone Number <span>&nbsp;*</span>
+                  </label>
+                  <input
+                    placeholder="123-456-7890"
+                    type="tel"
+                    id="phoneNumber"
+                    name="phoneNumber"
+                    required
+                  />
+                </div>
+                <div className="apply-job-form-group">
+                  <label htmlFor="location">
+                    Location <span>&nbsp;*</span>
+                  </label>
+                  <input
+                    placeholder="Ramallah, Palestine"
+                    type="text"
+                    id="location"
+                    name="location"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="input-apply-job-form-group">
+                <div className="apply-job-form-group">
+                  <label htmlFor="githubProfile">GitHub Profile</label>
+                  <input
+                    placeholder="github.com/username"
+                    type="url"
+                    id="githubProfile"
+                    name="githubProfile"
+                  />
+                </div>
+                <div className="apply-job-form-group">
+                  <label htmlFor="linkedinProfile">LinkedIn Profile</label>
+                  <input
+                    placeholder="linkedin.com/in/username"
+                    type="url"
+                    autoComplete="url"
+                    id="linkedinProfile"
+                    name="linkedinProfile"
+                  />
                 </div>
               </div>
             </div>
-            <div className="fieldset-apply-job-form-container">
-              <div className="apply-job-form-section-heading">
-                <div className="fieldset-icon-container">
-                  <DocumentIcon className="fieldset-icon" />
-                </div>
-                <h2>Professional Documents</h2>
+          </div>
+          <div className="fieldset-apply-job-form-container">
+            <div className="apply-job-form-section-heading">
+              <div className="fieldset-icon-container">
+                <DocumentIcon className="fieldset-icon" />
               </div>
-
-              <div className="apply-job-form-group">
-                <div className="apply-job-form-group-label">Resume / CV</div>
-                <FileUpload
-                  accept=".pdf,.doc,.docx"
-                  helperText="Upload your resume or CV (PDF, DOC, DOCX)"
-                  uploadIcon={UploadIcon}
-                  onFileChange={setResume}
-                  value={resume}
-                />
-              </div>
+              <h2>Professional Documents</h2>
             </div>
 
-            <div className="fieldset-apply-job-form-container">
-              <div className="apply-job-form-section-heading">
-                <div className="fieldset-icon-container">
-                  <CoverIcon className="fieldset-icon" />
-                </div>
-                <h2>Cover Letter</h2>
-              </div>
-
-              <div className="apply-job-form-group">
-                <div className="apply-job-form-group-label">
-                  Why are you a great fit for this role?
-                </div>
-                <textarea
-                  placeholder="Tell us about your experience and motivation..."
-                  id="coverLetter"
-                  name="coverLetter"
-                  rows={6}
-                />
-              </div>
-
-              <input
-                type="submit"
-                value="Submit Application"
-                className="submit-apply-job-form-button"
+            <div className="apply-job-form-group">
+              <div className="apply-job-form-group-label">Resume / CV</div>
+              <FileUpload
+                accept=".pdf,.doc,.docx"
+                helperText="Upload your resume or CV (PDF, DOC, DOCX)"
+                uploadIcon={UploadIcon}
+                onFileChange={setResume}
+                value={resume}
               />
             </div>
           </div>
-        </form>
-        {
-          message !== "" &&
-          (
-            <NotificationOverlay message={message} type={messageType} />
-          )
-        }
+
+          <div className="fieldset-apply-job-form-container">
+            <div className="apply-job-form-section-heading">
+              <div className="fieldset-icon-container">
+                <CoverIcon className="fieldset-icon" />
+              </div>
+              <h2>Cover Letter</h2>
+            </div>
+
+            <div className="apply-job-form-group">
+              <div className="apply-job-form-group-label">
+                Why are you a great fit for this role?
+              </div>
+              <textarea
+                placeholder="Tell us about your experience and motivation..."
+                id="coverLetter"
+                name="coverLetter"
+                rows={6}
+              />
+            </div>
+
+            <input
+              type="submit"
+              value="Submit Application"
+              className="submit-apply-job-form-button"
+            />
+          </div>
+        </div>
+      </form>
+      {message !== "" && (
+        <NotificationOverlay message={message} type={messageType} />
+      )}
     </div>
   );
 };

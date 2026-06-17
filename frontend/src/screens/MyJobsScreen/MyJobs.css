@@ -74,7 +74,7 @@
   margin-top: 40px;
 }
 
-.search-input {
+.jobs-search-input {
   all: unset;
   box-sizing: border-box;
   height: 44px;
@@ -88,7 +88,7 @@
   border: 1px solid #dce0e5;
 }
 
-.search-icon {
+.jobs-search-icon {
   position: absolute;
   width: 16px;
   height: 16px;
@@ -98,7 +98,7 @@
   transform: translateY(-50%);
 }
 
-.search-container {
+.jobs-search-container {
   position: relative;
 }
 

@@ -6,7 +6,7 @@ import { initialState } from "../../constants/formInitialState";
 import { formatText } from "../../utils/text";
 import ApplyJobForm from "../../components/ApplyJobForm/ApplyJobForm";
 
-const ApplyJob = () => {    
+const ApplyJobScreen = () => {    
   const navigate = useNavigate();
   const [job, setJob] = useState<IForm>(initialState);
   const { id } = useParams();
@@ -76,4 +76,4 @@ const ApplyJob = () => {
   );
 };
 
-export default ApplyJob;
+export default ApplyJobScreen;

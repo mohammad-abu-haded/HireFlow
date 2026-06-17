@@ -104,19 +104,21 @@ const authMiddleware = (req, res, next) => {
 app.post(
   "/apply",
   authMiddleware,
-  upload.single("resume"),
+  upload.single("cvFile"),
   async (req, res) => {
     try {
       const {
         jobId,
         fullName,
         email,
-        phoneNumber,
-        linkedinProfile,
+        location,
+        phone,
+        linkedIn,
+        github,
         coverLetter,
       } = req.body;
       const applicantId = req.user.id;
-      if (!jobId || !fullName || !email || !phoneNumber) {
+      if (!jobId || !fullName || !email || !phone || !location) {
         return res.status(400).json({
           success: false,
           message: "Missing required fields",
@@ -127,10 +129,11 @@ app.post(
         applicantId,
         fullName,
         email,
-        phoneNumber,
-        linkedinProfile,
+        location,
+        phone,
+        linkedIn,
         coverLetter,
-        resume: req.file
+        cvFile: req.file
           ? {
               filename: req.file.filename,
               originalName: req.file.originalname,
@@ -164,19 +167,70 @@ app.post(
 
 app.get("/", authMiddleware, async (req, res) => {
   try {
+    const limit = Math.max(parseInt(req.query.limit) || 6, 1);
+    let page = Math.max(parseInt(req.query.page) || 1, 1);
+
     const jobs = await Job.find({
       userId: req.user.id,
     }).select("_id");
 
-    const jobIds = jobs.map((job) => job._id.toString());
+    const jobIds = jobs.map((job) => job._id);
 
-    const applications = await Application.find({
-      jobId: { $in: jobIds },
-    }).sort({
-      createdAt: -1,
+    if (!jobIds.length) {
+      return res.json({
+        data: [],
+        total: 0,
+        page,
+        totalPages: 0,
+        limit,
+      });
+    }
+
+    const andFilters = [
+      {
+        jobId: { $in: jobIds },
+      },
+    ];
+
+    if (req.query.q?.trim()) {
+      andFilters.push({
+        $or: [
+          { fullName: { $regex: req.query.q, $options: "i" } },
+          { email: { $regex: req.query.q, $options: "i" } },
+        ],
+      });
+    }
+
+    if (req.query.status) {
+      const values = Array.isArray(req.query.status)
+        ? req.query.status
+        : [req.query.status];
+
+      andFilters.push({
+        status: { $in: values },
+      });
+    }
+
+    const filter =
+      andFilters.length === 1 ? andFilters[0] : { $and: andFilters };
+
+    const total = await Application.countDocuments(filter);
+    const totalPages = Math.max(Math.ceil(total / limit), 1);
+
+    if (page > totalPages) page = totalPages;
+
+    const applications = await Application.find(filter)
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    res.json({
+      data: applications,
+      total,
+      page,
+      totalPages,
+      limit,
     });
-
-    res.json(applications);
   } catch (err) {
     res.status(500).json({
       success: false,

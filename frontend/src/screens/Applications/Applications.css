@@ -1,0 +1,67 @@
+.applications-main {
+  display: flex;
+  flex-direction: column;
+  row-gap: 32px;
+  width: 95%;
+  height: fit-content;
+  padding: 32px;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+}
+
+.application-cards-container {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  width: 100%;
+}
+
+.applications-header {
+  display: flex;
+  flex-direction: column;
+  row-gap: 4px;
+  width: 100%;
+  align-items: flex-start;
+}
+
+.applications-header > h2 {
+  font-size: 30px;
+  color: #171a1f;
+  font-weight: bold;
+}
+
+.applications-header > p {
+  font-size: 16px;
+  color: #565d6d;
+  font-weight: 400;
+}
+
+.applications-filters {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
+  padding: 17px 73px 17px 17px;
+  border-radius: 16px;
+  border: 1px solid #dee1e6;
+  position: relative;
+}
+
+.applications-filters-icon {
+  position: absolute;
+  color: #565d6d;
+  width: 20px;
+  height: 20px;
+  right: 29px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.applications-search-filter-container {
+  display: flex;
+  column-gap: 15px;
+  align-items: center;
+  height: 40px;
+  width: 100%;
+}

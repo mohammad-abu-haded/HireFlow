@@ -22,7 +22,7 @@ import JobOverviewCard from "../../components/JobOverviewCard/JobOverviewCard";
 import { formatSalary } from "../../utils/formatSalary";
 import { formatText } from "../../utils/text";
 
-const JobDetails = () => {
+const JobDetailsScreen = () => {
   const deleteJob = async () => {
     if (!token) return;
     try {
@@ -311,4 +311,4 @@ const JobDetails = () => {
   );
 };
 
-export default JobDetails;
+export default JobDetailsScreen;

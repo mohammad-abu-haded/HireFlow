@@ -1,6 +1,5 @@
-import "./Jobs.screen.css";
+import "./Jobs.css";
 import { useSearchParams } from "react-router-dom";
-import SearchIcon from "../../assets/icons/search.svg?react";
 import { useContext, useEffect, useState } from "react";
 import FilterSidebar from "../../components/FilterSidebar/FilterSidebar";
 import type { FilterSection, JobCardProps } from "../../types";
@@ -9,6 +8,7 @@ import { AuthContext } from "../../context/authContext";
 import JobCard from "../../components/JobCard/JobCard";
 import Pagination from "../../components/Pagination/Pagination";
 import { getPagination } from "../../utils/getPaginationRange";
+import Search from "../../components/Search/Search";
 
 export const JOB_FILTERS_DATA: FilterSection[] = [
   {
@@ -51,27 +51,17 @@ export const JOB_FILTERS_DATA: FilterSection[] = [
 ];
 
 const JobsScreen = () => {
+  const { token } = useContext(AuthContext);
   const [params, setParams] = useSearchParams();
   const [search, setSearch] = useState(params.get("q") || "");
   const [clear, setClear] = useState(false);
   const [jobs, setJobs] = useState<JobCardProps[]>([]);
   const [totalJobs, setTotalJobs] = useState(0);
-  const { token } = useContext(AuthContext);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const limit = 6;
 
   const [pagination, setPagination] = useState<number[]>([]);
-  const handleSearch = (e: any) => {
-    e.preventDefault();
-    params.set("q", search);
-    setParams(params);
-    setPage(1);
-    if (search === "") {
-      params.delete("q");
-      setParams(params);
-    }
-  };
 
   const clearSearch = () => {
     setClear(true);
@@ -155,35 +145,16 @@ const JobsScreen = () => {
             Browse thousands of high-quality job opportunities from leading
             companies and startups around the globe.
           </p>
-          <form onSubmit={handleSearch}>
-            <div className="search-job-container">
-              <SearchIcon
-                className="search-job-icon"
-                onClick={() => document.getElementById("search")?.focus()}
-              />
-              <input
-                className="search-jobs"
-                type="text"
-                id="search"
-                placeholder="Job title or keywords"
-                value={search}
-                onChange={(e) => {
-                  setSearch(e.target.value);
-                  if (e.target.value === "") {
-                    params.delete("q");
-                    setParams(params);
-                  }
-                }}
-              />
-              <div className="search-job-button-container">
-                <input
-                  className="search-job-button"
-                  value="Search"
-                  type="submit"
-                />
-              </div>
-            </div>
-          </form>
+
+          <Search
+            params={params}
+            placeholder="Job title or keywords"
+            search={search}
+            setParams={setParams}
+            setSearch={setSearch}
+            setPage={setPage}
+            height="66px"
+          />
         </div>
       </div>
 
@@ -204,7 +175,9 @@ const JobsScreen = () => {
               SHOWING <b>{totalJobs}</b> ACTIVE OPPORTUNITIES
             </div>
           ) : (
-            <div className="job-search-sidebar-empty">No active jobs available yet</div>
+            <div className="job-search-sidebar-empty">
+              No active jobs available yet
+            </div>
           )}
         </div>
 
@@ -229,17 +202,15 @@ const JobsScreen = () => {
               ))}
             </div>
 
-            {totalPages > 1 && (
-              <Pagination
-                page={page}
-                setPage={setPage}
-                pagination={pagination}
-                totalPages={totalPages}
-                totalJobs={totalJobs}
-                limit={limit}
-                displayedJobs={jobs.length}
-              />
-            )}
+            <Pagination
+              page={page}
+              setPage={setPage}
+              pagination={pagination}
+              totalPages={totalPages}
+              totalItems={totalJobs}
+              limit={limit}
+              displayedItems={jobs.length}
+            />
           </div>
         )}
       </div>

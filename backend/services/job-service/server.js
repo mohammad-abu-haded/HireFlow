@@ -437,6 +437,38 @@ app.get("/:id/ownership", authMiddleware, async (req, res) => {
   }
 });
 
+// GET JOB TITLE ONLY
+app.get("/:id/title", authMiddleware, async (req, res) => {
+  try {
+    const job = await Job.findOne(
+      {
+        _id: req.params.id,
+        userId: req.user.id,
+      },
+      {
+        jobTitle: 1,
+        _id: 0,
+      },
+    );
+
+    if (!job) {
+      return res.status(404).json({
+        success: false,
+        message: "Job not found",
+      });
+    }
+
+    res.json({
+      jobTitle: job.jobTitle,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
+
 // GET ONE
 app.get("/:id", authMiddleware, async (req, res) => {
   await updateExpiredJobs(req.user.id);

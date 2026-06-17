@@ -53,11 +53,13 @@ export interface IApplication {
   jobId: number;
   fullName: string;
   email: string;
+  location: string;
   phone: string;
   linkedIn?: string;
+  github?: string;
   cvFile?: string;
   coverLetter: string;
-  appliedAt: string;
+  createdAt: string;
   status: ApplicationStatus;
 }
 

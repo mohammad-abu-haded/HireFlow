@@ -1,7 +1,6 @@
 import "./Sidebar.css";
 import BagIcon from "../../assets/icons/briefcase-bag.svg?react";
 import { NavLink, useNavigate } from "react-router-dom";
-import DashboardIcon from "../../assets/icons/dashboard.svg?react";
 import PostJobIcon from "../../assets/icons/plus-circle.svg?react";
 import ApplicationsIcon from "../../assets/icons/persons.svg?react";
 import LogoutIcon from "../../assets/icons/logout.svg?react";
@@ -11,12 +10,6 @@ import JobsIcon from "../../assets/icons/list.svg?react";
 import { AuthContext } from "../../context/authContext";
 import { useContext, useEffect, useState } from "react";
 const navItems = [
-  {
-    path: "/dashboard",
-    label: "Dashboard",
-    icon: DashboardIcon,
-    requiresAuth: true,
-  },
   {
     path: "/my-jobs",
     label: "My Jobs",

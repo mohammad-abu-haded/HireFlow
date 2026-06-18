@@ -5,7 +5,6 @@ import LoginScreen from "./screens/Auth/login/login.screen";
 import SignupScreen from "./screens/Auth/signup/signup.screen";
 import DemoModeSetupScreen from "./screens/Onboarding/DemoModeSetup.screen";
 import PostJobScreen from "./screens/PostJob/PostJob.screen";
-import DashboardScreen from "./screens/Dashboard/Dashboard.screen";
 import ApplicationsScreen from "./screens/Applications/Applications.screen";
 
 import AuthGuard from "./routes/AuthGuard";
@@ -32,7 +31,6 @@ function App() {
         <Route element={<AuthGuard />}>
           <Route path="/demo-setup" element={<DemoModeSetupScreen />} />
           <Route element={<AppLayout />}>
-            <Route path="/dashboard" element={<DashboardScreen />} />
             <Route path="/my-jobs" element={<MyJobsScreen />} />
             <Route path="/job-details/:id" element={<JobDetailsScreen />} />
             <Route path="/post-job" element={<PostJobScreen />} />

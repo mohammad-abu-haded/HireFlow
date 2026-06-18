@@ -15,7 +15,6 @@ const ApplicationDetailsScreen = () => {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     });
-    console.log("a");
     
     if (!res.ok) {
       navigate("/not-found", {
@@ -75,7 +74,7 @@ const ApplicationDetailsScreen = () => {
     <div className="application-details-main">
       <div className="application-details-header">
         <h2>Application Details</h2>
-        <p>{jobTitle} Application</p>
+        <p>Application for {jobTitle}</p>
       </div>
     </div>
   );

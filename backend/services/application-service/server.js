@@ -30,28 +30,6 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({
-  storage,
-  limits: {
-    fileSize: 5 * 1024 * 1024,
-  },
-  fileFilter: (req, file, cb) => {
-    const allowedTypes = [
-      "application/pdf",
-      "application/msword",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    ];
-
-    if (allowedTypes.includes(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(new Error("Only PDF, DOC and DOCX files are allowed"));
-    }
-  },
-});
-
-app.use("/uploads", express.static("uploads"));
-
 // ================= MODELS =================
 
 const ApplicationSchema = new mongoose.Schema(
@@ -80,8 +58,6 @@ const Job = mongoose.model("Job", JobSchema);
 // ================= AUTH =================
 
 const authMiddleware = (req, res, next) => {
-  console.log("AUTH HEADER:", req.headers.authorization);
-
   try {
     const token = req.headers.authorization?.split(" ")[1];
 
@@ -97,6 +73,59 @@ const authMiddleware = (req, res, next) => {
     return res.status(401).json({ message: "Invalid token" });
   }
 };
+
+const upload = multer({
+  storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024,
+  },
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = [
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ];
+
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error("Only PDF, DOC and DOCX files are allowed"));
+    }
+  },
+});
+
+
+app.get("/applications/:id/cv", authMiddleware, async (req, res) => {
+  try {
+    const application = await Application.findById(req.params.id);
+
+    if (!application) {
+      return res.status(404).json({ message: "Not found" });
+    }
+
+    const job = await Job.findById(application.jobId);
+
+    if (!job) {
+      return res.status(404).json({ message: "Job not found" });
+    }
+
+    if (job.userId.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
+    if (!application.cvFile?.path) {
+      return res.status(404).json({ message: "No CV found" });
+    }
+
+    return res.sendFile(
+      path.join(process.cwd(), application.cvFile.path)
+    );
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Server error" });
+  }
+});
 // ================= ROUTES =================
 
 // APPLY FOR JOB
@@ -137,7 +166,7 @@ app.post(
           ? {
               filename: req.file.filename,
               originalName: req.file.originalname,
-              path: req.file.path,
+              path: req.file.path.replace(/\\/g, "/"),
               mimetype: req.file.mimetype,
               size: req.file.size,
             }
@@ -398,20 +427,35 @@ app.patch("/:id/status", authMiddleware, async (req, res) => {
   }
 });
 
+
 // DELETE ALL APPLICATIONS FOR A JOB
 
-app.delete("/job/:jobId/applications", async (req, res) => {
+app.delete("/job/:jobId/applications", authMiddleware, async (req, res) => {  
   try {
-    const result = await Application.deleteMany({
-      jobId: req.params.jobId,
+    const { jobId } = req.params;
+
+    const job = await Job.findOne({
+      _id: jobId,
+      userId: req.user.id,
     });
 
-    res.json({
+    if (!job) {
+      return res.status(404).json({
+        success: false,
+        message: "Job not found or access denied",
+      });
+    }
+
+    const result = await Application.deleteMany({
+      jobId,
+    });
+
+    return res.json({
       success: true,
       deletedCount: result.deletedCount,
     });
   } catch (err) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: err.message,
     });

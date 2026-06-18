@@ -119,12 +119,12 @@
 
 .application-card-actions {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  column-gap: 12px;
   width: 100%;
 }
 
-.application-card-action-application-details {
+.application-card-action {
   all: unset;
   display: flex;
   align-items: center;
@@ -140,7 +140,12 @@
     transform 0.2s;
 }
 
-.application-card-action-application-details:hover,
-.application-card-action-application-details:focus-visible {
+.application-card-action:hover,
+.application-card-action:focus-visible {
   transform: scale(1.05);
+}
+
+.application-card-action:disabled {
+  color: #8a8d8f;
+  cursor: not-allowed;
 }

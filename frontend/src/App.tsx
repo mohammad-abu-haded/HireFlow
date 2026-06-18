@@ -38,7 +38,7 @@ function App() {
             <Route path="/post-job" element={<PostJobScreen />} />
             <Route path="/update-job/:id" element={<PostJobScreen />} />
             <Route path="/applications" element={<ApplicationsScreen />} />
-            <Route path="/applications/:id" element={<ApplicationDetailsScreen />} />
+            <Route path="/applications-details/:id" element={<ApplicationDetailsScreen />} />
             <Route path="/apply-job/:id" element={<ApplyJobScreen />} />
             <Route path="/not-found" element={<NotFoundScreen />} />
             <Route path="*" element={<Navigate to="/not-found" replace />} />

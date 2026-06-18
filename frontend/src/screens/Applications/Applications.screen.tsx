@@ -184,6 +184,8 @@ const ApplicationsScreen = () => {
               fullName={application?.fullName}
               status={application?.status}
               jobTitle={jobTitles[application.jobId]}
+              jobId={application.jobId}
+              cvFile={application.cvFile}
             />
           ))
         ) : (

@@ -57,10 +57,18 @@ export interface IApplication {
   phone: string;
   linkedIn?: string;
   github?: string;
-  cvFile?: string;
+  cvFile?: ICvFile | null;
   coverLetter: string;
   createdAt: string;
   status: ApplicationStatus;
+}
+
+export interface ICvFile {
+  filename: string;
+  originalName: string;
+  path: string;
+  mimetype: string;
+  size: number;
 }
 
 export interface FilterItem {

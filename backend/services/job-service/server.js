@@ -10,6 +10,18 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+const ApplicationSchema = new mongoose.Schema(
+  {
+    jobId: String,
+    applicantId: String,
+    status: {
+      type: String,
+      default: "PENDING",
+    },
+  },
+  { strict: false, timestamps: true },
+);
+
 const JobSchema = new mongoose.Schema(
   {
     userId: String,
@@ -18,6 +30,7 @@ const JobSchema = new mongoose.Schema(
 );
 
 const Job = mongoose.model("Job", JobSchema);
+const Application = mongoose.model("Application", ApplicationSchema);
 
 // ================= AUTH =================
 const authMiddleware = (req, res, next) => {
@@ -366,7 +379,7 @@ app.get("/jobs", optionalAuthMiddleware, async (req, res) => {
 
     const jobs = await Job.find(filter)
       .select(
-        "createdAt jobTitle companyName location jobType employmentType workSetting experienceLevel duration salaryMin salaryMax applicationDeadline skills"
+        "createdAt jobTitle companyName location jobType employmentType workSetting experienceLevel duration salaryMin salaryMax applicationDeadline skills",
       )
       .sort({ createdAt: -1, _id: -1 })
       .skip((page - 1) * limit)
@@ -516,27 +529,36 @@ app.put("/:id", authMiddleware, async (req, res) => {
 
 // DELETE
 app.delete("/:id", authMiddleware, async (req, res) => {
-  const job = await Job.findOneAndDelete({
-    _id: req.params.id,
-    userId: req.user.id,
-  });
-
-  if (!job) {
-    return res.status(404).json({
-      success: false,
-      message: "Not found",
-    });
-  }
-
   try {
-    await fetch(`http://localhost:5003/job/${req.params.id}/applications`, {
-      method: "DELETE",
+    const job = await Job.findOne({
+      _id: req.params.id,
+      userId: req.user.id,
+    });
+
+    if (!job) {
+      return res.status(404).json({
+        success: false,
+        message: "Not found",
+      });
+    }
+
+    await Application.deleteMany({
+      jobId: req.params.id,
+    });
+
+    await Job.deleteOne({
+      _id: req.params.id,
+    });
+
+    return res.json({
+      success: true,
     });
   } catch (err) {
-    console.error("Failed to delete applications:", err);
+    return res.status(500).json({
+      success: false,
+      message: err.message,
+    });
   }
-
-  res.json({ success: true });
 });
 
 // UPDATE STATUS manually

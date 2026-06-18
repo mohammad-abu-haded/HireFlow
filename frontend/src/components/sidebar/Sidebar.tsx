@@ -98,10 +98,10 @@ const Sidebar = () => {
           })}
       </nav>
       {isAuthenticated && (
-        <div className="sidebar-auth logout" onClick={handleLogout}>
+        <button className="sidebar-auth sidebar-logout" onClick={handleLogout}>
           <LogoutIcon className="auth-icon" />
           <span className="logout-label">Logout</span>
-        </div>
+        </button>
       )}
     </div>
   );

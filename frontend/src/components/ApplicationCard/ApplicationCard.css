@@ -131,10 +131,12 @@
   justify-content: center;
   font-size: 14px;
   color: #171a1f;
-  border-radius: 10px;
-  border: 1px solid #dee1e6;
+  border-radius: 6px;
   cursor: pointer;
-  padding: 8px 12px;
+  background-color: #f28602;
+  height: 40px;
+  padding: 0px 18px;
+  color: #fff;
   transition:
     background-color 0.2s,
     transform 0.2s;
@@ -146,6 +148,8 @@
 }
 
 .application-card-action:disabled {
-  color: #8a8d8f;
+  background-color: #f5c48a;
+  color: #ffffff;
   cursor: not-allowed;
+  opacity: 0.6;
 }

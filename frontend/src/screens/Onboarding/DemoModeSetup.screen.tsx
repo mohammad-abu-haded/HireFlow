@@ -6,10 +6,10 @@ import { useNavigate } from "react-router";
 const DemoModeSetupScreen = () => {
   const navigate = useNavigate();
   const handleSampleWorkspaceClick = () => {
-    navigate('/dashboard');
+    navigate('/jobs');
   };
   const handleBlankWorkspaceClick = () => {
-    navigate('/dashboard');
+    navigate('/jobs');
   };
   const featuresSamples = [
     "Full pipeline of 12 sample jobs",

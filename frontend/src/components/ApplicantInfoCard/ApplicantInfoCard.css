@@ -1,0 +1,145 @@
+.applicant-card {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 33px;
+  border-radius: 12px;
+  column-gap: 20px;
+  width: 100%;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #dee1e6;
+}
+
+.applicant-card-info-container {
+  display: flex;
+  align-items: center;
+  column-gap: 24px;
+}
+
+.applicant-card-profile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  width: 96px;
+  height: 96px;
+  border: 1px solid #dee1e6;
+  background-color: #fafafb;
+  font-size: 30px;
+  font-weight: bold;
+  color: #171a1f;
+}
+
+.applicant-card-info {
+  display: flex;
+  flex-direction: column;
+  row-gap: 8px;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.applicant-card-name-status {
+  display: flex;
+  column-gap: 10px;
+  align-items: center;
+}
+
+.applicant-card-name {
+  font-size: 30px;
+  font-weight: bold;
+  color: #171a1f;
+}
+
+.applicant-card-status {
+  display: flex;
+  column-gap: 5px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  padding: 6px 6px;
+}
+
+.applicant-card-status-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.applicant-card-status > p {
+  font-size: 12px;
+}
+
+.applicant-card-items {
+  display: flex;
+  align-items: center;
+  column-gap: 15px;
+}
+
+.applicant-card-item {
+  display: flex;
+  align-items: center;
+  column-gap: 6px;
+  color: #565d6d;
+  font-size: 14px;
+}
+
+.applicant-card-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.applicant-card-actions {
+  display: flex;
+  column-gap: 12px;
+  align-items: center;
+  justify-content: center;
+}
+
+.applicant-card-action {
+  all: unset;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  column-gap: 12px;
+  height: 36px;
+  padding: 0px 16px;
+  color: #fff;
+  border-radius: 6px;
+
+  transition:
+    background-color 0.2s,
+    transform 0.2s;
+}
+
+.applicant-card-action:hover,
+.applicant-card-action:focus-visible {
+  transform: scale(1.05);
+}
+
+.applicant-card-action-open-cv {
+  background-color: #eb7d0f;
+}
+
+.applicant-card-action-update-status {
+  border: 1px solid #dee1e6;
+  color: #565d6d;
+}
+
+.applicant-card-action-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.applicant-card-action-open-cv:disabled {
+  background-color: #f5c48a;
+  color: #ffffff;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.applicant-card-main {
+  display: flex;
+  width: 100%;
+  row-gap: 32px;
+  align-items: flex-start;
+  justify-content: center;
+}

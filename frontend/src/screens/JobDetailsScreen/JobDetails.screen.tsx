@@ -8,6 +8,7 @@ import ClockPlusIcon from "../../assets/icons/clock-plus.svg?react";
 import UserIcon from "../../assets/icons/persons.svg?react";
 import EyeIcon from "../../assets/icons/eye.svg?react";
 import ClockIcon from "../../assets/icons/clock.svg?react";
+import ApplicationsIcon from "../../assets/icons/persons.svg?react";
 import RightIcon from "../../assets/icons/right-arrow.svg?react";
 import CorrectIcon from "../../assets/icons/correct.svg?react";
 import { JobDetailStatus, type IForm } from "../../types";
@@ -119,13 +120,19 @@ const JobDetailsScreen = () => {
   const updateButtonData = (status: IForm["status"]) => {
     if (status === "ACTIVE") {
       setButtonLabel("Close Job");
-      setButtonIcon(<CloseIcon className="close-open-icon-job-details" />);
+      setButtonIcon(
+        <CloseIcon className="close-open-icon-job-details icon-job-details" />,
+      );
     } else if (status === "CLOSED") {
       setButtonLabel("Open Job");
-      setButtonIcon(<OpenIcon className="close-open-icon-job-details" />);
+      setButtonIcon(
+        <OpenIcon className="close-open-icon-job-details icon-job-details" />,
+      );
     } else {
       setButtonLabel("Extend Deadline");
-      setButtonIcon(<ClockPlusIcon className="close-open-icon-job-details" />);
+      setButtonIcon(
+        <ClockPlusIcon className="close-open-icon-job-details icon-job-details" />,
+      );
     }
   };
   const updateStatus = async (status: IForm["status"]) => {
@@ -185,16 +192,23 @@ const JobDetailsScreen = () => {
     <div className="job-details-main">
       <div className="header-job-details">
         <div className="job-details-meta">
-          <h2 className="job-details-title">{job?.jobTitle}</h2>
+          <h2 className="job-details-title">
+            {job?.jobTitle}
+           {isOwner &&  <span className="status-job-details">
+              ({job?.status})
+            </span>}
+          </h2>
           <div className="company-location-details">
             <p>{job?.companyName} •</p>
             <div className="location-details">
-              <LocationIcon className="location-icon-details" />
+              <LocationIcon className="icon-job-details" />
               <p>{job?.location}&nbsp;</p>
               {["remote", "hybrid"].some((setting) =>
                 job?.workSetting?.includes(setting),
               ) ? (
-                <p>({formatText(job?.workSetting, { capitalizeWords: true })})</p>
+                <p>
+                  ({formatText(job?.workSetting, { capitalizeWords: true })})
+                </p>
               ) : (
                 ""
               )}
@@ -203,9 +217,8 @@ const JobDetailsScreen = () => {
         </div>
         {isOwner ? (
           <div className="job-details-actions">
-            <div className="status-job-details">{job?.status}</div>
             <button
-              className="edit-button-job-details"
+              className="edit-button-job-details job-details-action"
               title="Edit Job"
               onClick={() =>
                 navigate(`/update-job/${job?._id}`, {
@@ -213,19 +226,19 @@ const JobDetailsScreen = () => {
                 })
               }
             >
-              <EditIcon className="edit-icon-job-details" />
+              <EditIcon className="edit-icon-job-details icon-job-details" />
               <p>Edit Job</p>
             </button>
             <button
-              className="delete-button"
+              className="delete-button-job-details job-details-action"
               title="Delete Job"
               onClick={() => deleteJob()}
             >
-              <DeleteIcon className="delete-icon-myJobCard" />
+              <DeleteIcon className="delete-icon-myJobCard icon-job-details" />
               <p>Delete</p>
             </button>
             <button
-              className="close-open-button-job-details"
+              className="close-open-button-job-details job-details-action"
               title={buttonLabel}
               onClick={() => {
                 if (job?.status === JobDetailStatus.ACTIVE) {
@@ -241,6 +254,15 @@ const JobDetailsScreen = () => {
             >
               {buttonIcon}
               <p>{buttonLabel}</p>
+            </button>
+            <button
+              className="job-details-action view-applications-job-details"
+              onClick={() => {
+                navigate(`/job/${job?._id}/applications`);
+              }}
+            >
+              <ApplicationsIcon className="delete-icon-myJobCard icon-job-details" />
+              <p>View Applications</p>
             </button>
           </div>
         ) : (
@@ -304,7 +326,9 @@ const JobDetailsScreen = () => {
             duration={job?.duration || ""}
             durationUnit={job?.durationUnit || ""}
           />
-          {job?.benefits && job?.benefits.length > 0 && <JobBenefitsCard benefits={job?.benefits || []} />}
+          {job?.benefits && job?.benefits.length > 0 && (
+            <JobBenefitsCard benefits={job?.benefits || []} />
+          )}
         </div>
       </div>
     </div>

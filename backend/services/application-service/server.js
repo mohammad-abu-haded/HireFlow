@@ -272,8 +272,13 @@ app.get("/", authMiddleware, async (req, res) => {
 
 app.get("/job/:jobId", authMiddleware, async (req, res) => {
   try {
+    const { jobId } = req.params;
+
+    const limit = Math.max(parseInt(req.query.limit) || 6, 1);
+    let page = Math.max(parseInt(req.query.page) || 1, 1);
+
     const job = await Job.findOne({
-      _id: req.params.jobId,
+      _id: jobId,
       userId: req.user.id,
     });
 
@@ -284,13 +289,47 @@ app.get("/job/:jobId", authMiddleware, async (req, res) => {
       });
     }
 
-    const applications = await Application.find({
-      jobId: req.params.jobId,
-    }).sort({
-      createdAt: -1,
-    });
+    const andFilters = [{ jobId }];
 
-    res.json(applications);
+    if (req.query.q?.trim()) {
+      andFilters.push({
+        $or: [
+          { fullName: { $regex: req.query.q, $options: "i" } },
+          { email: { $regex: req.query.q, $options: "i" } },
+        ],
+      });
+    }
+
+    if (req.query.status) {
+      const values = Array.isArray(req.query.status)
+        ? req.query.status
+        : [req.query.status];
+
+      andFilters.push({
+        status: { $in: values },
+      });
+    }
+
+    const filter =
+      andFilters.length === 1 ? andFilters[0] : { $and: andFilters };
+
+    const total = await Application.countDocuments(filter);
+    const totalPages = Math.max(Math.ceil(total / limit), 1);
+
+    if (page > totalPages) page = totalPages;
+
+    const applications = await Application.find(filter)
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    res.json({
+      data: applications,
+      total,
+      page,
+      totalPages,
+      limit,
+    });
   } catch (err) {
     res.status(500).json({
       success: false,

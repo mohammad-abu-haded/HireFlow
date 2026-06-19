@@ -17,26 +17,6 @@
   width: 100%;
 }
 
-.applications-header {
-  display: flex;
-  flex-direction: column;
-  row-gap: 4px;
-  width: 100%;
-  align-items: flex-start;
-}
-
-.applications-header > h2 {
-  font-size: 30px;
-  color: #171a1f;
-  font-weight: bold;
-}
-
-.applications-header > p {
-  font-size: 16px;
-  color: #565d6d;
-  font-weight: 400;
-}
-
 .applications-filters {
   display: flex;
   align-items: center;
@@ -64,4 +44,26 @@
   align-items: center;
   height: 40px;
   width: 100%;
+}
+
+.applications-cards-container-title {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  border-radius: 10px;
+}
+
+.applications-cards-container-title p {
+  padding: 25px;
+  background-color: #fff8f0;
+  border-radius: 14px;
+  border: 1px solid #f286021a;
+  color: #171a1f;
+  font-size: 32px;
+  font-weight: bold;
+}
+
+.applications-cards-container-title span {
+  color: #f28705;
 }

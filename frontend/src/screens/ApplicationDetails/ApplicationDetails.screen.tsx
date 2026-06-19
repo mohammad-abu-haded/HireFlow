@@ -2,7 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import "./ApplicationDetails.css";
 import { useEffect, useState } from "react";
 import type { IApplication } from "../../types";
-
+import ApplicantInfoCard from "../../components/ApplicantInfoCard/ApplicantInfoCard";
 const ApplicationDetailsScreen = () => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -15,7 +15,7 @@ const ApplicationDetailsScreen = () => {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     });
-    
+
     if (!res.ok) {
       navigate("/not-found", {
         state: { message: "Application not found" },
@@ -72,9 +72,11 @@ const ApplicationDetailsScreen = () => {
 
   return (
     <div className="application-details-main">
-      <div className="application-details-header">
-        <h2>Application Details</h2>
-        <p>Application for {jobTitle}</p>
+
+      <div className="application-details-main">
+        {application && (
+          <ApplicantInfoCard {...application} jobTitle={jobTitle || ""} />
+        )}
       </div>
     </div>
   );

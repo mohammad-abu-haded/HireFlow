@@ -7,7 +7,12 @@ import {
 import ApplicationCard from "../../components/ApplicationCard/ApplicationCard";
 import "./Applications.css";
 import StatusFilter from "../../components/StatusFilter/StatusFilter";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import {
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import FilterIcon from "../../assets/icons/filter.svg?react";
 import Search from "../../components/Search/Search";
 import Pagination from "../../components/Pagination/Pagination";
@@ -15,20 +20,30 @@ import { getPagination } from "../../utils/getPaginationRange";
 import { AuthContext } from "../../context/authContext";
 import { formatDisplayDateTime } from "../../utils/dateFormatter";
 
+export enum ApplicationsScope {
+  AllApplications = "allApplications",
+  JobApplications = "jobApplications",
+  NoApplications = "noApplications",
+}
 const ApplicationsScreen = () => {
   const [applications, setApplications] = useState<IApplication[]>([]);
   const { token } = useContext(AuthContext);
   const [params, setParams] = useSearchParams();
+  const pathname = useLocation().pathname;
+  const { id } = useParams();
   const [search, setSearch] = useState(params.get("q") || "");
   const [page, setPage] = useState(1);
   const [totalApplications, setTotalApplications] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [pagination, setPagination] = useState<number[]>([]);
   const [jobTitles, setJobTitles] = useState<Record<string, string>>({});
+  const [applicationsScope, setApplicationsScope] = useState<ApplicationsScope>(
+    ApplicationsScope.NoApplications,
+  );
   const navigate = useNavigate();
   const limit = 9;
 
-  const getJobTitleById = async (id: number) => {
+  const getJobTitleById = async (id: number | string) => {
     try {
       const res = await fetch(`http://localhost:5000/jobs/${id}/title`, {
         headers: {
@@ -54,8 +69,8 @@ const ApplicationsScreen = () => {
       });
     }
   };
-  
-  const getApplications = async () => {
+
+  const getApplications = async (applicationsScope: ApplicationsScope) => {
     const token = localStorage.getItem("token");
 
     const query = new URLSearchParams();
@@ -66,15 +81,18 @@ const ApplicationsScreen = () => {
     query.set("page", page.toString());
     query.set("limit", limit.toString());
 
+    const baseUrl =
+      applicationsScope == ApplicationsScope.JobApplications
+        ? `http://localhost:5000/applications/job/${id}`
+        : applicationsScope == ApplicationsScope.AllApplications
+          ? `http://localhost:5000/applications`
+          : "";
     try {
-      const res = await fetch(
-        `http://localhost:5000/applications?${query.toString()}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      const res = await fetch(`${baseUrl}?${query.toString()}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      );
+      });
 
       if (!res.ok) {
         throw new Error("Failed to fetch applications");
@@ -88,8 +106,17 @@ const ApplicationsScreen = () => {
 
   useEffect(() => {
     if (!token) return;
+    const scope =
+      pathname === "/applications"
+        ? ApplicationsScope.AllApplications
+        : pathname === `/job/${id}/applications`
+          ? ApplicationsScope.JobApplications
+          : ApplicationsScope.NoApplications;
+    setApplicationsScope(scope);
     const fetchData = async () => {
-      const data = await getApplications();
+      const data =
+        scope !== ApplicationsScope.NoApplications &&
+        (await getApplications(scope));
 
       if (data) {
         setApplications(data.data);
@@ -99,14 +126,28 @@ const ApplicationsScreen = () => {
     };
 
     fetchData();
-  }, [params, page]);
+  }, [params, page, pathname]);
 
   useEffect(() => {
     setPagination(getPagination(page, totalPages));
   }, [page, totalPages]);
 
   useEffect(() => {
-    if (!applications.length) return;
+    const loadData = async () => {
+      if (!applications.length) {
+        if (id) {
+          const title = await getJobTitleById(id);
+
+          setJobTitles({
+            [id]: title,
+          });
+        }
+
+        return;
+      }
+    };
+
+    loadData();
 
     const fetchTitles = async () => {
       const titles: Record<string, string> = {};
@@ -124,7 +165,7 @@ const ApplicationsScreen = () => {
     };
 
     fetchTitles();
-  }, [applications]);
+  }, [applications, id]);
 
   const STATUS_FILTER_CONFIG: StatusFilterOption[] = [
     {
@@ -144,11 +185,17 @@ const ApplicationsScreen = () => {
       label: ApplicationStatus.REJECTED,
     },
   ];
+
   return (
     <div className="applications-main">
-      <div className="applications-header">
-        <h2>Manage Applications</h2>
-        <p>Track and manage all candidate progress in real-time.</p>
+      <div className="applications-cards-container-title">
+        {id ? (
+          <p>
+            Applications submitted for <span>{jobTitles[id]}</span>.
+          </p>
+        ) : (
+          <p>Applications submitted across all your job postings.</p>
+        )}
       </div>
 
       <div className="applications-filters">
@@ -186,6 +233,7 @@ const ApplicationsScreen = () => {
               jobTitle={jobTitles[application.jobId]}
               jobId={application.jobId}
               cvFile={application.cvFile}
+              applicationsScope={applicationsScope}
             />
           ))
         ) : (

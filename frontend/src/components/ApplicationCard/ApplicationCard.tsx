@@ -5,6 +5,7 @@ import ClockIcon from "../../assets/icons/clock.svg?react";
 import AcceptedIcon from "../../assets/icons/clock.svg?react";
 import RejectIcon from "../../assets/icons/delete.svg?react";
 import { useNavigate } from "react-router-dom";
+import { ApplicationsScope } from "../../screens/Applications/Applications.screen";
 
 interface IProps {
   _id: string;
@@ -21,9 +22,10 @@ interface IProps {
     mimetype: string;
     size: number;
   } | null;
+  applicationsScope: ApplicationsScope;
 }
 
-const APPLICATION_STATUS_CONFIG = {
+export const APPLICATION_STATUS_CONFIG = {
   [ApplicationStatus.PENDING]: {
     label: "Pending",
     icon: ClockIcon,
@@ -107,10 +109,12 @@ const ApplicationCard = (props: IProps) => {
       </div>
 
       <div className="application-card-title-date-container">
-        <div className="application-card-job-title">
-          <p>APPLIED FOR</p>
-          <h2>{props.jobTitle}</h2>
-        </div>
+        { props.applicationsScope === ApplicationsScope.AllApplications &&
+          <div className="application-card-job-title">
+            <p>APPLIED FOR</p>
+            <h2>{props.jobTitle}</h2>
+          </div>
+        }
 
         <div>
           <p>DATE APPLIED</p>
@@ -127,21 +131,23 @@ const ApplicationCard = (props: IProps) => {
         >
           Application Details
         </button>
-        <button
-          className="application-card-action"
-          onClick={() => {
-            navigate(`/job-details/${props.jobId}`);
-          }}
-        >
-          Job Details
-        </button>
+        {props.applicationsScope === ApplicationsScope.AllApplications && (
           <button
             className="application-card-action"
-            disabled={props.cvFile ? false: true}
-            onClick={() => openCV()}
+            onClick={() => {
+              navigate(`/job-details/${props.jobId}`);
+            }}
           >
-            {props.cvFile ? "View Resume": "No CV uploaded"}
+            Job Details
           </button>
+        )}
+        <button
+          className="application-card-action"
+          disabled={props.cvFile ? false : true}
+          onClick={() => openCV()}
+        >
+          {props.cvFile ? "View Resume" : "No CV uploaded"}
+        </button>
       </div>
     </div>
   );

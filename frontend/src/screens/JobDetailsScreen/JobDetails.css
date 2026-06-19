@@ -15,7 +15,7 @@
 
 .job-details-title {
   font-size: 30px;
-  width: 388px;
+  width: 100%;
   color: #161a1d;
   font-weight: bolder;
 }
@@ -34,17 +34,12 @@
 }
 
 .location-icon-details {
-  width: 16px;
-  height: 16px;
   margin-right: 9px;
 }
 
-.edit-button-job-details {
+.job-details-action {
   all: unset;
-  color: #565d6d;
-  background-color: #fff;
   border-radius: 6px;
-  border: 1px solid #dee1e6;
   height: 36px;
   padding: 12px;
   cursor: pointer;
@@ -58,40 +53,23 @@
     transform 0.2s;
 }
 
-.edit-button-job-details:focus-visible,
-.edit-button-job-details:hover {
+.job-details-action:focus-visible,
+.job-details-action:hover {
   transform: scale(1.05);
 }
 
-.edit-icon-job-details {
-  width: 16px;
-  height: 16px;
-}
-
-.close-open-button-job-details {
-  all: unset;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 12px;
-  border-radius: 6px;
-  font-size: 14px;
+.close-open-button-job-details,
+.view-applications-job-details {
   color: #ffffff;
   background-color: #eb7d0f;
-  column-gap: 6px;
-  cursor: pointer;
-  font-weight: 600;
-  flex-shrink: 0;
-  transition:
-    background-color 0.2s,
-    transform 0.2s;
 }
 
-.close-open-button-job-details:focus-visible,
-.close-open-button-job-details:hover {
-  transform: scale(1.05);
+.edit-button-job-details,
+.delete-button-job-details {
+  color: #565d6d;
+  background-color: #fff;
+  border: 1px solid #dee1e6;
 }
-
 .job-details-actions {
   display: flex;
   column-gap: 12px;
@@ -104,12 +82,11 @@
 }
 
 .status-job-details {
-  display: flex;
-  align-items: flex-end;
-  font-size: 12px;
+  font-size: 18px;
+  font-weight: 400;
 }
 
-.close-open-icon-job-details {
+.icon-job-details {
   width: 16px;
   height: 16px;
 }

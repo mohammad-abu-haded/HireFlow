@@ -22,6 +22,10 @@ export const formatDateTimeLocal = (
 
 export const formatDisplayDateTime = (
   value: string | Date | null | undefined,
+  options?: {
+    hideDate?: boolean;
+    hideTime?: boolean;
+  },
 ): string => {
   if (!value) return "";
 
@@ -37,6 +41,9 @@ export const formatDisplayDateTime = (
     hour: "numeric",
     minute: "2-digit",
   }).format(date);
+
+  if (options?.hideDate) return timePart;
+  if (options?.hideTime) return datePart;
 
   return `${datePart} • ${timePart}`;
 };

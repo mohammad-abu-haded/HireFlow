@@ -120,7 +120,8 @@
 .application-card-actions {
   display: flex;
   align-items: center;
-  column-gap: 12px;
+  justify-content: flex-start;
+  column-gap: 6px;
   width: 100%;
 }
 

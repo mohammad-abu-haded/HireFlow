@@ -4,6 +4,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import PostJobIcon from "../../assets/icons/plus-circle.svg?react";
 import ApplicationsIcon from "../../assets/icons/persons.svg?react";
 import LogoutIcon from "../../assets/icons/logout.svg?react";
+import SavedIcon from "../../assets/icons/saved.svg?react";
 import OpenSidebar from "../../assets/icons/sidebar-right.svg?react";
 import CloseSidebar from "../../assets/icons/sidebar-left.svg?react";
 import JobsIcon from "../../assets/icons/list.svg?react";
@@ -33,6 +34,13 @@ const navItems = [
     label: "Jobs",
     icon: JobsIcon,
     requiresAuth: false,
+    section: "users",
+  },
+  {
+    path: "/my-applications",
+    label: "My Applications",
+    icon: SavedIcon,
+    requiresAuth: true,
   },
 ];
 
@@ -75,25 +83,27 @@ const Sidebar = () => {
       <nav className="sidebar-nav">
         {navItems
           .filter((item) => (isAuthenticated ? true : !item.requiresAuth))
-          .map((item) => {
+          .map((item, index) => {
             const Icon = item.icon;
-
             return (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                onClick={(e) => {
-                  if (location.pathname === item.path) {
-                    e.preventDefault();
+              <div key={`nav-item-container-${index}`}>
+              {item.section && item.section === 'users' && (<div className="nav-divider" key={`nav-divider-${index}`}/>)}
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  onClick={(e) => {
+                    if (location.pathname === item.path) {
+                      e.preventDefault();
+                    }
+                  }}
+                  className={({ isActive }) =>
+                    isActive ? "nav-item active" : "nav-item"
                   }
-                }}
-                className={({ isActive }) =>
-                  isActive ? "nav-item active" : "nav-item"
-                }
-              >
-                <Icon className="nav-icon" />
-                <span className="nav-label">{item.label}</span>
-              </NavLink>
+                >
+                  <Icon className="nav-icon" />
+                  <span className="nav-label">{item.label}</span>
+                </NavLink>
+              </div>
             );
           })}
       </nav>

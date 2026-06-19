@@ -1,29 +1,7 @@
 .application-details-main {
-    display: flex;
-    width: 95%;
-    height: fit-content;
-    padding-bottom: 40px;
-    flex-direction: column;
-}
-
-.application-details-header {
-    display: flex;
-    flex-direction: column;
-    column-gap: 4px;
-    width: 100%;
-    align-items: flex-start;
-    justify-content: center;
-    padding-bottom: 26px;
-}
-
-.application-details-header > h2 {
-    font-size: 30px;
-    color: #16181D;
-    font-weight: bold;
-}
-
-.application-details-header > p {
-    font-size: 14px;
-    color: #353940;
-    font-weight: 500;
+  display: flex;
+  width: 95%;
+  height: fit-content;
+  padding: 40px;
+  flex-direction: column;
 }

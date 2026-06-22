@@ -1,0 +1,25 @@
+.my-applications-main {
+  display: flex;
+  flex-direction: column;
+  row-gap: 32px;
+  width: 95%;
+  height: fit-content;
+  padding: 32px;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+}
+
+.my-application-cards-container {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  width: 100%;
+}
+
+.my-applications-filters {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: flex-start;
+}

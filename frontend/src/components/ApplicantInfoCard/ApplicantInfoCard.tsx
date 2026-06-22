@@ -8,12 +8,13 @@ import DucIcon from "../../assets/icons/document.svg?react";
 import { APPLICATION_STATUS_CONFIG } from "../ApplicationCard/ApplicationCard";
 import { formatDisplayDateTime } from "../../utils/dateFormatter";
 import ApplicationStatusUpdate from "../ApplicationStatusUpdate/ApplicationStatusUpdate";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import NotificationOverlay from "../NotificationOverlay/NotificationOverlay";
 export interface IProps extends Pick<
   IApplication,
   | "_id"
   | "applicantId"
+  | "jobId"
   | "fullName"
   | "email"
   | "location"
@@ -46,6 +47,8 @@ const openCV = async (id: string) => {
 };
 
 const ApplicantInfoCard = (props: IProps) => {
+  const [isOwner, setIsOwner] = useState(false);
+
   const [notification, setNotification] = useState<{
     type: "success" | "error";
     message: string;
@@ -85,6 +88,36 @@ const ApplicantInfoCard = (props: IProps) => {
       }
     }, 1000);
   };
+  const checkIsOwner = async () => {
+    try {
+      const res = await fetch(
+        `http://localhost:5000/jobs/${props.jobId}/ownership`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        },
+      );
+
+      if (!res.ok) {
+        setIsOwner(false);
+        return false;
+      }
+
+      const data = await res.json();
+      setIsOwner(data.isOwner);
+
+      return data.isOwner;
+    } catch (err) {
+      console.error("Error checking ownership:", err);
+      setIsOwner(false);
+      return false;
+    }
+  };
+
+  useEffect(() => {
+    checkIsOwner();
+  }, []);
 
   return (
     <div className="applicant-card">
@@ -125,13 +158,15 @@ const ApplicantInfoCard = (props: IProps) => {
         </div>
       </div>
       <div className="applicant-card-actions">
-        <button
-          className="applicant-card-action applicant-card-action-update-status"
-          onClick={() => setIsUpdateStatusOpen(true)}
-        >
-          <EditIcon className="applicant-card-action-icon" />
-          Update Status
-        </button>
+        {isOwner && (
+          <button
+            className="applicant-card-action applicant-card-action-update-status"
+            onClick={() => setIsUpdateStatusOpen(true)}
+          >
+            <EditIcon className="applicant-card-action-icon" />
+            Update Status
+          </button>
+        )}
         <button
           className="applicant-card-action applicant-card-action-open-cv"
           onClick={() => openCV(props._id)}

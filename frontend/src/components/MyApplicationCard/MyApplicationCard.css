@@ -1,0 +1,125 @@
+.my-application-card-container {
+  display: flex;
+  flex-direction: column;
+  padding: 25px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  border: 1px solid #dee1e6;
+  width: 100%;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.my-application-card-container:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+.my-application-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.my-application-profile-container {
+  display: flex;
+  column-gap: 16px;
+  align-items: flex-start;
+}
+
+.my-application-profile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  border: 1px solid #dee1e6;
+  background-color: #fafafb;
+  font-weight: bold;
+  font-size: 30px;
+}
+
+.my-application-profile-info {
+  display: flex;
+  flex-direction: column;
+  row-gap: 2px;
+  align-items: flex-start;
+}
+
+.my-application-profile-info > h2 {
+  font-size: 18px;
+  color: #16181d;
+  font-weight: bold;
+}
+
+.my-application-profile-info > p {
+  font-size: 14px;
+  color: #16181dcc;
+  font-weight: 500;
+}
+
+.my-application-job-info {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  column-gap: 15px;
+  font-size: 12px;
+  color: #575e6b;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.my-application-job-info-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.my-application-job-info-item {
+  display: flex;
+  align-items: center;
+  column-gap: 6px;
+}
+
+.my-application-card-footer {
+  padding-top: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.my-application-card-footer > p {
+  font-size: 12px;
+  color: #575e6b;
+}
+
+.my-application-card-action {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.my-application-card-action {
+  all: unset;
+  cursor: pointer;
+  color: #f28602;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  column-gap: 4px;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.my-application-card-action-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.my-application-card-action:hover,
+.my-application-card-action:focus-visible {
+  transform: scale(1.05);
+}

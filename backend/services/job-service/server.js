@@ -230,12 +230,23 @@ app.get("/jobs", optionalAuthMiddleware, async (req, res) => {
     ];
 
     if (req.user?.id) {
+      const applications = await Application.find({
+        applicantId: req.user.id,
+      }).select("jobId");
+
+      const appliedJobIds = applications.map((a) => a.jobId);
+
+      if (appliedJobIds.length) {
+        andFilters.push({
+          _id: { $nin: appliedJobIds },
+        });
+      }
+
       andFilters.push({
         userId: { $ne: req.user.id },
       });
     }
 
-    // Search
     if (req.query.q?.trim()) {
       andFilters.push({
         $or: [
@@ -246,7 +257,6 @@ app.get("/jobs", optionalAuthMiddleware, async (req, res) => {
       });
     }
 
-    // Job Type
     if (req.query.job_type) {
       const values = Array.isArray(req.query.job_type)
         ? req.query.job_type
@@ -257,7 +267,6 @@ app.get("/jobs", optionalAuthMiddleware, async (req, res) => {
       });
     }
 
-    // Experience
     if (req.query.experience) {
       const values = Array.isArray(req.query.experience)
         ? req.query.experience
@@ -268,7 +277,6 @@ app.get("/jobs", optionalAuthMiddleware, async (req, res) => {
       });
     }
 
-    // Salary Range
     if (req.query.salary_range) {
       const values = Array.isArray(req.query.salary_range)
         ? req.query.salary_range
@@ -326,7 +334,6 @@ app.get("/jobs", optionalAuthMiddleware, async (req, res) => {
       }
     }
 
-    // Date Posted
     if (req.query.date_posted) {
       const values = Array.isArray(req.query.date_posted)
         ? req.query.date_posted
@@ -363,14 +370,9 @@ app.get("/jobs", optionalAuthMiddleware, async (req, res) => {
     }
 
     const filter =
-      andFilters.length === 1
-        ? andFilters[0]
-        : {
-            $and: andFilters,
-          };
+      andFilters.length === 1 ? andFilters[0] : { $and: andFilters };
 
     const total = await Job.countDocuments(filter);
-
     const totalPages = Math.max(Math.ceil(total / limit), 1);
 
     if (page > totalPages) {
@@ -400,17 +402,32 @@ app.get("/jobs", optionalAuthMiddleware, async (req, res) => {
   }
 });
 
-app.get("/public/jobs/:id", async (req, res) => {
+app.get("/public/jobs/:id", authMiddleware, async (req, res) => {
   try {
-    const job = await Job.findOne({
-      _id: req.params.id,
-      status: "ACTIVE",
-    }).select("-applicationsCount -profileViews");
+    const job = await Job.findById(req.params.id).select(
+      "-applicationsCount -profileViews",
+    );
 
     if (!job) {
       return res.status(404).json({
         success: false,
         message: "Job not found",
+      });
+    }
+
+    const isOwner = job.userId.toString() === req.user.id;
+
+    const isApplicant = await Application.exists({
+      jobId: job._id,
+      applicantId: req.user.id,
+    });
+
+    const isActive = job.status === "ACTIVE";
+
+    if (!isActive && !isOwner && !isApplicant) {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied",
       });
     }
 
@@ -453,21 +470,26 @@ app.get("/:id/ownership", authMiddleware, async (req, res) => {
 // GET JOB TITLE ONLY
 app.get("/:id/title", authMiddleware, async (req, res) => {
   try {
-    const job = await Job.findOne(
-      {
-        _id: req.params.id,
-        userId: req.user.id,
-      },
-      {
-        jobTitle: 1,
-        _id: 0,
-      },
-    );
+    const job = await Job.findById(req.params.id).select("jobTitle userId");
 
     if (!job) {
       return res.status(404).json({
         success: false,
         message: "Job not found",
+      });
+    }
+
+    const isOwner = job.userId.toString() === req.user.id;
+
+    const isApplicant = await Application.exists({
+      jobId: job._id,
+      applicantId: req.user.id,
+    });
+
+    if (!isOwner && !isApplicant) {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied",
       });
     }
 

@@ -188,15 +188,13 @@ const ApplicationsScreen = () => {
 
   return (
     <div className="applications-main">
-      <div className="applications-cards-container-title">
-        {id ? (
+      {id && (
+        <div className="applications-cards-container-title">
           <p>
             Applications submitted for <span>{jobTitles[id]}</span>.
           </p>
-        ) : (
-          <p>Applications submitted across all your job postings.</p>
-        )}
-      </div>
+        </div>
+      )}
 
       <div className="applications-filters">
         <div className="applications-search-filter-container">

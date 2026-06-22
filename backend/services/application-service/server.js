@@ -151,7 +151,10 @@ app.get("/applications/:id/cv", authMiddleware, async (req, res) => {
       return res.status(404).json({ message: "Job not found" });
     }
 
-    if (job.userId.toString() !== req.user.id) {
+    if (
+      job.userId.toString() !== req.user.id &&
+      application.applicantId.toString() !== req.user.id
+    ) {
       return res.status(403).json({ message: "Forbidden" });
     }
 
@@ -165,6 +168,7 @@ app.get("/applications/:id/cv", authMiddleware, async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 });
+
 // ================= ROUTES =================
 
 // APPLY FOR JOB
@@ -231,6 +235,58 @@ app.post(
     }
   },
 );
+
+// GET ALL My APPLICATIONS
+
+app.get("/my-applications", authMiddleware, async (req, res) => {
+  try {
+    const limit = Math.max(parseInt(req.query.limit) || 6, 1);
+    let page = Math.max(parseInt(req.query.page) || 1, 1);
+
+    const andFilters = [
+      {
+        applicantId: req.user.id,
+      },
+    ];
+
+
+    if (req.query.status) {
+      const values = Array.isArray(req.query.status)
+        ? req.query.status
+        : [req.query.status];
+
+      andFilters.push({
+        status: { $in: values },
+      });
+    }
+
+    const filter =
+      andFilters.length === 1 ? andFilters[0] : { $and: andFilters };
+
+    const total = await Application.countDocuments(filter);
+    const totalPages = Math.max(Math.ceil(total / limit), 1);
+
+    if (page > totalPages) page = totalPages;
+
+    const applications = await Application.find(filter)
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    res.json({
+      data: applications,
+      total,
+      page,
+      totalPages,
+      limit,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
 
 // GET ALL APPLICATIONS FOR MY JOBS
 
@@ -681,18 +737,19 @@ app.get("/:id", authMiddleware, async (req, res) => {
       });
     }
 
-    const job = await Job.findOne({
-      _id: application.jobId,
-      userId: req.user.id,
-    });
+    const job = await Job.findById(application.jobId);
 
-    if (!job) {
+    const isOwner = job && job.userId.toString() === req.user.id;
+    const isApplicant =
+      application.applicantId.toString() === req.user.id;
+
+    if (!isOwner && !isApplicant) {
       return res.status(403).json({
         success: false,
         message: "Access denied",
       });
     }
-
+    
     res.json(application);
   } catch (err) {
     res.status(500).json({

@@ -2,13 +2,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import type { IForm } from "../../types";
 import "./ApplyJob.css";
 import { useEffect, useState } from "react";
-import { initialState } from "../../constants/formInitialState";
+import { initialStateForm } from "../../constants/formInitialState";
 import { formatText } from "../../utils/text";
 import ApplyJobForm from "../../components/ApplyJobForm/ApplyJobForm";
 
 const ApplyJobScreen = () => {    
   const navigate = useNavigate();
-  const [job, setJob] = useState<IForm>(initialState);
+  const [job, setJob] = useState<IForm>(initialStateForm);
   const { id } = useParams();
   const getJobById = async (id: string) => {
     const res = await fetch(`http://localhost:5000/jobs/public/jobs/${id}`, {

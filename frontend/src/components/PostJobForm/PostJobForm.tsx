@@ -18,7 +18,7 @@ import {
 import { AuthContext } from "../../context/authContext";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { formatDateTimeLocal } from "../../utils/dateFormatter";
-import { initialState } from "../../constants/formInitialState";
+import { initialStateForm } from "../../constants/formInitialState";
 const PostJobForm = () => {
   const { email } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -31,7 +31,7 @@ const PostJobForm = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [prevLocation, setPrevLocation] = useState<string>("");
 
-  const [form, setForm] = useState<IForm>(initialState);
+  const [form, setForm] = useState<IForm>(initialStateForm);
   const createJob = async (job: IForm) => {
     const res = await fetch("http://localhost:5000/jobs", {
       method: "POST",
@@ -78,7 +78,7 @@ const PostJobForm = () => {
     e.preventDefault();
     if (formData) {
       await updateJob(form._id!, form);
-      setForm(initialState);
+      setForm(initialStateForm);
       setIsSubmitted(true);
       setTimeout(() => {
         setIsSubmitted(false);
@@ -93,7 +93,7 @@ const PostJobForm = () => {
       email: email,
     };
     await createJob(newJob);
-    setForm(initialState);
+    setForm(initialStateForm);
     localStorage.removeItem("jobForm");
     setIsSubmitted(true);
     setTimeout(() => {
@@ -103,7 +103,7 @@ const PostJobForm = () => {
   };
 
   const handleCancel = () => {
-    setForm(initialState);
+    setForm(initialStateForm);
   };
 
   useEffect(() => {
@@ -145,7 +145,7 @@ const PostJobForm = () => {
       prevLocation.includes("/update-job") &&
       location.pathname === "/post-job"
     ) {
-      setForm(initialState);
+      setForm(initialStateForm);
       setFormData(null);
     }
   }, [location.pathname]);

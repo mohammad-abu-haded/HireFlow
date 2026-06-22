@@ -40,10 +40,8 @@
 
 .applications-search-filter-container {
   display: flex;
-  column-gap: 15px;
   align-items: center;
-  height: 40px;
-  width: 100%;
+  width: fit-content;
 }
 
 .applications-cards-container-title {

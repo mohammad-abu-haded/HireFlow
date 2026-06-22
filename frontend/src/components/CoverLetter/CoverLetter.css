@@ -1,0 +1,44 @@
+.cover-letter {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #dee1e6;
+  border-radius: 10px;
+}
+
+.cover-letter-header {
+  display: flex;
+  align-items: center;
+  padding: 24px;
+  font-size: 18px;
+  color: #171a1f;
+  column-gap: 8px;
+  padding-bottom: 25px;
+  border-bottom: 1px solid #dee1e6;
+}
+
+.cover-letter-icon {
+  width: 20px;
+  height: 20px;
+  color: #f17204;
+}
+
+.cover-letter-content {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 32px;
+}
+
+.cover-letter-content > p {
+  font-size: 16px;
+  color: #171a1f;
+  white-space: pre-wrap;
+}
+
+.cover-letter-content > .cover-letter-empty{
+    color: #888;
+    font-size: 14px;
+    font-style: italic;
+}

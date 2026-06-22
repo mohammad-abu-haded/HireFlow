@@ -202,14 +202,12 @@ const ApplicationsScreen = () => {
         <div className="applications-search-filter-container">
           <Search
             params={params}
-            placeholder="Search candidates by name, email..."
+            placeholder="Search applications..."
             search={search}
             setParams={setParams}
             setSearch={setSearch}
-            height="40px"
             setPage={setPage}
           />
-          <div className="applications-filter-by-job"></div>
         </div>
         <StatusFilter
           STATUS_FILTER_CONFIG={STATUS_FILTER_CONFIG}

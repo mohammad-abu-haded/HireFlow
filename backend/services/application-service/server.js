@@ -51,9 +51,52 @@ const JobSchema = new mongoose.Schema(
   { strict: false },
 );
 
-const Application = mongoose.model("Application", ApplicationSchema);
+const InterviewSchema = new mongoose.Schema(
+  {
+    applicationId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Application",
+      required: true,
+    },
 
+    applicantId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+
+    ownerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+
+    type: {
+      type: String,
+      enum: ["ONLINE", "ONSITE"],
+      required: true,
+    },
+
+    scheduledAt: {
+      type: Date,
+      required: true,
+    },
+
+    meetingLink: {
+      type: String,
+      default: "",
+    },
+
+    location: {
+      type: String,
+      default: "",
+    },
+  },
+  { timestamps: true },
+);
+const Application = mongoose.model("Application", ApplicationSchema);
 const Job = mongoose.model("Job", JobSchema);
+const Interview = mongoose.model("Interview", InterviewSchema);
 
 // ================= AUTH =================
 
@@ -94,7 +137,6 @@ const upload = multer({
   },
 });
 
-
 app.get("/applications/:id/cv", authMiddleware, async (req, res) => {
   try {
     const application = await Application.findById(req.params.id);
@@ -117,10 +159,7 @@ app.get("/applications/:id/cv", authMiddleware, async (req, res) => {
       return res.status(404).json({ message: "No CV found" });
     }
 
-    return res.sendFile(
-      path.join(process.cwd(), application.cvFile.path)
-    );
-
+    return res.sendFile(path.join(process.cwd(), application.cvFile.path));
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: "Server error" });
@@ -161,6 +200,7 @@ app.post(
         location,
         phone,
         linkedIn,
+        github,
         coverLetter,
         cvFile: req.file
           ? {
@@ -426,9 +466,10 @@ app.get("/stats/applications", authMiddleware, async (req, res) => {
 });
 
 // UPDATE APPLICATION STATUS
-
 app.patch("/:id/status", authMiddleware, async (req, res) => {
   try {
+    const { status, interview } = req.body;
+
     const application = await Application.findById(req.params.id);
 
     if (!application) {
@@ -450,26 +491,106 @@ app.patch("/:id/status", authMiddleware, async (req, res) => {
       });
     }
 
-    application.status = req.body.status;
+    const ownerId = job.userId;
+    const applicantId = application.applicantId;
+    const allowedStatuses = ["PENDING", "INTERVIEW", "ACCEPTED", "REJECTED"];
 
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid status",
+      });
+    }
+
+    if (status === "INTERVIEW") {
+      if (!interview) {
+        return res.status(400).json({
+          success: false,
+          message: "Interview data is required",
+        });
+      }
+
+      const { type, scheduledAt, meetingLink, location } = interview;
+
+      if (!["ONLINE", "ONSITE"].includes(type)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid interview type",
+        });
+      }
+
+      if (!scheduledAt) {
+        return res.status(400).json({
+          success: false,
+          message: "Interview date is required",
+        });
+      }
+
+      const interviewDate = new Date(scheduledAt);
+
+      if (isNaN(interviewDate.getTime())) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid interview date",
+        });
+      }
+
+      if (type === "ONSITE" && !location?.trim()) {
+        return res.status(400).json({
+          success: false,
+          message: "Office location is required",
+        });
+      }
+
+      let finalMeetingLink = meetingLink || "";
+      let finalLocation = location || "";
+
+      if (type === "ONLINE") {
+        finalLocation = "";
+      }
+
+      if (type === "ONSITE") {
+        finalMeetingLink = "";
+      }
+
+      await Interview.findOneAndUpdate(
+        { applicationId: application._id },
+        {
+          applicationId: application._id,
+          applicantId,
+          ownerId,
+          type,
+          scheduledAt: interviewDate,
+          meetingLink: finalMeetingLink,
+          location: finalLocation,
+        },
+        { upsert: true, new: true },
+      );
+    } else {
+      await Interview.deleteOne({
+        applicationId: application._id,
+      });
+    }
+
+    application.status = status;
     await application.save();
 
-    res.json({
+    return res.json({
       success: true,
       application,
     });
   } catch (err) {
-    res.status(500).json({
+    console.error("STATUS UPDATE ERROR:", err);
+    return res.status(500).json({
       success: false,
       message: err.message,
     });
   }
 });
 
-
 // DELETE ALL APPLICATIONS FOR A JOB
 
-app.delete("/job/:jobId/applications", authMiddleware, async (req, res) => {  
+app.delete("/job/:jobId/applications", authMiddleware, async (req, res) => {
   try {
     const { jobId } = req.params;
 
@@ -492,6 +613,52 @@ app.delete("/job/:jobId/applications", authMiddleware, async (req, res) => {
     return res.json({
       success: true,
       deletedCount: result.deletedCount,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
+
+app.get("/:id/interview", authMiddleware, async (req, res) => {
+  try {
+    const application = await Application.findById(req.params.id);
+
+    if (!application) {
+      return res.status(404).json({
+        success: false,
+        message: "Application not found",
+      });
+    }
+
+    const job = await Job.findOne({
+      _id: application.jobId,
+      userId: req.user.id,
+    });
+
+    if (!job) {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied",
+      });
+    }
+
+    const interview = await Interview.findOne({
+      applicationId: application._id,
+    });
+
+    if (!interview) {
+      return res.status(404).json({
+        success: false,
+        message: "Interview not found",
+      });
+    }
+
+    return res.json({
+      success: true,
+      interview,
     });
   } catch (err) {
     return res.status(500).json({

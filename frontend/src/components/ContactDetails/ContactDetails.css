@@ -1,0 +1,119 @@
+.contact-details {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #dee1e6;
+  border-radius: 10px;
+}
+
+.contact-details-header {
+  display: flex;
+  align-items: center;
+  padding: 24px;
+  font-size: 18px;
+  color: #565d6d;
+  column-gap: 8px;
+  padding-bottom: 25px;
+  border-bottom: 1px solid #dee1e6;
+}
+
+.contact-details-content {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  column-gap: 12px;
+}
+
+.contact-details-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background-color: #f3f4f6;
+  border-radius: 10px;
+}
+
+.contact-details-icon {
+  width: 16px;
+  height: 16px;
+  color: #565d6d;
+}
+
+.contact-details-content:hover .contact-details-icon {
+  color: #f17204;
+}
+
+.contact-details-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.contact-details-label {
+  font-size: 10px;
+  color: #565d6d;
+}
+
+.contact-details-item {
+  font-size: 14px;
+  color: #171a1f;
+  font-weight: 600;
+}
+
+.contact-details-link-icon {
+  width: 18px;
+  height: 18px;
+  color: #565d6d;
+  position: absolute;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    transform 0.2s;
+}
+
+.contact-details-link-icon:hover,
+.contact-details-link-icon:focus-visible {
+  transform: translateY(-50%) scale(1.1);
+  color: #f17204;
+}
+
+.contact-details-item-link {
+  cursor: pointer;
+  align-items: center;
+  display: inline-block;
+
+  max-width: 80%;
+  width: fit-content;
+
+  transition: 0.2s ease;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.contact-details-item-link:hover {
+  opacity: 0.7;
+  text-decoration: underline;
+}
+
+.contact-details-content-container {
+  display: flex;
+  flex-direction: column;
+  row-gap: 26px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 32px;
+}
+
+.contact-details-empty {
+  color: #888;
+  font-size: 14px;
+  font-style: italic;
+}

@@ -1,6 +1,6 @@
 import { JobDetailStatus, type IForm } from "../types";
 
-export const initialState: IForm = {
+export const initialStateForm: IForm = {
   jobTitle: "",
   companyName: "",
   location: "",

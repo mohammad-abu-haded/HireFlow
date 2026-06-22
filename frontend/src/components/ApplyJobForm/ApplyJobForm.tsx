@@ -187,7 +187,8 @@ const ApplyJobForm = () => {
                   <label htmlFor="githubProfile">GitHub Profile</label>
                   <input
                     placeholder="github.com/username"
-                    type="url"
+                    type="text"
+                    autoComplete="url"
                     id="githubProfile"
                     name="githubProfile"
                   />
@@ -196,7 +197,7 @@ const ApplyJobForm = () => {
                   <label htmlFor="linkedinProfile">LinkedIn Profile</label>
                   <input
                     placeholder="linkedin.com/in/username"
-                    type="url"
+                    type="text"
                     autoComplete="url"
                     id="linkedinProfile"
                     name="linkedinProfile"

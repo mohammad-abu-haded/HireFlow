@@ -2,7 +2,7 @@ import { ApplicationStatus } from "../../types";
 import "./ApplicationCard.css";
 import CalenderIcon from "../../assets/icons/calender.svg?react";
 import ClockIcon from "../../assets/icons/clock.svg?react";
-import AcceptedIcon from "../../assets/icons/clock.svg?react";
+import AcceptedIcon from "../../assets/icons/accepted.svg?react";
 import RejectIcon from "../../assets/icons/delete.svg?react";
 import { useNavigate } from "react-router-dom";
 import { ApplicationsScope } from "../../screens/Applications/Applications.screen";

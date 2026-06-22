@@ -50,6 +50,7 @@ export interface IUser {
 
 export interface IApplication {
   _id: string;
+  applicantId: string;
   jobId: number;
   fullName: string;
   email: string;
@@ -83,8 +84,8 @@ export interface FilterSection {
 }
 
 export interface StatusFilterOption {
-    label: JobDetailStatus | string;
-    isAll?: boolean;
+  label: JobDetailStatus | string;
+  isAll?: boolean;
 }
 
 export enum ApplicationStatus {
@@ -121,3 +122,18 @@ export type ExperienceLevel = "entry" | "mid" | "senior" | "";
 export type EmploymentType = "permanent" | "temporary" | "";
 
 export type NotificationType = "success" | "error" | "info";
+
+export enum InterviewType {
+  ONLINE = "ONLINE",
+  ONSITE = "ONSITE",
+}
+
+export interface IInterview {
+  _id: string;
+  applicationId: string;
+  type: InterviewType;
+  scheduledAt: string;
+  meetingLink?: string;
+  location?: string;
+  createdAt: string;
+}

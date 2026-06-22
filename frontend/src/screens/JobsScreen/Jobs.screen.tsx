@@ -145,16 +145,16 @@ const JobsScreen = () => {
             Browse thousands of high-quality job opportunities from leading
             companies and startups around the globe.
           </p>
-
-          <Search
-            params={params}
-            placeholder="Job title or keywords"
-            search={search}
-            setParams={setParams}
-            setSearch={setSearch}
-            setPage={setPage}
-            height="66px"
-          />
+          <div className="job-search-container">
+            <Search
+              params={params}
+              placeholder="Job title or keywords"
+              search={search}
+              setParams={setParams}
+              setSearch={setSearch}
+              setPage={setPage}
+            />
+          </div>
         </div>
       </div>
 

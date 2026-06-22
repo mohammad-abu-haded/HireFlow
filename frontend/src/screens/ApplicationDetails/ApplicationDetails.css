@@ -4,4 +4,15 @@
   height: fit-content;
   padding: 40px;
   flex-direction: column;
+  row-gap: 32px;
+}
+
+.application-details-items {
+  display: flex;
+  align-items: flex-start;
+  column-gap: 32px;
+}
+
+.application-details-cover-letter {
+  width: 80%;
 }

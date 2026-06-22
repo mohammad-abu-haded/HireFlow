@@ -8,7 +8,6 @@ interface IProps {
   setParams: SetURLSearchParams;
   placeholder: string;
   setPage?: React.Dispatch<React.SetStateAction<number>>;
-  height: string;
 }
 const Search = (props: IProps) => {
   const handleSearch = (e: any) => {
@@ -22,8 +21,8 @@ const Search = (props: IProps) => {
     }
   };
   return (
-    <form onSubmit={handleSearch}>
-      <div className="search-container" style={{height: props.height}}>
+    <form onSubmit={handleSearch} style={{width: "100%"}}>
+      <div className="search-container">
         <SearchIcon
           className="search-icon"
           onClick={() => document.getElementById("search")?.focus()}

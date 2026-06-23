@@ -6,7 +6,6 @@ import OpenIcon from "../../assets/icons/open.svg?react";
 import CloseIcon from "../../assets/icons/close.svg?react";
 import ClockPlusIcon from "../../assets/icons/clock-plus.svg?react";
 import UserIcon from "../../assets/icons/persons.svg?react";
-import EyeIcon from "../../assets/icons/eye.svg?react";
 import ClockIcon from "../../assets/icons/clock.svg?react";
 import ApplicationsIcon from "../../assets/icons/persons.svg?react";
 import RightIcon from "../../assets/icons/right-arrow.svg?react";
@@ -180,12 +179,6 @@ const JobDetailsScreen = () => {
       value: getDaysAgo(job?.createdAt),
       icon: ClockIcon,
     },
-    {
-      title: "Profile Views",
-      value: job?.profileViews || 0,
-      subtitle: "",
-      icon: EyeIcon,
-    },
   ];
 
   return (
@@ -285,7 +278,6 @@ const JobDetailsScreen = () => {
               key={stat.title}
               title={stat.title}
               value={stat.value}
-              subtitle={stat.subtitle}
               icon={stat.icon}
             />
           ))}

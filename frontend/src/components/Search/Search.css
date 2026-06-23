@@ -25,6 +25,7 @@
 
 .search-input {
   all: unset;
+  width: 90%;
 }
 
 .search-button-container {

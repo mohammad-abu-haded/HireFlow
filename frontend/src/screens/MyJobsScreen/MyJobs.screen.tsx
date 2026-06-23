@@ -216,12 +216,6 @@ const MyJobsScreen = () => {
       subtitle: applicationsSubtitle,
       icon: UserIcon,
     },
-    {
-      title: "Time to Hire",
-      value: "18d",
-      subtitle: "",
-      icon: CalendarIcon,
-    },
   ];
 
   const STATUS_FILTER_CONFIG: StatusFilterOption[] = [

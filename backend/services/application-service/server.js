@@ -379,14 +379,16 @@ app.get("/my-supervised-interviews", authMiddleware, async (req, res) => {
     const limit = Math.max(parseInt(req.query.limit) || 6, 1);
     let page = Math.max(parseInt(req.query.page) || 1, 1);
 
-    const search = req.query.search || "";
-
-    const matchStage = {
-      ownerId: req.user.id,
-    };
+    const status = req.query.status || "";
+    const search = (req.query.q || "").trim();
 
     const pipeline = [
-      { $match: matchStage },
+      {
+        $match: {
+          ownerId: new mongoose.Types.ObjectId(req.user.id),
+        },
+      },
+
       {
         $lookup: {
           from: "applications",
@@ -396,18 +398,49 @@ app.get("/my-supervised-interviews", authMiddleware, async (req, res) => {
         },
       },
       { $unwind: "$application" },
-      ...(search
-        ? [
-            {
-              $match: {
-                "application.fullName": {
-                  $regex: search,
-                  $options: "i",
-                },
-              },
-            },
-          ]
-        : []),
+
+      {
+        $lookup: {
+          from: "jobs",
+          localField: "jobId",
+          foreignField: "_id",
+          as: "job",
+        },
+      },
+      { $unwind: "$job" },
+    ];
+
+    // STATUS FILTER
+    if (status && ["ONLINE", "ONSITE"].includes(status)) {
+      pipeline.push({
+        $match: { type: status },
+      });
+    }
+
+    // SMART SEARCH (AND across words)
+    if (search) {
+      const words = search.split(/\s+/).filter(Boolean);
+
+      pipeline.push({
+        $match: {
+          $and: words.map((word) => ({
+            $or: [
+              // APPLICATION FIELDS
+              { "application.fullName": { $regex: word, $options: "i" } },
+              { "application.email": { $regex: word, $options: "i" } },
+              { "application.location": { $regex: word, $options: "i" } },
+
+              // JOB FIELDS
+              { "job.jobTitle": { $regex: word, $options: "i" } },
+              { "job.companyName": { $regex: word, $options: "i" } },
+              { "job.location": { $regex: word, $options: "i" } },
+            ],
+          })),
+        },
+      });
+    }
+
+    pipeline.push(
       { $sort: { scheduledAt: -1 } },
       {
         $facet: {
@@ -417,8 +450,8 @@ app.get("/my-supervised-interviews", authMiddleware, async (req, res) => {
           ],
           totalCount: [{ $count: "count" }],
         },
-      },
-    ];
+      }
+    );
 
     const result = await Interview.aggregate(pipeline);
 
@@ -454,6 +487,7 @@ app.get("/my-supervised-interviews", authMiddleware, async (req, res) => {
     });
   }
 });
+
 // GET ALL APPLICATIONS FOR MY JOBS
 
 app.get("/", authMiddleware, async (req, res) => {

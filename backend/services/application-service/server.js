@@ -36,6 +36,7 @@ const ApplicationSchema = new mongoose.Schema(
   {
     jobId: String,
     applicantId: String,
+    fullName: String,
     status: {
       type: String,
       default: "PENDING",
@@ -56,6 +57,12 @@ const InterviewSchema = new mongoose.Schema(
     applicationId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Application",
+      required: true,
+    },
+
+    jobId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Job",
       required: true,
     },
 
@@ -94,6 +101,33 @@ const InterviewSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
+
+const UserSchema = new mongoose.Schema(
+  {
+    userName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
+
+    password: {
+      type: String,
+      required: true,
+    },
+  },
+  { timestamps: true }
+);
+
+
+const User = mongoose.model("User", UserSchema);
 const Application = mongoose.model("Application", ApplicationSchema);
 const Job = mongoose.model("Job", JobSchema);
 const Interview = mongoose.model("Interview", InterviewSchema);
@@ -249,7 +283,6 @@ app.get("/my-applications", authMiddleware, async (req, res) => {
       },
     ];
 
-
     if (req.query.status) {
       const values = Array.isArray(req.query.status)
         ? req.query.status
@@ -288,6 +321,139 @@ app.get("/my-applications", authMiddleware, async (req, res) => {
   }
 });
 
+app.get("/my-interviews", authMiddleware, async (req, res) => {
+  try {
+    const limit = Math.max(parseInt(req.query.limit) || 6, 1);
+    let page = Math.max(parseInt(req.query.page) || 1, 1);
+
+    const status = req.query.status;
+
+    const filter = {
+      applicantId: req.user.id,
+    };
+
+    if (status && (status === "ONLINE" || status === "ONSITE")) {
+      filter.type = status;
+    }
+
+    const total = await Interview.countDocuments(filter);
+    const totalPages = Math.max(Math.ceil(total / limit), 1);
+
+    if (page > totalPages) page = totalPages;
+
+    const interviews = await Interview.find(filter)
+      .sort({ scheduledAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    const data = interviews.map((i) => ({
+      _id: i._id.toString(),
+      applicationId: i.applicationId?.toString(),
+      applicantId: i.applicantId?.toString(),
+      ownerId: i.ownerId?.toString(),
+      jobId: i.jobId?.toString(),
+      type: i.type,
+      scheduledAt: i.scheduledAt,
+      meetingLink: i.meetingLink,
+      location: i.location,
+      createdAt: i.createdAt,
+    }));
+
+    res.json({
+      data,
+      total,
+      page,
+      totalPages,
+      limit,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
+
+app.get("/my-supervised-interviews", authMiddleware, async (req, res) => {
+  try {
+    const limit = Math.max(parseInt(req.query.limit) || 6, 1);
+    let page = Math.max(parseInt(req.query.page) || 1, 1);
+
+    const search = req.query.search || "";
+
+    const matchStage = {
+      ownerId: req.user.id,
+    };
+
+    const pipeline = [
+      { $match: matchStage },
+      {
+        $lookup: {
+          from: "applications",
+          localField: "applicationId",
+          foreignField: "_id",
+          as: "application",
+        },
+      },
+      { $unwind: "$application" },
+      ...(search
+        ? [
+            {
+              $match: {
+                "application.fullName": {
+                  $regex: search,
+                  $options: "i",
+                },
+              },
+            },
+          ]
+        : []),
+      { $sort: { scheduledAt: -1 } },
+      {
+        $facet: {
+          data: [
+            { $skip: (page - 1) * limit },
+            { $limit: limit },
+          ],
+          totalCount: [{ $count: "count" }],
+        },
+      },
+    ];
+
+    const result = await Interview.aggregate(pipeline);
+
+    const data = (result[0]?.data || []).map((i) => ({
+      _id: i._id.toString(),
+      applicationId: i.applicationId?.toString(),
+      applicantId: i.applicantId?.toString(),
+      ownerId: i.ownerId?.toString(),
+      jobId: i.jobId?.toString(),
+      type: i.type,
+      scheduledAt: i.scheduledAt,
+      meetingLink: i.meetingLink,
+      location: i.location,
+      createdAt: i.createdAt,
+    }));
+
+    const total = result[0]?.totalCount?.[0]?.count || 0;
+    const totalPages = Math.max(Math.ceil(total / limit), 1);
+
+    if (page > totalPages) page = totalPages;
+
+    res.json({
+      data,
+      total,
+      page,
+      totalPages,
+      limit,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
 // GET ALL APPLICATIONS FOR MY JOBS
 
 app.get("/", authMiddleware, async (req, res) => {
@@ -598,6 +764,13 @@ app.patch("/:id/status", authMiddleware, async (req, res) => {
         });
       }
 
+      if (type === "ONLINE" && !meetingLink?.trim()) {
+        return res.status(400).json({
+          success: false,
+          message: "Meeting Link is required",
+        });
+      }
+
       let finalMeetingLink = meetingLink || "";
       let finalLocation = location || "";
 
@@ -614,6 +787,7 @@ app.patch("/:id/status", authMiddleware, async (req, res) => {
         {
           applicationId: application._id,
           applicantId,
+          jobId: application.jobId,
           ownerId,
           type,
           scheduledAt: interviewDate,
@@ -740,8 +914,7 @@ app.get("/:id", authMiddleware, async (req, res) => {
     const job = await Job.findById(application.jobId);
 
     const isOwner = job && job.userId.toString() === req.user.id;
-    const isApplicant =
-      application.applicantId.toString() === req.user.id;
+    const isApplicant = application.applicantId.toString() === req.user.id;
 
     if (!isOwner && !isApplicant) {
       return res.status(403).json({
@@ -749,7 +922,7 @@ app.get("/:id", authMiddleware, async (req, res) => {
         message: "Access denied",
       });
     }
-    
+
     res.json(application);
   } catch (err) {
     res.status(500).json({

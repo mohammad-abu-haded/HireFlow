@@ -1,0 +1,210 @@
+.my-interview-card-container {
+  display: flex;
+  flex-direction: column;
+  padding: 24px 24px 16px 24px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  border: 1px solid #dee1e6;
+  width: 100%;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.my-interview-card-container:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+.my-interview-card-header {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: flex-start;
+  justify-content: space-between;
+  row-gap: 15px;
+  width: 100%;
+  padding-bottom: 16px;
+}
+
+.my-interview-card-divider {
+  width: 100%;
+  height: 1px;
+  border-bottom: 1px solid #e0e2e680;
+}
+
+.my-interview-card-profile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  width: 96px;
+  height: 96px;
+  border: 1px solid #dee1e6;
+  background-color: #fafafb;
+  font-size: 30px;
+  font-weight: bold;
+  color: #171a1f;
+}
+
+.my-interview-card-job-info {
+  display: flex;
+  flex-direction: column;
+  row-gap: 4px;
+}
+
+.my-interview-card-job-info > h2 {
+  font-size: 18px;
+  color: #16181d;
+  font-weight: bold;
+}
+
+.my-interview-card-job-info > p {
+  font-size: 14px;
+  color: #575e6b;
+  font-weight: 500;
+}
+
+.my-interview-card-type-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.my-interview-card-type {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  padding: 10px 12px;
+  border-radius: 9999px;
+  color: #fff;
+}
+
+.my-interview-card-type.online {
+  background-color: #6366f1;
+}
+
+.my-interview-card-type.onsite {
+  background-color: #10b981;
+}
+
+.my-interview-card-info {
+  font-size: 14px;
+  color: #575e6b;
+  padding: 19px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  column-gap: 8px;
+}
+
+.my-interview-card-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.my-interview-card-settings-container {
+  margin: 24px 0 24px 0;
+  display: flex;
+  flex-direction: column;
+  row-gap: 12px;
+  width: 100%;
+}
+
+.my-interview-card-setting-view {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  column-gap: 8px;
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid #e0e2e6;
+  font-size: 14px;
+  color: #575e6b;
+  height: 34px;
+  padding: 11px 9px;
+}
+
+.my-interview-card-setting-icon {
+  width: 16px;
+  height: 16px;
+  color: #f28602;
+}
+
+.my-interview-card-setting-action {
+  all: unset;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  column-gap: 12px;
+  width: 100%;
+  height: 40px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  transition:
+    background-color 0.2s,
+    transform 0.2s;
+}
+
+.my-interview-card-setting-action.online {
+  background-color: #f9fafb;
+  border: 1px solid #e0e2e6;
+  color: #16181d;
+}
+
+.my-interview-card-setting-action.onsite {
+  background-color: #f28602;
+  color: #ffffff;
+}
+
+.my-interview-card-setting-action:hover,
+.my-interview-card-setting-action:focus-visible {
+  transform: scale(1.05);
+}
+
+.my-interview-card-setting-action-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.my-interview-card-actions {
+  margin-top: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.my-interview-card-action {
+  all: unset;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #575e6b;
+  font-size: 16px;
+  font-weight: 600;
+  position: relative;
+  flex: 1;
+  text-align: center;
+  transition:
+    background-color 0.2s,
+    transform 0.2s;
+}
+
+.my-interview-card-action:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 100%;
+  width: 1px;
+  background-color: #e0e2e6;
+}
+
+.my-interview-card-action:hover,
+.my-interview-card-action:focus-visible {
+  transform: scale(1.05);
+}

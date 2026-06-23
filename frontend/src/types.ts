@@ -131,6 +131,9 @@ export enum InterviewType {
 export interface IInterview {
   _id: string;
   applicationId: string;
+  applicantId: string;
+  ownerId: string;
+  jobId: string;
   type: InterviewType;
   scheduledAt: string;
   meetingLink?: string;

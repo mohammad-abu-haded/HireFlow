@@ -6,7 +6,9 @@ import ApplicationsIcon from "../../assets/icons/persons.svg?react";
 import LogoutIcon from "../../assets/icons/logout.svg?react";
 import SavedIcon from "../../assets/icons/saved.svg?react";
 import OpenSidebar from "../../assets/icons/sidebar-right.svg?react";
-import CloseSidebar from "../../assets/icons/sidebar-left.svg?react";
+import UserCheckIcon from "../../assets/icons/user-check.svg?react";
+import InterviewIcon from "../../assets/icons/interview.svg?react";
+import CloseSidebarIcon from "../../assets/icons/sidebar-left.svg?react";
 import JobsIcon from "../../assets/icons/list.svg?react";
 import { AuthContext } from "../../context/authContext";
 import { useContext, useEffect, useState } from "react";
@@ -30,16 +32,28 @@ const navItems = [
     requiresAuth: true,
   },
   {
+    path: "/interviews",
+    label: "Interviews",
+    icon: UserCheckIcon,
+    requiresAuth: true,
+  },
+  {
     path: "/jobs",
     label: "Jobs",
     icon: JobsIcon,
     requiresAuth: false,
-    section: "users",
+    section: "new-section",
   },
   {
     path: "/my-applications",
     label: "My Applications",
     icon: SavedIcon,
+    requiresAuth: true,
+  },
+  {
+    path: "/my-interviews",
+    label: "My Interviews",
+    icon: InterviewIcon,
     requiresAuth: true,
   },
 ];
@@ -63,7 +77,7 @@ const Sidebar = () => {
   return (
     <div className={`sidebar ${!isSidebarOpen && "sidebar-closed"}`}>
       {isSidebarOpen ? (
-        <CloseSidebar
+        <CloseSidebarIcon
           className="sidebar-toggle"
           onClick={() => setIsSidebarOpen((prev) => !prev)}
         />
@@ -87,7 +101,7 @@ const Sidebar = () => {
             const Icon = item.icon;
             return (
               <div key={`nav-item-container-${index}`}>
-              {item.section && item.section === 'users' && (<div className="nav-divider" key={`nav-divider-${index}`}/>)}
+              {item.section && item.section === 'new-section' && (<div className="nav-divider" key={`nav-divider-${index}`}/>)}
                 <NavLink
                   key={item.path}
                   to={item.path}

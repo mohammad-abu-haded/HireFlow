@@ -217,7 +217,7 @@ const ApplicationStatusUpdate = (props: IProps) => {
               )}
               {interview.type === InterviewType.ONLINE ? (
                 <div className="application-status-update-content">
-                  <label htmlFor="link">MEETING LINK (OPTIONAL)</label>
+                  <label htmlFor="link">MEETING LINK</label>
                   <input
                     type="text"
                     id="link"
@@ -228,6 +228,7 @@ const ApplicationStatusUpdate = (props: IProps) => {
                         meetingLink: e.target.value,
                       }))
                     }
+                    required
                   />
                 </div>
               ) : (

@@ -17,6 +17,8 @@ import JobDetailsScreen from "./screens/JobDetailsScreen/JobDetails.screen";
 import ApplyJobScreen from "./screens/ApplyJob/ApplyJob.screen";
 import ApplicationDetailsScreen from "./screens/ApplicationDetails/ApplicationDetails.screen";
 import MyApplicationsScreen from "./screens/MyApplications/MyApplications.screen";
+import InterviewsScreen from "./screens/Interviews/Interviews.screen";
+import MyInterViewsScreen from "./screens/MyInterViews/MyInterViews.screen";
 
 function App() {
   return (
@@ -38,6 +40,8 @@ function App() {
             <Route path="/update-job/:id" element={<PostJobScreen />} />
             <Route path="/applications" element={<ApplicationsScreen />} />
             <Route path="/my-applications" element={<MyApplicationsScreen />} />
+            <Route path="/interviews" element={<InterviewsScreen />} />
+            <Route path="/my-interviews" element={<MyInterViewsScreen />} />
             <Route path="/job/:id/applications" element={<ApplicationsScreen />} />
             <Route path="/applications-details/:id" element={<ApplicationDetailsScreen />} />
             <Route path="/apply-job/:id" element={<ApplyJobScreen />} />

@@ -2,7 +2,6 @@ import StatCard from "../../components/StatCard/StatCard ";
 import "./MyJobs.css";
 import JobIcon from "../../assets/icons/briefcase-bag.svg?react";
 import UserIcon from "../../assets/icons/persons.svg?react";
-import CalendarIcon from "../../assets/icons/calender.svg?react";
 import PlusIcon from "../../assets/icons/plus.svg?react";
 import SearchIcon from "../../assets/icons/search.svg?react";
 import {

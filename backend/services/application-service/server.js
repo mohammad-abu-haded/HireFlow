@@ -634,17 +634,44 @@ app.get("/job/:jobId", authMiddleware, async (req, res) => {
   }
 });
 
+
 // GET TOTAL APPLICATIONS FOR JOB
 
-app.get("/jobs/:jobId/applications/count", async (req, res) => {
+app.get("/my-jobs/applications/count", authMiddleware, async (req, res) => {
   try {
-    const count = await Application.countDocuments({
-      jobId: req.params.jobId,
+    const userId = req.user.id;
+
+    const myJobs = await Job.find({ userId }).select("_id");
+
+    const jobIds = myJobs.map((job) => job._id.toString());
+
+    const total = await Application.countDocuments({
+      jobId: { $in: jobIds },
     });
 
     res.json({
       success: true,
-      jobId: req.params.jobId,
+      totalApplications: total,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
+
+
+// GET TOTAL APPLICATIONS SUBMITTED BY USER
+
+app.get("/my/applications/count", authMiddleware, async (req, res) => {
+  try {
+    const count = await Application.countDocuments({
+      applicantId: req.user.id,
+    });
+
+    res.json({
+      success: true,
       totalApplications: count,
     });
   } catch (err) {
@@ -655,7 +682,7 @@ app.get("/jobs/:jobId/applications/count", async (req, res) => {
   }
 });
 
-// GET TOTAL APPLICATIONS SUBMITTED BY USER
+// GET TOTAL APPLICATIONS FOR MY JOBS
 
 app.get("/my/applications/count", authMiddleware, async (req, res) => {
   try {

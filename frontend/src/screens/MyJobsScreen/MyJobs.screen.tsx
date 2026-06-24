@@ -82,7 +82,7 @@ const MyJobsScreen = () => {
 
     try {
       const res = await fetch(
-        "http://localhost:5000/applications/my/applications/count",
+        "http://localhost:5000/applications/my-jobs/applications/count",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -90,7 +90,7 @@ const MyJobsScreen = () => {
         },
       );
 
-      const data = await res.json();
+      const data = await res.json();      
       setTotalApplications(data.totalApplications);
     } catch (error) {
       console.error("Error fetching total applications:", error);

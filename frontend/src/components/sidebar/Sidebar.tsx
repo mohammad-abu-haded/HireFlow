@@ -1,6 +1,6 @@
 import "./Sidebar.css";
 import BagIcon from "../../assets/icons/briefcase-bag.svg?react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import PostJobIcon from "../../assets/icons/plus-circle.svg?react";
 import ApplicationsIcon from "../../assets/icons/persons.svg?react";
 import LogoutIcon from "../../assets/icons/logout.svg?react";
@@ -79,6 +79,7 @@ type SidebarTab = (typeof SIDEBAR_TABS)[number]["value"];
 
 const Sidebar = () => {
   const navigate = useNavigate();
+  const pathname = useLocation().pathname;
   const { isAuthenticated, logout } = useContext(AuthContext);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(() => {
     const saved = localStorage.getItem("sidebar");
@@ -99,15 +100,30 @@ const Sidebar = () => {
     localStorage.setItem("sidebar", JSON.stringify(isSidebarOpen));
   }, [isSidebarOpen]);
 
-useEffect(() => {
-  localStorage.setItem("sidebar-tab", activeTab);
-}, [activeTab]);
+  useEffect(() => {
+    localStorage.setItem("sidebar-tab", activeTab);
+  }, [activeTab]);
+
+  useEffect(() => {
+    navItemsApplicant.map((item) => {
+      if (item.path === pathname) {
+        setActiveTab("applicant");
+        return;
+      }
+    });
+    navItemsEmployer.map((item) => {
+      if (item.path === pathname) {
+        setActiveTab("employer");
+        return;
+      }
+    });
+  }, [pathname]);
 
   const handleLogout = () => {
     logout();
     navigate("/login");
   };
-  
+
   return (
     <div className={`sidebar ${!isSidebarOpen && "sidebar-closed"}`}>
       {isSidebarOpen ? (
@@ -133,7 +149,7 @@ useEffect(() => {
           const Icon = item.icon;
           return (
             <button
-            key={index}
+              key={index}
               className={`sidebar-mode ${
                 item.value === activeTab ? "active" : ""
               }`}

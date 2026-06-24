@@ -124,12 +124,12 @@ const ApplicationCard = (props: IProps) => {
 
       <div className="application-card-actions">
         <button
-          className="application-card-action"
+          className="application-card-action details"
           onClick={() => {
             navigate(`/applications-details/${props._id}`);
           }}
         >
-          Application Details
+          Details
         </button>
         {props.applicationsScope === ApplicationsScope.AllApplications && (
           <button
@@ -138,7 +138,7 @@ const ApplicationCard = (props: IProps) => {
               navigate(`/job-details/${props.jobId}`);
             }}
           >
-            Job Details
+            Job
           </button>
         )}
         <button
@@ -146,7 +146,7 @@ const ApplicationCard = (props: IProps) => {
           disabled={props.cvFile ? false : true}
           onClick={() => openCV()}
         >
-          {props.cvFile ? "View Resume" : "No CV uploaded"}
+          {props.cvFile ? "Resume" : "No CV uploaded"}
         </button>
       </div>
     </div>

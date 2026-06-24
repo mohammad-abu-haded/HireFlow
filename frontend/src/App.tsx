@@ -21,10 +21,11 @@ import InterviewsScreen from "./screens/Interviews/Interviews.screen";
 import MyInterViewsScreen from "./screens/MyInterViews/MyInterViews.screen";
 
 function App() {
+  const activeTab = localStorage.getItem("sidebar-tab");
   return (
     <div>
       <Routes>
-        <Route path="/" element={<Navigate to="/jobs" replace />} />
+        <Route path="/" element={<Navigate to={activeTab === "employer" ? "/my-jobs" : "/jobs"} replace />} />
         <Route path="/login" element={<LoginScreen />} />
         <Route path="/signup" element={<SignupScreen />} />
         <Route path="/verify-otp" element={<VerifyOtpScreen />} />

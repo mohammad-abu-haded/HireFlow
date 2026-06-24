@@ -144,33 +144,35 @@ const Sidebar = () => {
         <h2 className="logo-text">HireFlow</h2>
       </div>
 
-      <div className="sidebar-mode-switch">
-        {SIDEBAR_TABS.map((item, index) => {
-          const Icon = item.icon;
-          return (
-            <button
-              key={index}
-              className={`sidebar-mode ${
-                item.value === activeTab ? "active" : ""
-              }`}
-              onClick={() => {
-                if (activeTab !== item.value) {
-                  const newActiveTab = item.value;
-                  setActiveTab(newActiveTab);
-                  if (newActiveTab === "applicant") {
-                    navigate("/jobs");
-                  } else {
-                    navigate("/my-jobs");
+      {isAuthenticated && (
+        <div className="sidebar-mode-switch">
+          {SIDEBAR_TABS.map((item, index) => {
+            const Icon = item.icon;
+            return (
+              <button
+                key={index}
+                className={`sidebar-mode ${
+                  item.value === activeTab ? "active" : ""
+                }`}
+                onClick={() => {
+                  if (activeTab !== item.value) {
+                    const newActiveTab = item.value;
+                    setActiveTab(newActiveTab);
+                    if (newActiveTab === "applicant") {
+                      navigate("/jobs");
+                    } else {
+                      navigate("/my-jobs");
+                    }
                   }
-                }
-              }}
-            >
-              <Icon className="sidebar-mode-icon" />
-              <p>{item.label}</p>
-            </button>
-          );
-        })}
-      </div>
+                }}
+              >
+                <Icon className="sidebar-mode-icon" />
+                <p>{item.label}</p>
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {activeTab === "applicant" && (
         <nav className="sidebar-nav">

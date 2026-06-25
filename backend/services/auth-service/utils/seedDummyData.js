@@ -198,11 +198,8 @@ const buildJobDocument = (config, user, index, title, location) => {
   const showEmploymentType = needsEmploymentType(config);
   const showDuration = needsDuration(config);
   const deadline = getDeadline(index);
-  const status = deadline < new Date()
-    ? "EXPIRED"
-    : index % 4 === 0
-    ? "CLOSED"
-    : "ACTIVE";
+  const status =
+    deadline < new Date() ? "EXPIRED" : index % 4 === 0 ? "CLOSED" : "ACTIVE";
 
   const salaryBase = 50000 + index * 5000;
 
@@ -268,7 +265,12 @@ const seedDummyAccountsAndJobs = async (User, currentUserEmail) => {
     let user = await User.findOne({ email });
 
     if (!user) {
-      user = await User.create({ userName, email, password: hashed });
+      user = await User.create({
+        userName,
+        email,
+        password: hashed,
+        hasCompletedOnboarding: true,
+      });
     }
 
     const Job = getJobModel();
@@ -295,12 +297,21 @@ const seedDummyAccountsAndJobs = async (User, currentUserEmail) => {
   if (currentEmail) {
     const existingSeed = results.find(
       (item) =>
-        item.user && item.user.email &&
+        item.user &&
+        item.user.email &&
         String(item.user.email).toLowerCase() === currentEmail,
     );
 
     if (!existingSeed) {
       const currentUser = await User.findOne({ email: currentEmail });
+      if (currentUser) {
+        currentUser.hasCompletedOnboarding = true;
+        await currentUser.save();
+      }
+      {
+        currentUser.hasCompletedOnboarding = true;
+        await currentUser.save();
+      }
       if (currentUser) {
         const Job = getJobModel();
         const existingJobs = await Job.countDocuments({

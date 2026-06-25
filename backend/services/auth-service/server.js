@@ -16,7 +16,7 @@ app.use(
   cors({
     origin: "http://localhost:5173",
     credentials: true,
-  })
+  }),
 );
 
 app.use(express.json());
@@ -26,7 +26,29 @@ const UserSchema = new mongoose.Schema({
   userName: String,
   email: { type: String, unique: true },
   password: String,
+  hasCompletedOnboarding: {
+    type: Boolean,
+    default: false,
+  },
 });
+
+const authMiddleware = (req, res, next) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({ message: "No token" });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    req.user = decoded;
+
+    next();
+  } catch (err) {
+    return res.status(401).json({ message: "Invalid token" });
+  }
+};
 
 const User = mongoose.model("User", UserSchema);
 app.post("/register", async (req, res) => {
@@ -73,7 +95,7 @@ app.post("/register", async (req, res) => {
       `pending:${email}`,
       JSON.stringify(pendingUser),
       "EX",
-      expiresIn
+      expiresIn,
     );
 
     await redis.set(`otp:${email}`, otp, "EX", expiresIn);
@@ -286,7 +308,12 @@ app.post("/dev/register", async (req, res) => {
     }
 
     const hashed = await bcrypt.hash(password, 12);
-    const user = await User.create({ userName, email, password: hashed });
+    const user = await User.create({
+      userName,
+      email,
+      password: hashed,
+      hasCompletedOnboarding: true,
+    });
 
     res.status(201).json({
       success: true,
@@ -323,6 +350,42 @@ app.post("/dev/seed", async (req, res) => {
   }
 });
 
+app.get("/onboarding/status", authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select(
+      "hasCompletedOnboarding",
+    );
+
+    res.json({
+      success: true,
+      hasCompletedOnboarding: user.hasCompletedOnboarding,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
+
+app.patch("/onboarding/complete", authMiddleware, async (req, res) => {
+  try {
+    await User.findByIdAndUpdate(req.user.id, {
+      hasCompletedOnboarding: true,
+    });
+
+    res.json({
+      success: true,
+      hasCompletedOnboarding: true,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
+
 const startServer = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI);
@@ -335,7 +398,6 @@ const startServer = async () => {
     app.listen(PORT, () => {
       console.log(`Auth service running on ${PORT}`);
     });
-
   } catch (err) {
     console.error("DB connection error:", err);
   }

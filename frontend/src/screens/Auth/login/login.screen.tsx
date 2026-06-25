@@ -17,7 +17,12 @@ const LoginScreen = () => {
       setEmail("");
       setPassword("");
       setErrorMessage("");
-      navigate("/demo-setup");
+      const hasCompletedOnboarding = await fetchOnboardingStatus();
+      if (hasCompletedOnboarding) {
+        navigate("/jobs");
+      } else {
+        navigate("/demo-setup");
+      }
     } else {
       setErrorMessage("Invalid email or password. Please try again.");
     }
@@ -27,6 +32,23 @@ const LoginScreen = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
+
+  const fetchOnboardingStatus = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/auth/onboarding/status", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      const data = await res.json();
+      return data.hasCompletedOnboarding;
+    } catch (err) {
+      return true;
+    }
+  };
+
   return (
     <div className="login-screen">
       <div

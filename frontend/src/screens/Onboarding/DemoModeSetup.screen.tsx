@@ -2,21 +2,25 @@ import "./DemoModeSetup.css";
 import BagIcon from "../../assets/icons/briefcase-bag.svg?react";
 import Plus from "../../assets/icons/plus-circle.svg?react";
 import RightArrow from "../../assets/icons/right-arrow.svg?react";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router";
 import { seedDevAccounts, seedApplications } from "../../utils/seedDummyData";
 import { AuthContext } from "../../context/authContext";
+import Loader from "../../components/Loader/Loader";
 const DemoModeSetupScreen = () => {
+  const [loading, setLoading] = useState(false);
   const { email } = useContext(AuthContext);
   const navigate = useNavigate();
   const handleSampleWorkspaceClick = async () => {
+    setLoading(true);
     await seedDevAccounts(email);
     await seedApplications(email);
-    navigate('/jobs');
+    completeOnboarding();
   };
   const handleBlankWorkspaceClick = async () => {
+    setLoading(true);
     await seedDevAccounts();
-    navigate('/jobs');
+    completeOnboarding();
   };
   const featuresSamples = [
     "5 demo accounts with 75 jobs",
@@ -32,6 +36,27 @@ const DemoModeSetupScreen = () => {
     "No applications - start your first one",
   ];
 
+  const completeOnboarding = async () => {
+    try {
+      const res = await fetch(
+        "http://localhost:5000/auth/onboarding/complete",
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        },
+      );
+
+      const data = await res.json();
+
+      if (data.success) {
+        navigate("/jobs");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
   return (
     <div className="demo-mode-setup">
       <div className="demo-mode-setup-content">
@@ -60,7 +85,10 @@ const DemoModeSetupScreen = () => {
               </div>
             ))}
           </div>
-          <div className="explore-button with-sample" onClick={handleSampleWorkspaceClick}>
+          <div
+            className="explore-button with-sample"
+            onClick={handleSampleWorkspaceClick}
+          >
             <p>Explore Sample Workspace</p>
             <RightArrow className="explore-button-icon" />
           </div>
@@ -82,12 +110,18 @@ const DemoModeSetupScreen = () => {
               </div>
             ))}
           </div>
-          <div className="explore-button without-sample" onClick={handleBlankWorkspaceClick}>
+          <div
+            className="explore-button without-sample"
+            onClick={handleBlankWorkspaceClick}
+          >
             <p>Create Blank Workspace</p>
             <RightArrow className="explore-button-icon without-sample" />
           </div>
         </div>
       </div>
+      {
+        loading && <Loader />
+      }
     </div>
   );
 };

@@ -2,27 +2,34 @@ import "./DemoModeSetup.css";
 import BagIcon from "../../assets/icons/briefcase-bag.svg?react";
 import Plus from "../../assets/icons/plus-circle.svg?react";
 import RightArrow from "../../assets/icons/right-arrow.svg?react";
+import { useContext } from "react";
 import { useNavigate } from "react-router";
+import { seedDevAccounts, seedApplications } from "../../utils/seedDummyData";
+import { AuthContext } from "../../context/authContext";
 const DemoModeSetupScreen = () => {
+  const { email } = useContext(AuthContext);
   const navigate = useNavigate();
-  const handleSampleWorkspaceClick = () => {
+  const handleSampleWorkspaceClick = async () => {
+    await seedDevAccounts(email);
+    await seedApplications(email);
     navigate('/jobs');
   };
-  const handleBlankWorkspaceClick = () => {
+  const handleBlankWorkspaceClick = async () => {
+    await seedDevAccounts();
     navigate('/jobs');
   };
   const featuresSamples = [
-    "Full pipeline of 12 sample jobs",
-    "45+ pre-populated applications",
-    "Live visual analytics dashboard",
-    "Automated testing workflows",
+    "5 demo accounts with 75 jobs",
+    "100+ pre-filled applications",
+    "Complete interview workflows",
+    "All statuses & interview types",
   ];
 
   const featuresBlank = [
-    "Clean, distraction-free interface",
-    "Step-by-step setup wizard",
-    "Custom data import tools",
-    "Direct API access ready",
+    "5 fresh demo accounts ready to use",
+    "75 sample jobs across all accounts",
+    "Clean, pre-configured job board",
+    "No applications - start your first one",
   ];
 
   return (

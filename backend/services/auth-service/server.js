@@ -2,6 +2,7 @@ require("dotenv").config();
 
 const { createAuthIndexes } = require("./db/indexes");
 const sendEmail = require("./utils/sendEmail");
+const { seedDummyAccountsAndJobs } = require("./utils/seedDummyData");
 const express = require("express");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
@@ -263,6 +264,63 @@ app.get("/me", async (req, res) => {
   const user = await User.findById(decoded.id).select("-password");
 
   res.json({ success: true, user });
+});
+
+app.post("/dev/register", async (req, res) => {
+  const { userName, email, password } = req.body;
+
+  try {
+    if (!userName || !email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing fields",
+      });
+    }
+
+    const exists = await User.findOne({ email });
+    if (exists) {
+      return res.status(400).json({
+        success: false,
+        message: "Email already exists",
+      });
+    }
+
+    const hashed = await bcrypt.hash(password, 12);
+    const user = await User.create({ userName, email, password: hashed });
+
+    res.status(201).json({
+      success: true,
+      message: "Account created without OTP verification",
+      user: {
+        id: user._id,
+        userName: user.userName,
+        email: user.email,
+      },
+    });
+  } catch {
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+});
+
+app.post("/dev/seed", async (req, res) => {
+  try {
+    const { email: currentUserEmail } = req.body || {};
+    const results = await seedDummyAccountsAndJobs(User, currentUserEmail);
+
+    res.json({
+      success: true,
+      message: "Seed completed",
+      accounts: results,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message || "Server error",
+    });
+  }
 });
 
 const startServer = async () => {

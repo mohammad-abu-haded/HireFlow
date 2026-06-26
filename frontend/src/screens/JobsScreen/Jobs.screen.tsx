@@ -124,8 +124,6 @@ const JobsScreen = () => {
   }, [params, page]);
 
   useEffect(() => {
-    if (!token) return;
-
     const pagesCount = Math.ceil(totalJobs / limit);
     setTotalPages(pagesCount);
   }, [token, params, totalJobs]);

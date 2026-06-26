@@ -188,7 +188,7 @@ const ApplyJobForm = () => {
                   <input
                     placeholder="github.com/username"
                     type="text"
-                    autoComplete="url"
+                    autoComplete="on"
                     id="githubProfile"
                     name="githubProfile"
                   />
@@ -198,7 +198,7 @@ const ApplyJobForm = () => {
                   <input
                     placeholder="linkedin.com/in/username"
                     type="text"
-                    autoComplete="url"
+                    autoComplete="on"
                     id="linkedinProfile"
                     name="linkedinProfile"
                   />

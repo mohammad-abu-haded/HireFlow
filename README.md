@@ -1,4 +1,10 @@
 <p align="center">
+  <a href="https://drive.google.com/file/d/1a-YFhAd4VUXgttQxUoR0wykzQ8NkKCpb/view?usp=sharing">
+    <img src="https://img.shields.io/badge/▶%20Watch%20Demo%20Video-f17204?style=for-the-badge&logo=google-drive&logoColor=white" alt="Watch Demo Video" />
+  </a>
+</p>
+
+<p align="center">
   <img src="frontend/public/hireflow-favicon.svg" alt="HireFlow" width="72" height="72" />
 </p>
 
